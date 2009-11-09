@@ -4,7 +4,7 @@
  * DATE:          September 17, 2009
  * PROJECT:       Cryptnos
  * .NET VERSION:  2.0
- * REQUIRES:      AboutDialog
+ * REQUIRES:      AboutDialog, PassphraseDialog, ExportSitesForm
  * REQUIRED BY:   (None)
  * 
  * The main Cryptnos application form.  Cryptnos is a small .NET GUI utility for generating
@@ -525,64 +525,76 @@ namespace com.gpfcomics.Cryptnos
                     // ... and if there are any actual sites saved in the registry:
                     if (siteParamsKey.GetValueNames().Length > 0)
                     {
-                        // Prompt the user for a passphrase.  All Cryptnos export files are
-                        // encrypted, so we need a passphrase to encrypt the data with.
-                        PassphraseDialog pd =
-                            new PassphraseDialog(PassphraseDialog.Mode.Export_Initial);
-                        if (pd.ShowDialog() == DialogResult.OK)
+                        // Open up the export dialog and let the user select what sites
+                        // they want to export:
+                        object[] sitesToExport = new object[cbSites.Items.Count];
+                        cbSites.Items.CopyTo(sitesToExport, 0);
+                        ExportSitesForm esf = new ExportSitesForm(sitesToExport);
+                        // If they selected anything to export:
+                        if (esf.ShowDialog() == DialogResult.OK && esf.SelectedSites != null
+                            && esf.SelectedSites.Length > 0)
                         {
-                            string passphrase = pd.Passphrase;
-                            pd.Dispose();
-                            // Now prompt them for their passphrase again to make sure they
-                            // don't misstype it:
-                            pd = new PassphraseDialog(PassphraseDialog.Mode.Export_Confirm);
+                            sitesToExport = esf.SelectedSites;
+                            // Prompt the user for a passphrase.  All Cryptnos export files are
+                            // encrypted, so we need a passphrase to encrypt the data with.
+                            PassphraseDialog pd =
+                                new PassphraseDialog(PassphraseDialog.Mode.Export_Initial);
                             if (pd.ShowDialog() == DialogResult.OK)
                             {
-                                // If the passphrases match:
-                                if (passphrase == pd.Passphrase)
+                                string passphrase = pd.Passphrase;
+                                pd.Dispose();
+                                // Now prompt them for their passphrase again to make sure they
+                                // don't misstype it:
+                                pd = new PassphraseDialog(PassphraseDialog.Mode.Export_Confirm);
+                                if (pd.ShowDialog() == DialogResult.OK)
                                 {
-                                    // Now prompt the user for a file to save to:
-                                    SaveFileDialog sfd = new SaveFileDialog();
-                                    string initDir = null;
-                                    try { initDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments); }
-                                    catch { initDir = Environment.CurrentDirectory; }
-                                    sfd.InitialDirectory = initDir;
-                                    if (sfd.ShowDialog() == DialogResult.OK)
+                                    // If the passphrases match:
+                                    if (passphrase == pd.Passphrase)
                                     {
-                                        string filename = sfd.FileName;
-                                        // Generate a generic List of SiteParameters objects.
-                                        // Site Parameters are serializable, as are generic
-                                        // Lists (if the underlying object is serializable), so
-                                        // our output file will simply be a serialized List of
-                                        // these objects, encrypted to protect their data.
-                                        List<SiteParameters> siteParams =
-                                            new List<SiteParameters>();
-                                        foreach (string subkey in siteParamsKey.GetValueNames())
+                                        // Now prompt the user for a file to save to:
+                                        SaveFileDialog sfd = new SaveFileDialog();
+                                        string initDir = null;
+                                        try { initDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments); }
+                                        catch { initDir = Environment.CurrentDirectory; }
+                                        sfd.InitialDirectory = initDir;
+                                        if (sfd.ShowDialog() == DialogResult.OK)
                                         {
-                                            SiteParameters sp =
-                                                SiteParameters.ReadFromRegistry(siteParamsKey,
-                                                subkey);
-                                            siteParams.Add(sp);
+                                            string filename = sfd.FileName;
+                                            // Generate a generic List of SiteParameters objects.
+                                            // Site Parameters are serializable, as are generic
+                                            // Lists (if the underlying object is serializable), so
+                                            // our output file will simply be a serialized List of
+                                            // these objects, encrypted to protect their data.
+                                            List<SiteParameters> siteParams =
+                                                new List<SiteParameters>();
+                                            //foreach (string subkey in siteParamsKey.GetValueNames())
+                                            foreach (object site in sitesToExport)
+                                            {
+                                                SiteParameters sp =
+                                                    SiteParameters.ReadFromRegistry(siteParamsKey,
+                                                    (string)site);
+                                                siteParams.Add(sp);
+                                            }
+                                            // Serialize the List into an array of bytes:
+                                            BinaryFormatter bf = new BinaryFormatter();
+                                            MemoryStream ms = new MemoryStream();
+                                            bf.Serialize(ms, siteParams);
+                                            ms.Close();
+                                            byte[] serializedParams = ms.ToArray();
+                                            // Now write out those bytes in a secure form to disk:
+                                            SecureFile.Write(filename, serializedParams, passphrase);
+                                            MessageBox.Show("Your site parameters have been " +
+                                                "successfully  exported.", "Information",
+                                                MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         }
-                                        // Serialize the List into an array of bytes:
-                                        BinaryFormatter bf = new BinaryFormatter();
-                                        MemoryStream ms = new MemoryStream();
-                                        bf.Serialize(ms, siteParams);
-                                        ms.Close();
-                                        byte[] serializedParams = ms.ToArray();
-                                        // Now write out those bytes in a secure form to disk:
-                                        SecureFile.Write(filename, serializedParams, passphrase);
-                                        MessageBox.Show("Your site parameters have been " +
-                                            "successfully  exported.", "Information",
-                                            MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     }
+                                    // The two passphrases did not match:
+                                    else MessageBox.Show("The two passphrases did not match.  " +
+                                            "Please try exporting your parameters again.", "Error",
+                                            MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
-                                // The two passphrases did not match:
-                                else MessageBox.Show("The two passphrases did not match.  " +
-                                        "Please try exporting your parameters again.", "Error",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
-                        }
+                            }
                     }
                     // No parameters were found to export:
                     else
