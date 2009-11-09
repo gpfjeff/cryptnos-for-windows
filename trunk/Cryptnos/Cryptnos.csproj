@@ -47,6 +47,12 @@
     <Compile Include="AboutDialog.Designer.cs">
       <DependentUpon>AboutDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExportSitesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExportSitesForm.Designer.cs">
+      <DependentUpon>ExportSitesForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -64,6 +70,10 @@
     <EmbeddedResource Include="AboutDialog.resx">
       <SubType>Designer</SubType>
       <DependentUpon>AboutDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExportSitesForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ExportSitesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <SubType>Designer</SubType>
