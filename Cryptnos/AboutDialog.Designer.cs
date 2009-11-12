@@ -34,31 +34,33 @@ namespace com.gpfcomics.Cryptnos
             this.lblLink = new System.Windows.Forms.LinkLabel();
             this.btnOK = new System.Windows.Forms.Button();
             this.txtLicense = new System.Windows.Forms.TextBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // lblVersion
             // 
-            this.lblVersion.Location = new System.Drawing.Point(12, 9);
+            this.lblVersion.Location = new System.Drawing.Point(59, 9);
             this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(268, 23);
+            this.lblVersion.Size = new System.Drawing.Size(221, 23);
             this.lblVersion.TabIndex = 0;
             this.lblVersion.Text = "[Version Label]";
             this.lblVersion.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // lblCopyright
             // 
-            this.lblCopyright.Location = new System.Drawing.Point(12, 32);
+            this.lblCopyright.Location = new System.Drawing.Point(59, 32);
             this.lblCopyright.Name = "lblCopyright";
-            this.lblCopyright.Size = new System.Drawing.Size(268, 23);
+            this.lblCopyright.Size = new System.Drawing.Size(221, 23);
             this.lblCopyright.TabIndex = 1;
             this.lblCopyright.Text = "[Copyright label]";
             this.lblCopyright.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // lblLink
             // 
-            this.lblLink.Location = new System.Drawing.Point(12, 55);
+            this.lblLink.Location = new System.Drawing.Point(59, 55);
             this.lblLink.Name = "lblLink";
-            this.lblLink.Size = new System.Drawing.Size(268, 23);
+            this.lblLink.Size = new System.Drawing.Size(221, 23);
             this.lblLink.TabIndex = 2;
             this.lblLink.TabStop = true;
             this.lblLink.Text = "http://www.gpf-comics.com/dl/cryptnos/";
@@ -86,6 +88,15 @@ namespace com.gpfcomics.Cryptnos
             this.txtLicense.TabIndex = 4;
             this.txtLicense.Text = resources.GetString("txtLicense.Text");
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(15, 12);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(38, 50);
+            this.pictureBox1.TabIndex = 5;
+            this.pictureBox1.TabStop = false;
+            // 
             // AboutDialog
             // 
             this.AcceptButton = this.btnOK;
@@ -93,6 +104,7 @@ namespace com.gpfcomics.Cryptnos
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnOK;
             this.ClientSize = new System.Drawing.Size(292, 199);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.txtLicense);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.lblLink);
@@ -106,6 +118,7 @@ namespace com.gpfcomics.Cryptnos
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "AboutDialog";
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -118,5 +131,6 @@ namespace com.gpfcomics.Cryptnos
         private System.Windows.Forms.LinkLabel lblLink;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.TextBox txtLicense;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

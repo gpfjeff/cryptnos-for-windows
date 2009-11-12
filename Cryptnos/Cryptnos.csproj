@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>com.gpfcomics.Cryptnos</RootNamespace>
     <AssemblyName>Cryptnos</AssemblyName>
-    <ApplicationIcon>Icon1.ico</ApplicationIcon>
+    <ApplicationIcon>Lock.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -110,7 +110,8 @@
     <None Include="Resources\Icon1.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Icon1.ico" />
+    <Content Include="Lock.ico" />
+    <Content Include="lock_48.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

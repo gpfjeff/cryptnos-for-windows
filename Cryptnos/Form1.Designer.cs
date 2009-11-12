@@ -35,12 +35,12 @@ namespace com.gpfcomics.Cryptnos
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.cbHashes = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.chkRemember = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.cbCharTypes = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtCharLimit = new System.Windows.Forms.TextBox();
+            this.chkRemember = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.btnGenerate = new System.Windows.Forms.Button();
@@ -119,19 +119,6 @@ namespace com.gpfcomics.Cryptnos
             this.label7.TabIndex = 4;
             this.label7.Text = "Hash algorithm:";
             // 
-            // chkRemember
-            // 
-            this.chkRemember.AutoSize = true;
-            this.chkRemember.Checked = true;
-            this.chkRemember.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkRemember.Location = new System.Drawing.Point(8, 19);
-            this.chkRemember.Name = "chkRemember";
-            this.chkRemember.Size = new System.Drawing.Size(132, 17);
-            this.chkRemember.TabIndex = 3;
-            this.chkRemember.Text = "Remember parameters";
-            this.chkRemember.UseVisualStyleBackColor = true;
-            this.chkRemember.CheckedChanged += new System.EventHandler(this.chkRemember_CheckedChanged);
-            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -181,6 +168,19 @@ namespace com.gpfcomics.Cryptnos
             this.txtCharLimit.Name = "txtCharLimit";
             this.txtCharLimit.Size = new System.Drawing.Size(51, 20);
             this.txtCharLimit.TabIndex = 2;
+            // 
+            // chkRemember
+            // 
+            this.chkRemember.AutoSize = true;
+            this.chkRemember.Checked = true;
+            this.chkRemember.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkRemember.Location = new System.Drawing.Point(8, 19);
+            this.chkRemember.Name = "chkRemember";
+            this.chkRemember.Size = new System.Drawing.Size(132, 17);
+            this.chkRemember.TabIndex = 3;
+            this.chkRemember.Text = "Remember parameters";
+            this.chkRemember.UseVisualStyleBackColor = true;
+            this.chkRemember.CheckedChanged += new System.EventHandler(this.chkRemember_CheckedChanged);
             // 
             // label5
             // 
