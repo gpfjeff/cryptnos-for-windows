@@ -110,6 +110,13 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         private Hashtable hashLengths = null;
 
+        /// <summary>
+        /// A string containing the last path used for import/export operations.  This should
+        /// default to My Documents when the app first opens, but should be updated each time
+        /// an import/export operation is performed.
+        /// </summary>
+        private string lastImportExportPath = null;
+
         #endregion
 
         /// <summary>
@@ -204,6 +211,12 @@ namespace com.gpfcomics.Cryptnos
             object[] obj = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
             if (obj != null && obj.Length > 0)
                 copyright = ((AssemblyCopyrightAttribute)obj[0]).Copyright;
+
+            // Default the last import/export path to My Documents (or its equivalent) or,
+            // if that fails, the current working directory:
+            try { lastImportExportPath =
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments); }
+            catch { lastImportExportPath = Environment.CurrentDirectory; }
         }
 
         #region GUI Event Handlers
@@ -447,13 +460,15 @@ namespace com.gpfcomics.Cryptnos
                         {
                             // Prompt the user for an import file:
                             OpenFileDialog ofd = new OpenFileDialog();
-                            string initDir = null;
-                            try { initDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments); }
-                            catch { initDir = Environment.CurrentDirectory; }
-                            ofd.InitialDirectory = initDir;
+                            ofd.InitialDirectory = lastImportExportPath;
                             if (ofd.ShowDialog() == DialogResult.OK)
                             {
+                                // Take note of the file name, as well as update the last
+                                // import/export path for later use:
                                 string filename = ofd.FileName;
+                                try { lastImportExportPath =
+                                    (new FileInfo(filename)).DirectoryName; }
+                                catch { }
                                 // Prompt the user for their passphrase (Cryptnos files are always
                                 // encrypted):
                                 PassphraseDialog pd =
@@ -553,13 +568,16 @@ namespace com.gpfcomics.Cryptnos
                                     {
                                         // Now prompt the user for a file to save to:
                                         SaveFileDialog sfd = new SaveFileDialog();
-                                        string initDir = null;
-                                        try { initDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments); }
-                                        catch { initDir = Environment.CurrentDirectory; }
-                                        sfd.InitialDirectory = initDir;
+                                        sfd.InitialDirectory = lastImportExportPath;
                                         if (sfd.ShowDialog() == DialogResult.OK)
                                         {
                                             string filename = sfd.FileName;
+                                            // Save the last import/export path for later
+                                            // user:
+                                            try { lastImportExportPath =
+                                                (new FileInfo(filename)).DirectoryName; }
+                                            catch { }
+
                                             // Generate a generic List of SiteParameters objects.
                                             // Site Parameters are serializable, as are generic
                                             // Lists (if the underlying object is serializable), so
@@ -567,12 +585,11 @@ namespace com.gpfcomics.Cryptnos
                                             // these objects, encrypted to protect their data.
                                             List<SiteParameters> siteParams =
                                                 new List<SiteParameters>();
-                                            //foreach (string subkey in siteParamsKey.GetValueNames())
                                             foreach (object site in sitesToExport)
                                             {
                                                 SiteParameters sp =
                                                     SiteParameters.ReadFromRegistry(siteParamsKey,
-                                                    (string)site);
+                                                    SiteParameters.GenerateKeyFromSite((string)site));
                                                 siteParams.Add(sp);
                                             }
                                             // Serialize the List into an array of bytes:
@@ -594,7 +611,7 @@ namespace com.gpfcomics.Cryptnos
                                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
-                            }
+                        }
                     }
                     // No parameters were found to export:
                     else
