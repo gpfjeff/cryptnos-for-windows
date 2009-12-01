@@ -96,6 +96,12 @@ namespace com.gpfcomics.Cryptnos
         private string hash = null;
 
         /// <summary>
+        /// A positive integer greater than zero representing the number of times the
+        /// specified hash algorithm should be applied to the inputs.
+        /// </summary>
+        private int iterations = 1;
+
+        /// <summary>
         /// A generated registry key value used to look up this set of parameters
         /// </summary>
         private string key = null;
@@ -146,6 +152,16 @@ namespace com.gpfcomics.Cryptnos
         }
 
         /// <summary>
+        /// A positive integer greater than zero representing the number of times the
+        /// specified hash algorithm should be applied to the inputs.
+        /// </summary>
+        public int Iterations
+        {
+            get { return iterations; }
+            set { iterations = value; }
+        }
+
+        /// <summary>
         /// A read-only property of the generated registry subkey name for storing the site
         /// parameters in the registry.  This will only be available if the <see cref="Site"/>
         /// property is populated; otherwise it will be null.
@@ -185,12 +201,16 @@ namespace com.gpfcomics.Cryptnos
         /// <param name="charTypes">An integer index of the character type drop-down</param>
         /// <param name="charLimit">The character limit, -1 for none</param>
         /// <param name="hash">A string identifying the hash used</param>
-        public SiteParameters(string site, int charTypes, int charLimit, string hash)
+        /// <param name="iterations">A positive integer greater than zero representing the
+        /// number of iterations of the hash to perform</param>
+        public SiteParameters(string site, int charTypes, int charLimit, string hash,
+            int iterations)
         {
             this.site = site;
             this.charTypes = charTypes;
             this.charLimit = charLimit;
             this.hash = hash;
+            this.iterations = iterations;
             key = GenerateKeyFromSite(site);
         }
 
@@ -208,6 +228,7 @@ namespace com.gpfcomics.Cryptnos
                 charTypes = info.GetInt32("CharTypes");
                 charLimit = info.GetInt32("CharLimit");
                 hash = info.GetString("Hash");
+                iterations = info.GetInt32("Iterations");
                 key = GenerateKeyFromSite(site);
             }
             catch
@@ -216,6 +237,7 @@ namespace com.gpfcomics.Cryptnos
                 charTypes = -1;
                 charLimit = -1;
                 hash = null;
+                iterations = 1;
                 key = null;
             }
         }
@@ -368,6 +390,7 @@ namespace com.gpfcomics.Cryptnos
             info.AddValue("CharTypes", charTypes);
             info.AddValue("CharLimit", charLimit);
             info.AddValue("Hash", hash);
+            info.AddValue("Iterations", iterations);
         }
 
         #endregion
