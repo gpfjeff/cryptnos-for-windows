@@ -63,7 +63,6 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using Microsoft.Win32;
-using com.gpfcomics.WinHasher.Core;
 
 namespace com.gpfcomics.Cryptnos
 {
@@ -185,6 +184,7 @@ namespace com.gpfcomics.Cryptnos
                 cbSites.Text = String.Empty;
                 txtPassphrase.Text = String.Empty;
                 txtCharLimit.Text = String.Empty;
+                txtIterations.Text = "1";
                 cbHashes.SelectedItem = Hashes.SHA1.ToString();
                 btnForget.Enabled = false;
                 btnForgetAll.Enabled = false;
@@ -197,8 +197,7 @@ namespace com.gpfcomics.Cryptnos
             hashLengths = new Hashtable();
             foreach (Hashes item in Enum.GetValues(typeof(Hashes)))
             {
-                string tmp = HashEngine.HashText(item, "null", Encoding.Default,
-                    OutputType.Base64);
+                string tmp = HashEngine.HashString(item, "null", 1);
                 hashLengths.Add(item, tmp.Length);
             }
 
@@ -262,8 +261,21 @@ namespace com.gpfcomics.Cryptnos
                 Hashes hashAlgo = (Hashes)Enum.Parse(typeof(Hashes),
                         (string)cbHashes.SelectedItem);
                 int hashLength = (int)hashLengths[hashAlgo];
-                // Error checking:  First make sure the site field isn't empty:
-                if (String.IsNullOrEmpty((string)cbSites.Text))
+                // Error checking:  Since the check is more complex, start by checking the
+                // iteration count text box.  Try parsing the text value of that box and
+                // stuffing it into an integer value.  If the parse fails, or if the integer
+                // is equal to or less than zero, throw an error:
+                int iterations = 1;
+                bool parsedIterations = Int32.TryParse(txtIterations.Text, out iterations);
+                if (!parsedIterations || iterations < 1)
+                {
+                    MessageBox.Show("The iteration count must be a positive integer greater " +
+                        "than zero.", "Error", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    txtIterations.Focus();
+                }
+                // Make sure the site field isn't empty:
+                else if (String.IsNullOrEmpty((string)cbSites.Text))
                 {
                     MessageBox.Show("The site box is empty.", "Error", MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
@@ -303,15 +315,14 @@ namespace com.gpfcomics.Cryptnos
                     // here to do the grunt work.  For the text, combine the site name with
                     // the passphrase text to give us a unique plaintext input.  Note that
                     // the output is Base64 to give us a healthy output.
-                    string hash = HashEngine.HashText(hashAlgo, cbSites.Text +
-                        txtPassphrase.Text, Encoding.Default, OutputType.Base64);
+                    //string hash = HashEngine.HashText(hashAlgo, cbSites.Text +
+                    //    txtPassphrase.Text, Encoding.Default, OutputType.Base64);
+                    string hash = HashEngine.HashString(hashAlgo, Encoding.Default,
+                        cbSites.Text + txtPassphrase.Text, iterations);
                     // Now that we have the hash, we'll wittle it down based on the user's
                     // preferences.  First we'll eliminate any undesireable character types:
                     switch ((string)cbCharTypes.SelectedItem)
                     {
-                        case "alphanumerics plus underscores":
-                            hash = Regex.Replace(hash, @"\W", "");
-                            break;
                         case "alphanumerics, change others to underscores":
                             hash = Regex.Replace(hash, @"\W", "_");
                             break;
@@ -798,6 +809,7 @@ namespace com.gpfcomics.Cryptnos
                 cbHashes.Enabled = false;
                 cbCharTypes.Enabled = false;
                 txtCharLimit.ReadOnly = true;
+                txtIterations.ReadOnly = true;
                 btnForgetAll.Enabled = false;
                 btnForget.Enabled = false;
                 btnImport.Enabled = false;
@@ -815,6 +827,7 @@ namespace com.gpfcomics.Cryptnos
                 cbHashes.Enabled = true;
                 cbCharTypes.Enabled = true;
                 txtCharLimit.ReadOnly = false;
+                txtIterations.ReadOnly = false;
                 btnImport.Enabled = true;
                 // Let the uncheck the Remember box now:
                 chkRemember.Enabled = true;
@@ -972,6 +985,8 @@ namespace com.gpfcomics.Cryptnos
                         cbSites.SelectedItem = siteParams.Site;
                         // The hash algorithm:
                         cbHashes.SelectedItem = siteParams.Hash;
+                        // The iteration count:
+                        txtIterations.Text = siteParams.Iterations.ToString();
                         // Close the individual site parameters and update the last site key
                         // with the just opened value:
                         if (chkRemember.Checked)
@@ -1022,27 +1037,44 @@ namespace com.gpfcomics.Cryptnos
                 // Only bother continuing if the registry is open and the site isn't empty:
                 if (CryptnosRegistryKeyOpen() && !String.IsNullOrEmpty(site))
                 {
-                    // Using the GUI inputs, generate a SiteParameters object.  Note that for
-                    // the character limit we'll pass in a -1 if the text box is actually
-                    // empty, while the rest go in pretty much as is.
-                    SiteParameters siteParams = new SiteParameters(cbSites.Text,
-                        cbCharTypes.SelectedIndex, (String.IsNullOrEmpty(txtCharLimit.Text) ?
-                        -1 : Int32.Parse(txtCharLimit.Text)), (string)cbHashes.SelectedItem);
-                    // Attempt to save the site parameters to the registry.  If that works,
-                    // proceed:
-                    if (siteParams.SaveToRegistry(siteParamsKey))
+                    // Try to parse the iteration count text box value.  If it's not a positive
+                    // integer greater than zero, complain.  What I'm worried about here is
+                    // that I think this gets called when the application closes, so there's
+                    // a chance we could lose our site params if this fails.
+                    int iterations = 1;
+                    bool parsedIterations = Int32.TryParse(txtIterations.Text, out iterations);
+                    if (!parsedIterations || iterations < 1)
                     {
-                        // Set the last site value to this site:
-                        CryptnosSettings.SetValue("LastSite",
-                            SiteParameters.GenerateKeyFromSite(cbSites.Text),
-                            RegistryValueKind.String);
-                        // If the site doesn't exist in the drop-down list, add it now.  That way
-                        // it can be quickly selected again.
-                        if (cbSites.Items.IndexOf(cbSites.Text) == -1)
-                            cbSites.Items.Add(cbSites.Text);
-                        btnForgetAll.Enabled = true;
-                        btnExport.Enabled = true;
-                        btnForget.Enabled = true;
+                        MessageBox.Show("The iteration count must be a positive integer " +
+                            "greater than zero.", "Error", MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                        txtIterations.Focus();
+                    }
+                    else
+                    {
+                        // Using the GUI inputs, generate a SiteParameters object.  Note that for
+                        // the character limit we'll pass in a -1 if the text box is actually
+                        // empty, while the rest go in pretty much as is.
+                        SiteParameters siteParams = new SiteParameters(cbSites.Text,
+                            cbCharTypes.SelectedIndex, (String.IsNullOrEmpty(txtCharLimit.Text) ?
+                            -1 : Int32.Parse(txtCharLimit.Text)), (string)cbHashes.SelectedItem,
+                            iterations);
+                        // Attempt to save the site parameters to the registry.  If that works,
+                        // proceed:
+                        if (siteParams.SaveToRegistry(siteParamsKey))
+                        {
+                            // Set the last site value to this site:
+                            CryptnosSettings.SetValue("LastSite",
+                                SiteParameters.GenerateKeyFromSite(cbSites.Text),
+                                RegistryValueKind.String);
+                            // If the site doesn't exist in the drop-down list, add it now.  That way
+                            // it can be quickly selected again.
+                            if (cbSites.Items.IndexOf(cbSites.Text) == -1)
+                                cbSites.Items.Add(cbSites.Text);
+                            btnForgetAll.Enabled = true;
+                            btnExport.Enabled = true;
+                            btnForget.Enabled = true;
+                        }
                     }
                 }
             }

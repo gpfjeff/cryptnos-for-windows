@@ -54,6 +54,9 @@ namespace com.gpfcomics.Cryptnos
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.chkLock = new System.Windows.Forms.CheckBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.txtIterations = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -65,7 +68,7 @@ namespace com.gpfcomics.Cryptnos
             this.label1.Location = new System.Drawing.Point(5, 23);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(57, 13);
-            this.label1.TabIndex = 11;
+            this.label1.TabIndex = 4;
             this.label1.Text = "Site name:";
             // 
             // label2
@@ -74,7 +77,7 @@ namespace com.gpfcomics.Cryptnos
             this.label2.Location = new System.Drawing.Point(5, 49);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(65, 13);
-            this.label2.TabIndex = 12;
+            this.label2.TabIndex = 5;
             this.label2.Text = "Passphrase:";
             // 
             // txtPassphrase
@@ -87,6 +90,9 @@ namespace com.gpfcomics.Cryptnos
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label9);
+            this.groupBox1.Controls.Add(this.txtIterations);
+            this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.cbHashes);
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.label6);
@@ -96,8 +102,8 @@ namespace com.gpfcomics.Cryptnos
             this.groupBox1.Controls.Add(this.txtCharLimit);
             this.groupBox1.Location = new System.Drawing.Point(7, 139);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(278, 92);
-            this.groupBox1.TabIndex = 2;
+            this.groupBox1.Size = new System.Drawing.Size(278, 118);
+            this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Optional Rules:";
             // 
@@ -122,19 +128,19 @@ namespace com.gpfcomics.Cryptnos
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(24, 67);
+            this.label6.Location = new System.Drawing.Point(24, 92);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(85, 13);
-            this.label6.TabIndex = 6;
+            this.label6.TabIndex = 8;
             this.label6.Text = "Use only the first";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(24, 43);
+            this.label4.Location = new System.Drawing.Point(24, 68);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(26, 13);
-            this.label4.TabIndex = 5;
+            this.label4.TabIndex = 7;
             this.label4.Text = "Use";
             // 
             // cbCharTypes
@@ -143,31 +149,30 @@ namespace com.gpfcomics.Cryptnos
             this.cbCharTypes.FormattingEnabled = true;
             this.cbCharTypes.Items.AddRange(new object[] {
             "all generated characters",
-            "alphanumerics plus underscores",
             "alphanumerics, change others to underscores",
             "alphanumerics only",
             "alphabetic characters only",
             "numbers only"});
-            this.cbCharTypes.Location = new System.Drawing.Point(56, 40);
+            this.cbCharTypes.Location = new System.Drawing.Point(56, 65);
             this.cbCharTypes.Name = "cbCharTypes";
             this.cbCharTypes.Size = new System.Drawing.Size(195, 21);
-            this.cbCharTypes.TabIndex = 1;
+            this.cbCharTypes.TabIndex = 2;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(172, 67);
+            this.label3.Location = new System.Drawing.Point(172, 92);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(57, 13);
-            this.label3.TabIndex = 7;
+            this.label3.TabIndex = 9;
             this.label3.Text = "characters";
             // 
             // txtCharLimit
             // 
-            this.txtCharLimit.Location = new System.Drawing.Point(115, 64);
+            this.txtCharLimit.Location = new System.Drawing.Point(115, 89);
             this.txtCharLimit.Name = "txtCharLimit";
             this.txtCharLimit.Size = new System.Drawing.Size(51, 20);
-            this.txtCharLimit.TabIndex = 2;
+            this.txtCharLimit.TabIndex = 3;
             // 
             // chkRemember
             // 
@@ -177,7 +182,7 @@ namespace com.gpfcomics.Cryptnos
             this.chkRemember.Location = new System.Drawing.Point(8, 19);
             this.chkRemember.Name = "chkRemember";
             this.chkRemember.Size = new System.Drawing.Size(132, 17);
-            this.chkRemember.TabIndex = 3;
+            this.chkRemember.TabIndex = 0;
             this.chkRemember.Text = "Remember parameters";
             this.chkRemember.UseVisualStyleBackColor = true;
             this.chkRemember.CheckedChanged += new System.EventHandler(this.chkRemember_CheckedChanged);
@@ -188,7 +193,7 @@ namespace com.gpfcomics.Cryptnos
             this.label5.Location = new System.Drawing.Point(5, 103);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(56, 13);
-            this.label5.TabIndex = 13;
+            this.label5.TabIndex = 6;
             this.label5.Text = "Password:";
             // 
             // txtPassword
@@ -204,7 +209,7 @@ namespace com.gpfcomics.Cryptnos
             this.btnGenerate.Location = new System.Drawing.Point(8, 72);
             this.btnGenerate.Name = "btnGenerate";
             this.btnGenerate.Size = new System.Drawing.Size(264, 23);
-            this.btnGenerate.TabIndex = 4;
+            this.btnGenerate.TabIndex = 2;
             this.btnGenerate.Text = "Generate";
             this.btnGenerate.UseVisualStyleBackColor = true;
             this.btnGenerate.Click += new System.EventHandler(this.btnGenerate_Click);
@@ -212,10 +217,10 @@ namespace com.gpfcomics.Cryptnos
             // btnClose
             // 
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(229, 320);
+            this.btnClose.Location = new System.Drawing.Point(229, 346);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(57, 23);
-            this.btnClose.TabIndex = 10;
+            this.btnClose.TabIndex = 6;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
@@ -232,20 +237,20 @@ namespace com.gpfcomics.Cryptnos
             // 
             // btnAbout
             // 
-            this.btnAbout.Location = new System.Drawing.Point(165, 320);
+            this.btnAbout.Location = new System.Drawing.Point(165, 346);
             this.btnAbout.Name = "btnAbout";
             this.btnAbout.Size = new System.Drawing.Size(58, 23);
-            this.btnAbout.TabIndex = 9;
+            this.btnAbout.TabIndex = 5;
             this.btnAbout.Text = "About...";
             this.btnAbout.UseVisualStyleBackColor = true;
             this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
             // 
             // btnImport
             // 
-            this.btnImport.Location = new System.Drawing.Point(6, 320);
+            this.btnImport.Location = new System.Drawing.Point(6, 346);
             this.btnImport.Name = "btnImport";
             this.btnImport.Size = new System.Drawing.Size(72, 23);
-            this.btnImport.TabIndex = 5;
+            this.btnImport.TabIndex = 3;
             this.btnImport.Text = "Import...";
             this.btnImport.UseVisualStyleBackColor = true;
             this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
@@ -255,17 +260,17 @@ namespace com.gpfcomics.Cryptnos
             this.btnForgetAll.Location = new System.Drawing.Point(143, 42);
             this.btnForgetAll.Name = "btnForgetAll";
             this.btnForgetAll.Size = new System.Drawing.Size(120, 23);
-            this.btnForgetAll.TabIndex = 8;
+            this.btnForgetAll.TabIndex = 3;
             this.btnForgetAll.Text = "Forget All";
             this.btnForgetAll.UseVisualStyleBackColor = true;
             this.btnForgetAll.Click += new System.EventHandler(this.btnForgetAll_Click);
             // 
             // btnExport
             // 
-            this.btnExport.Location = new System.Drawing.Point(84, 320);
+            this.btnExport.Location = new System.Drawing.Point(84, 346);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(75, 23);
-            this.btnExport.TabIndex = 6;
+            this.btnExport.TabIndex = 4;
             this.btnExport.Text = "Export...";
             this.btnExport.UseVisualStyleBackColor = true;
             this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
@@ -275,7 +280,7 @@ namespace com.gpfcomics.Cryptnos
             this.btnForget.Location = new System.Drawing.Point(16, 42);
             this.btnForget.Name = "btnForget";
             this.btnForget.Size = new System.Drawing.Size(120, 23);
-            this.btnForget.TabIndex = 7;
+            this.btnForget.TabIndex = 2;
             this.btnForget.Text = "Forget";
             this.btnForget.UseVisualStyleBackColor = true;
             this.btnForget.Click += new System.EventHandler(this.btnForget_Click);
@@ -292,7 +297,7 @@ namespace com.gpfcomics.Cryptnos
             this.groupBox2.Location = new System.Drawing.Point(7, 7);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(278, 126);
-            this.groupBox2.TabIndex = 14;
+            this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Core Parameters:";
             // 
@@ -302,10 +307,10 @@ namespace com.gpfcomics.Cryptnos
             this.groupBox3.Controls.Add(this.chkRemember);
             this.groupBox3.Controls.Add(this.btnForget);
             this.groupBox3.Controls.Add(this.btnForgetAll);
-            this.groupBox3.Location = new System.Drawing.Point(7, 237);
+            this.groupBox3.Location = new System.Drawing.Point(7, 263);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(278, 77);
-            this.groupBox3.TabIndex = 15;
+            this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Remebering Settings:";
             // 
@@ -315,10 +320,37 @@ namespace com.gpfcomics.Cryptnos
             this.chkLock.Location = new System.Drawing.Point(167, 19);
             this.chkLock.Name = "chkLock";
             this.chkLock.Size = new System.Drawing.Size(105, 17);
-            this.chkLock.TabIndex = 9;
+            this.chkLock.TabIndex = 1;
             this.chkLock.Text = "Lock parameters";
             this.chkLock.UseVisualStyleBackColor = true;
             this.chkLock.CheckedChanged += new System.EventHandler(this.chkLock_CheckedChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(24, 43);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(88, 13);
+            this.label8.TabIndex = 5;
+            this.label8.Text = "Perform this hash";
+            // 
+            // txtIterations
+            // 
+            this.txtIterations.Location = new System.Drawing.Point(115, 40);
+            this.txtIterations.Name = "txtIterations";
+            this.txtIterations.Size = new System.Drawing.Size(51, 20);
+            this.txtIterations.TabIndex = 1;
+            this.txtIterations.Text = "1";
+            this.txtIterations.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(172, 43);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(31, 13);
+            this.label9.TabIndex = 6;
+            this.label9.Text = "times";
             // 
             // Form1
             // 
@@ -326,7 +358,7 @@ namespace com.gpfcomics.Cryptnos
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(292, 351);
+            this.ClientSize = new System.Drawing.Size(292, 379);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btnExport);
@@ -377,6 +409,9 @@ namespace com.gpfcomics.Cryptnos
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.CheckBox chkLock;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox txtIterations;
+        private System.Windows.Forms.Label label8;
     }
 }
 

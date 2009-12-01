@@ -27,7 +27,6 @@ AppVersion=Cryptnos 1.0
 UninstallDisplayName=Cryptnos 1.0
 SetupIconFile=C:\Documents and Settings\Jeff\My Documents\Visual Studio 2005\Projects\Cryptnos\Cryptnos\Lock.ico
 [Files]
-Source: ..\Cryptnos\bin\Release\WinHasherCore.dll; DestDir: {app}
 Source: ..\Cryptnos\bin\Release\Cryptnos.exe; DestDir: {app}
 Source: help.html; DestDir: {app}; Flags: ignoreversion
 Source: gpl.html; DestDir: {app}; Flags: ignoreversion
@@ -113,4 +112,4 @@ end;
 // doing a release build, make sure to change the random string below to some-
 // thing new to force SubWCRev to add the new info.
 //
-// Revision Tag: 302e36383830373938333339
+// Revision Tag: 302e31383833383530303937
