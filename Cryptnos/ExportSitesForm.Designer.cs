@@ -28,12 +28,15 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportSitesForm));
             this.rbExportAll = new System.Windows.Forms.RadioButton();
             this.label1 = new System.Windows.Forms.Label();
             this.rbExportSome = new System.Windows.Forms.RadioButton();
             this.lbSiteList = new System.Windows.Forms.ListBox();
             this.btnExport = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // rbExportAll
@@ -46,6 +49,8 @@ namespace com.gpfcomics.Cryptnos
             this.rbExportAll.TabIndex = 0;
             this.rbExportAll.TabStop = true;
             this.rbExportAll.Text = "Export all saved site parameters";
+            this.toolTip1.SetToolTip(this.rbExportAll, "Select this radio button to export all of your\r\nsite parameters in one file.  Thi" +
+                    "nk of this as\r\na shortcut to selecting all of the sites in the\r\nlist below.");
             this.rbExportAll.UseVisualStyleBackColor = true;
             this.rbExportAll.CheckedChanged += new System.EventHandler(this.rbExportAll_CheckedChanged);
             // 
@@ -66,6 +71,8 @@ namespace com.gpfcomics.Cryptnos
             this.rbExportSome.Size = new System.Drawing.Size(166, 17);
             this.rbExportSome.TabIndex = 1;
             this.rbExportSome.Text = "Export only the following sites:";
+            this.toolTip1.SetToolTip(this.rbExportSome, "Select this radio button if you would like to\r\nexport only certain site parameter" +
+                    "s, but not\r\nall of them.  The site list below will become\r\nenabled.");
             this.rbExportSome.UseVisualStyleBackColor = true;
             this.rbExportSome.CheckedChanged += new System.EventHandler(this.rbExportSome_CheckedChanged);
             // 
@@ -77,6 +84,7 @@ namespace com.gpfcomics.Cryptnos
             this.lbSiteList.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
             this.lbSiteList.Size = new System.Drawing.Size(263, 95);
             this.lbSiteList.TabIndex = 2;
+            this.toolTip1.SetToolTip(this.lbSiteList, resources.GetString("lbSiteList.ToolTip"));
             this.lbSiteList.SelectedIndexChanged += new System.EventHandler(this.lbSiteList_SelectedIndexChanged);
             // 
             // btnExport
@@ -86,23 +94,33 @@ namespace com.gpfcomics.Cryptnos
             this.btnExport.Size = new System.Drawing.Size(75, 23);
             this.btnExport.TabIndex = 3;
             this.btnExport.Text = "Export";
+            this.toolTip1.SetToolTip(this.btnExport, resources.GetString("btnExport.ToolTip"));
             this.btnExport.UseVisualStyleBackColor = true;
             this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
             // btnCancel
             // 
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Location = new System.Drawing.Point(149, 181);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 4;
             this.btnCancel.Text = "Cancel";
+            this.toolTip1.SetToolTip(this.btnCancel, "Click this button to cancel the export\r\nprocess.  You will be returned to the\r\nma" +
+                    "in Cryptnos window.");
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
+            // toolTip1
+            // 
+            this.toolTip1.IsBalloon = true;
+            // 
             // ExportSitesForm
             // 
+            this.AcceptButton = this.btnExport;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(292, 215);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnExport);
@@ -130,5 +148,6 @@ namespace com.gpfcomics.Cryptnos
         private System.Windows.Forms.ListBox lbSiteList;
         private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

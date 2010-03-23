@@ -32,7 +32,7 @@
  * so even if the site parameters in the registry are decrypted, the final passphrase cannot
  * be generated without social engineering or similar external means.
  * 
- * This program is Copyright 2009, Jeffrey T. Darlington.
+ * This program is Copyright 2010, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
  * 
@@ -173,6 +173,9 @@ namespace com.gpfcomics.Cryptnos
                     // If that worked, get the state of the lock parameters value:
                     chkLock.Checked = (int)CryptnosSettings.GetValue("LockParams", 0)
                         == 1 ? true : false;
+                    // Get the user's tooltip help preference:
+                    chkShowTooltips.Checked = (int)CryptnosSettings.GetValue("ToolTips", 1)
+                        == 1 ? true : false;
                 }
             }
             // If anything above blew up, set some sensible defaults:
@@ -189,7 +192,10 @@ namespace com.gpfcomics.Cryptnos
                 btnForget.Enabled = false;
                 btnForgetAll.Enabled = false;
                 btnExport.Enabled = false;
+                chkShowTooltips.Checked = true;
             }
+            // Turn on or off tooltip help depending on the user's save preference:
+            toolTip1.Active = chkShowTooltips.Checked;
             // Generate the hash lengths list.  The idea here is to enforce the character
             // limit ranges depending on which hash algorithm has been selected.  To do that,
             // we'll quickly generate each available hash and get the length of the output
@@ -200,9 +206,8 @@ namespace com.gpfcomics.Cryptnos
                 string tmp = HashEngine.HashString(item, "null", 1);
                 hashLengths.Add(item, tmp.Length);
             }
-
+            // Set the window title to include the short version number:
             Text = versionShort;
-
             // Get our copyright information.  It seems a bit silly to do it this way,
             // but this seems to be the only way to do it that I can find.  We'll pull this
             // from the assembly so we only need to change it in one place, and it can be
@@ -431,7 +436,8 @@ namespace com.gpfcomics.Cryptnos
         private void btnAbout_Click(object sender, EventArgs e)
         {
             // Create and open the about dialog:
-            AboutDialog ad = new AboutDialog(version, versionShort, copyright);
+            AboutDialog ad = new AboutDialog(version, versionShort, copyright,
+                chkShowTooltips.Checked);
             ad.ShowDialog();
         }
 
@@ -555,7 +561,8 @@ namespace com.gpfcomics.Cryptnos
                         // they want to export:
                         object[] sitesToExport = new object[cbSites.Items.Count];
                         cbSites.Items.CopyTo(sitesToExport, 0);
-                        ExportSitesForm esf = new ExportSitesForm(sitesToExport);
+                        ExportSitesForm esf = new ExportSitesForm(sitesToExport,
+                            chkShowTooltips.Checked);
                         // If they selected anything to export:
                         if (esf.ShowDialog() == DialogResult.OK && esf.SelectedSites != null
                             && esf.SelectedSites.Length > 0)
@@ -841,6 +848,19 @@ namespace com.gpfcomics.Cryptnos
             }
         }
 
+        /// <summary>
+        /// What to do when the ToolTips checkbox is toggled
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chkShowTooltips_CheckedChanged(object sender, EventArgs e)
+        {
+            // Fortunately, the ToolTip.Active property turns tooltips on and off, so
+            // this is relatively easy:
+            if (chkShowTooltips.Checked) toolTip1.Active = true;
+            else toolTip1.Active = false;
+        }
+
         #endregion
 
         #region Private Methods
@@ -929,8 +949,11 @@ namespace com.gpfcomics.Cryptnos
                 // Otherwise, if they've selected to save their info, save it for the
                 // currently selected site:
                 if (chkRemember.Checked && !chkLock.Checked) SaveSiteParams(cbSites.Text);
-                // Always remember the state of the remember checkbox:
+                // Always remember the state of the remember, tooltip help, and lock
+                // parameters checkboxes, as well as the version info:
                 CryptnosSettings.SetValue("RememberParams", (chkRemember.Checked ? 1 : 0),
+                    RegistryValueKind.DWord);
+                CryptnosSettings.SetValue("ToolTips", (chkShowTooltips.Checked ? 1 : 0),
                     RegistryValueKind.DWord);
                 CryptnosSettings.SetValue("LockParams", (chkLock.Checked ? 1 : 0),
                     RegistryValueKind.DWord);
@@ -1129,7 +1152,6 @@ namespace com.gpfcomics.Cryptnos
         }
 
         #endregion
-
 
     }
 }

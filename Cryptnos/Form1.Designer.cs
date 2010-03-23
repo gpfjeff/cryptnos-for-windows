@@ -28,11 +28,15 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.txtPassphrase = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.txtIterations = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.cbHashes = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -54,9 +58,8 @@ namespace com.gpfcomics.Cryptnos
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.chkLock = new System.Windows.Forms.CheckBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.txtIterations = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.chkShowTooltips = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -86,6 +89,7 @@ namespace com.gpfcomics.Cryptnos
             this.txtPassphrase.Name = "txtPassphrase";
             this.txtPassphrase.Size = new System.Drawing.Size(197, 20);
             this.txtPassphrase.TabIndex = 1;
+            this.toolTip1.SetToolTip(this.txtPassphrase, resources.GetString("txtPassphrase.ToolTip"));
             this.txtPassphrase.UseSystemPasswordChar = true;
             // 
             // groupBox1
@@ -106,6 +110,35 @@ namespace com.gpfcomics.Cryptnos
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Optional Rules:";
+            this.toolTip1.SetToolTip(this.groupBox1, resources.GetString("groupBox1.ToolTip"));
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(172, 43);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(31, 13);
+            this.label9.TabIndex = 6;
+            this.label9.Text = "times";
+            // 
+            // txtIterations
+            // 
+            this.txtIterations.Location = new System.Drawing.Point(115, 40);
+            this.txtIterations.Name = "txtIterations";
+            this.txtIterations.Size = new System.Drawing.Size(51, 20);
+            this.txtIterations.TabIndex = 1;
+            this.txtIterations.Text = "1";
+            this.txtIterations.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.toolTip1.SetToolTip(this.txtIterations, resources.GetString("txtIterations.ToolTip"));
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(24, 43);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(88, 13);
+            this.label8.TabIndex = 5;
+            this.label8.Text = "Perform this hash";
             // 
             // cbHashes
             // 
@@ -115,6 +148,7 @@ namespace com.gpfcomics.Cryptnos
             this.cbHashes.Name = "cbHashes";
             this.cbHashes.Size = new System.Drawing.Size(141, 21);
             this.cbHashes.TabIndex = 0;
+            this.toolTip1.SetToolTip(this.cbHashes, resources.GetString("cbHashes.ToolTip"));
             // 
             // label7
             // 
@@ -157,6 +191,7 @@ namespace com.gpfcomics.Cryptnos
             this.cbCharTypes.Name = "cbCharTypes";
             this.cbCharTypes.Size = new System.Drawing.Size(195, 21);
             this.cbCharTypes.TabIndex = 2;
+            this.toolTip1.SetToolTip(this.cbCharTypes, resources.GetString("cbCharTypes.ToolTip"));
             // 
             // label3
             // 
@@ -173,6 +208,7 @@ namespace com.gpfcomics.Cryptnos
             this.txtCharLimit.Name = "txtCharLimit";
             this.txtCharLimit.Size = new System.Drawing.Size(51, 20);
             this.txtCharLimit.TabIndex = 3;
+            this.toolTip1.SetToolTip(this.txtCharLimit, resources.GetString("txtCharLimit.ToolTip"));
             // 
             // chkRemember
             // 
@@ -184,6 +220,7 @@ namespace com.gpfcomics.Cryptnos
             this.chkRemember.Size = new System.Drawing.Size(132, 17);
             this.chkRemember.TabIndex = 0;
             this.chkRemember.Text = "Remember parameters";
+            this.toolTip1.SetToolTip(this.chkRemember, resources.GetString("chkRemember.ToolTip"));
             this.chkRemember.UseVisualStyleBackColor = true;
             this.chkRemember.CheckedChanged += new System.EventHandler(this.chkRemember_CheckedChanged);
             // 
@@ -203,6 +240,7 @@ namespace com.gpfcomics.Cryptnos
             this.txtPassword.ReadOnly = true;
             this.txtPassword.Size = new System.Drawing.Size(212, 20);
             this.txtPassword.TabIndex = 3;
+            this.toolTip1.SetToolTip(this.txtPassword, resources.GetString("txtPassword.ToolTip"));
             // 
             // btnGenerate
             // 
@@ -211,17 +249,20 @@ namespace com.gpfcomics.Cryptnos
             this.btnGenerate.Size = new System.Drawing.Size(264, 23);
             this.btnGenerate.TabIndex = 2;
             this.btnGenerate.Text = "Generate";
+            this.toolTip1.SetToolTip(this.btnGenerate, "Click this button to generate your\r\npassword.  Note that you must\r\nenter a site n" +
+                    "ame and passphrase\r\nbefore this button will work.");
             this.btnGenerate.UseVisualStyleBackColor = true;
             this.btnGenerate.Click += new System.EventHandler(this.btnGenerate_Click);
             // 
             // btnClose
             // 
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(229, 346);
+            this.btnClose.Location = new System.Drawing.Point(228, 370);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(57, 23);
-            this.btnClose.TabIndex = 6;
+            this.btnClose.TabIndex = 7;
             this.btnClose.Text = "Close";
+            this.toolTip1.SetToolTip(this.btnClose, resources.GetString("btnClose.ToolTip"));
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
@@ -232,26 +273,30 @@ namespace com.gpfcomics.Cryptnos
             this.cbSites.Name = "cbSites";
             this.cbSites.Size = new System.Drawing.Size(197, 21);
             this.cbSites.TabIndex = 0;
+            this.toolTip1.SetToolTip(this.cbSites, resources.GetString("cbSites.ToolTip"));
             this.cbSites.SelectedIndexChanged += new System.EventHandler(this.cbSites_SelectedIndexChanged);
             this.cbSites.Leave += new System.EventHandler(this.cbSites_Leave);
             // 
             // btnAbout
             // 
-            this.btnAbout.Location = new System.Drawing.Point(165, 346);
+            this.btnAbout.Location = new System.Drawing.Point(164, 370);
             this.btnAbout.Name = "btnAbout";
             this.btnAbout.Size = new System.Drawing.Size(58, 23);
-            this.btnAbout.TabIndex = 5;
+            this.btnAbout.TabIndex = 6;
             this.btnAbout.Text = "About...";
+            this.toolTip1.SetToolTip(this.btnAbout, "Click this button to see the copyright and\r\nlicensing information about Cryptnos," +
+                    " as\r\nwell as a hyperlink to find Cryptnos\r\nonline.");
             this.btnAbout.UseVisualStyleBackColor = true;
             this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
             // 
             // btnImport
             // 
-            this.btnImport.Location = new System.Drawing.Point(6, 346);
+            this.btnImport.Location = new System.Drawing.Point(5, 370);
             this.btnImport.Name = "btnImport";
             this.btnImport.Size = new System.Drawing.Size(72, 23);
-            this.btnImport.TabIndex = 3;
+            this.btnImport.TabIndex = 4;
             this.btnImport.Text = "Import...";
+            this.toolTip1.SetToolTip(this.btnImport, resources.GetString("btnImport.ToolTip"));
             this.btnImport.UseVisualStyleBackColor = true;
             this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
             // 
@@ -262,16 +307,18 @@ namespace com.gpfcomics.Cryptnos
             this.btnForgetAll.Size = new System.Drawing.Size(120, 23);
             this.btnForgetAll.TabIndex = 3;
             this.btnForgetAll.Text = "Forget All";
+            this.toolTip1.SetToolTip(this.btnForgetAll, resources.GetString("btnForgetAll.ToolTip"));
             this.btnForgetAll.UseVisualStyleBackColor = true;
             this.btnForgetAll.Click += new System.EventHandler(this.btnForgetAll_Click);
             // 
             // btnExport
             // 
-            this.btnExport.Location = new System.Drawing.Point(84, 346);
+            this.btnExport.Location = new System.Drawing.Point(83, 370);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(75, 23);
-            this.btnExport.TabIndex = 4;
+            this.btnExport.TabIndex = 5;
             this.btnExport.Text = "Export...";
+            this.toolTip1.SetToolTip(this.btnExport, resources.GetString("btnExport.ToolTip"));
             this.btnExport.UseVisualStyleBackColor = true;
             this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
@@ -282,6 +329,7 @@ namespace com.gpfcomics.Cryptnos
             this.btnForget.Size = new System.Drawing.Size(120, 23);
             this.btnForget.TabIndex = 2;
             this.btnForget.Text = "Forget";
+            this.toolTip1.SetToolTip(this.btnForget, resources.GetString("btnForget.ToolTip"));
             this.btnForget.UseVisualStyleBackColor = true;
             this.btnForget.Click += new System.EventHandler(this.btnForget_Click);
             // 
@@ -300,6 +348,7 @@ namespace com.gpfcomics.Cryptnos
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Core Parameters:";
+            this.toolTip1.SetToolTip(this.groupBox2, resources.GetString("groupBox2.ToolTip"));
             // 
             // groupBox3
             // 
@@ -313,6 +362,7 @@ namespace com.gpfcomics.Cryptnos
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Remebering Settings:";
+            this.toolTip1.SetToolTip(this.groupBox3, resources.GetString("groupBox3.ToolTip"));
             // 
             // chkLock
             // 
@@ -322,35 +372,27 @@ namespace com.gpfcomics.Cryptnos
             this.chkLock.Size = new System.Drawing.Size(105, 17);
             this.chkLock.TabIndex = 1;
             this.chkLock.Text = "Lock parameters";
+            this.toolTip1.SetToolTip(this.chkLock, resources.GetString("chkLock.ToolTip"));
             this.chkLock.UseVisualStyleBackColor = true;
             this.chkLock.CheckedChanged += new System.EventHandler(this.chkLock_CheckedChanged);
             // 
-            // label8
+            // toolTip1
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(24, 43);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(88, 13);
-            this.label8.TabIndex = 5;
-            this.label8.Text = "Perform this hash";
+            this.toolTip1.IsBalloon = true;
             // 
-            // txtIterations
+            // chkShowTooltips
             // 
-            this.txtIterations.Location = new System.Drawing.Point(115, 40);
-            this.txtIterations.Name = "txtIterations";
-            this.txtIterations.Size = new System.Drawing.Size(51, 20);
-            this.txtIterations.TabIndex = 1;
-            this.txtIterations.Text = "1";
-            this.txtIterations.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(172, 43);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(31, 13);
-            this.label9.TabIndex = 6;
-            this.label9.Text = "times";
+            this.chkShowTooltips.AutoSize = true;
+            this.chkShowTooltips.Checked = true;
+            this.chkShowTooltips.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkShowTooltips.Location = new System.Drawing.Point(70, 347);
+            this.chkShowTooltips.Name = "chkShowTooltips";
+            this.chkShowTooltips.Size = new System.Drawing.Size(153, 17);
+            this.chkShowTooltips.TabIndex = 3;
+            this.chkShowTooltips.Text = "Show verbose tooltips help";
+            this.toolTip1.SetToolTip(this.chkShowTooltips, resources.GetString("chkShowTooltips.ToolTip"));
+            this.chkShowTooltips.UseVisualStyleBackColor = true;
+            this.chkShowTooltips.CheckedChanged += new System.EventHandler(this.chkShowTooltips_CheckedChanged);
             // 
             // Form1
             // 
@@ -358,7 +400,8 @@ namespace com.gpfcomics.Cryptnos
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(292, 379);
+            this.ClientSize = new System.Drawing.Size(292, 405);
+            this.Controls.Add(this.chkShowTooltips);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btnExport);
@@ -379,6 +422,7 @@ namespace com.gpfcomics.Cryptnos
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -412,6 +456,8 @@ namespace com.gpfcomics.Cryptnos
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox txtIterations;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.CheckBox chkShowTooltips;
     }
 }
 

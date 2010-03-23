@@ -117,6 +117,213 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <data name="txtPassphrase.ToolTip" xml:space="preserve">
+    <value>This is your secret token or passphrase.
+This value will be combined with the site
+name above to generate your final
+password.  You can use the same pass-
+phrase here for all your sites, because
+the generated password will always be
+unique (since the site name must be
+unique).  Obviously, the stronger this
+passphrase is, the stronger your final
+password will become.</value>
+  </data>
+  <data name="groupBox1.ToolTip" xml:space="preserve">
+    <value>This section contains optional settings
+or rules which allow you to modify the
+final password value.  Here you can
+specify a password length, what
+characters will be used, and which hash
+algorithm to use to generate your new
+password.  While the default values are
+usually OK, changing these can help
+adjust the value to better fit certain
+edge use cases.</value>
+  </data>
+  <data name="txtIterations.ToolTip" xml:space="preserve">
+    <value>This box contains the number of iterations
+of the hash algorithm to use while genera-
+ting your password.  This must be a whole
+number greater than zero (positive integer).
+The default is 1, which is usually sufficient,
+but higher values create further distance
+between the input values and the final
+password.  Higher values can also taken
+longer to generate on slower systems.</value>
+  </data>
+  <data name="cbHashes.ToolTip" xml:space="preserve">
+    <value>This drop-down list contains the available
+cryptographic hash algorithms.  You must
+select one.  Stronger hashes will produce
+stronger passwords, but in general it
+doesn't matter which hash you use as
+long as you remain consistent for each
+individual password you generate.  Note
+that the use of MD5 and SHA-1 are not
+recommended as these hashes have proven
+weak over time, but they are included for
+completeness and convenience.</value>
+  </data>
+  <data name="cbCharTypes.ToolTip" xml:space="preserve">
+    <value>This drop-down restricts the character types
+used in the final password.  Some websites
+and applications restrict the types of
+characters you can use in a password.  The
+algorithm used by Cryptnos to generate
+passwords may include characters that these
+sites won't like.  In general, the safest value
+here is to use alphanumeric characters (letters
+and numbers), but it is strongly recommended
+to use all available characters if the site or
+application will allow it.</value>
+  </data>
+  <data name="txtCharLimit.ToolTip" xml:space="preserve">
+    <value>This box allows you to restrict the length
+of your generated password.  By default,
+if this box is empty, Cryptnos will generate
+a password as long as the hash algorithm
+will produce.  Many sites and applications,
+however, restrict the length of passwords
+to a set length.  This field must be a whole
+number greater than one (positive integer).
+Note that this limit is applied after the
+character type limit is applied, so it is possible
+to end up with a password shorter than the
+value you specify.</value>
+  </data>
+  <data name="chkRemember.ToolTip" xml:space="preserve">
+    <value>If this checkbox is checked, Cryptnos will
+remember your parameter information.  IT
+WILL NEVER STORE YOUR PASSWORDS; only
+the parameters used to create them.  Uncheck
+this box to make Cryptnos "forget" all of your
+parameters.  Note that this checkbox may be
+disabled if you choose to lock your parameters.</value>
+  </data>
+  <data name="txtPassword.ToolTip" xml:space="preserve">
+    <value>This box will contain you final generated
+password.  Enter your site name and
+passphrase above and click the Generate
+button to populate this box.  You can
+then copy the value from this box and
+paste it into the password field for the
+site or application asking for the pass-
+word.  Note that this field is read only
+and cannot be changed except by pressing
+the Generate button.</value>
+  </data>
+  <data name="btnClose.ToolTip" xml:space="preserve">
+    <value>Click this button to close Cryptnos.  If you have
+chosen to remember your parameters, they will
+be written securely to the system registry at
+this time.  You can also close Cryptnos by other
+traditional Windows methods, such as the "X" in
+the upper right corner of the window or by using
+Alt + F4.</value>
+  </data>
+  <data name="cbSites.ToolTip" xml:space="preserve">
+    <value>This field contains the "site name", a
+mnemonic or token that uniquely identifies
+the parameters for the password you are
+going to create.  This can be a domain
+name or any other text that is easy for
+you to remember, but which must be
+unique for each password you generate.
+</value>
+  </data>
+  <data name="btnImport.ToolTip" xml:space="preserve">
+    <value>Click this button to import parameter infor-
+mation from a Cryptnos export file.  You
+will be prompted for the location of the file
+and for the password you set during the
+export.  Note that if the import file contains
+a site name that is already in your saved
+parameter list, the currently saved
+parameters WILL be overwritten with the
+information from the file.</value>
+  </data>
+  <data name="btnForgetAll.ToolTip" xml:space="preserve">
+    <value>Click this button to "forget" ALL parameter
+currently remembered.  This will effectively
+clear all your saved information.  Be sure this
+is what you actually want to do as this
+operation cannot be undone!  This button
+will become disabled if the Remember
+Parameters checkbox is unchecked, or if the
+Lock Parameters checkbox is checked.</value>
+  </data>
+  <data name="btnExport.ToolTip" xml:space="preserve">
+    <value>Click this button to export one or more of
+your parameter entries to an external
+encrypted file.  A dialog box will appear
+asking which set of parameters to export.
+You will also be prompted for a password
+that will be used to encrypt the export file.
+Export files can be used to copy password
+parameters from an instance of Cryptnos on
+one machine to an instance of Cryptnos on
+another machine, or to serve as a backup of
+your parameter data in case of current
+installation is damaged or lost.</value>
+  </data>
+  <data name="btnForget.ToolTip" xml:space="preserve">
+    <value>Click this button to "forget" the parameters for
+the site name currently selected in the Site Name
+drop-down above.  Be sure this is what you really
+want to do as this operation cannot be undone!
+This button will become disabled if the Remember
+Parameters checkbox is unchecked, or if the Lock
+Parameters checkbox is checked.</value>
+  </data>
+  <data name="groupBox2.ToolTip" xml:space="preserve">
+    <value>This section contains the core required
+parameters for generating your pass-
+word.  These are required, and Cryptnos
+will not work unless these values are
+specified.  Your generated password
+will also be displayed here.  You can
+fine tune your parameters further using
+the options in the sections below.</value>
+  </data>
+  <data name="groupBox3.ToolTip" xml:space="preserve">
+    <value>This section allows you to specify if and how
+Cryptnos remembers your password para-
+meter information.  Remember that YOUR
+PASSWORD IS NEVER SAVED; only the
+parameters used to generate it are
+remembered, and that information is ALWAYS
+encrypted.  You can also make Cryptnos
+"forget" one or more of your parameters if
+you decide to discontinue their use.</value>
+  </data>
+  <data name="chkLock.ToolTip" xml:space="preserve">
+    <value>If this checkbox is checked, Cryptnos will lock
+your parameter information to prevent it from
+being modified or overwritten.  In order to edit
+or "forget" parameter information, this box
+must be unchecked.  Obviously, this implies
+that the Remember Parameters box must be
+checked for this box to be enabled.  Checking
+this box disables that checkbox and the Forget,
+Forget All, and Import buttons.</value>
+  </data>
+  <data name="chkShowTooltips.ToolTip" xml:space="preserve">
+    <value>Clear this checkbox if you find these help
+tooltips to be annoying or no longer
+helpful.  We certainly hope they WERE
+helpful, but if you know what you're doing,
+they sure can get in the way.  If you ever
+want to bring them back, just check this
+box again and we'll be happy to help you
+once more.</value>
+  </data>
+  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>43</value>
+  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

@@ -28,6 +28,7 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutDialog));
             this.lblVersion = new System.Windows.Forms.Label();
             this.lblCopyright = new System.Windows.Forms.Label();
@@ -35,6 +36,7 @@ namespace com.gpfcomics.Cryptnos
             this.btnOK = new System.Windows.Forms.Button();
             this.txtLicense = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -46,6 +48,7 @@ namespace com.gpfcomics.Cryptnos
             this.lblVersion.TabIndex = 0;
             this.lblVersion.Text = "[Version Label]";
             this.lblVersion.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip1.SetToolTip(this.lblVersion, "The version of Cryptnos you\r\nare currently using.");
             // 
             // lblCopyright
             // 
@@ -55,6 +58,8 @@ namespace com.gpfcomics.Cryptnos
             this.lblCopyright.TabIndex = 1;
             this.lblCopyright.Text = "[Copyright label]";
             this.lblCopyright.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip1.SetToolTip(this.lblCopyright, "The copyright date for this version\r\nof Cryptnos, so you can determine\r\nits fresh" +
+                    "ness.");
             // 
             // lblLink
             // 
@@ -65,6 +70,7 @@ namespace com.gpfcomics.Cryptnos
             this.lblLink.TabStop = true;
             this.lblLink.Text = "http://www.gpf-comics.com/dl/cryptnos/";
             this.lblLink.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip1.SetToolTip(this.lblLink, "Click this link to find out more\r\ninformation about Cryptnos\r\nonline.");
             // 
             // btnOK
             // 
@@ -74,6 +80,7 @@ namespace com.gpfcomics.Cryptnos
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 3;
             this.btnOK.Text = "OK";
+            this.toolTip1.SetToolTip(this.btnOK, "Click this button to return to the\r\nwonder and joy that is Cryptnos.");
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
@@ -87,6 +94,8 @@ namespace com.gpfcomics.Cryptnos
             this.txtLicense.Size = new System.Drawing.Size(265, 79);
             this.txtLicense.TabIndex = 4;
             this.txtLicense.Text = resources.GetString("txtLicense.Text");
+            this.toolTip1.SetToolTip(this.txtLicense, "The license under which Cryptnos has\r\nbeen released.  A full copy of this\r\nlicens" +
+                    "e can be found in the Cryptnos\r\ninstallation folder.");
             // 
             // pictureBox1
             // 
@@ -96,6 +105,11 @@ namespace com.gpfcomics.Cryptnos
             this.pictureBox1.Size = new System.Drawing.Size(38, 50);
             this.pictureBox1.TabIndex = 5;
             this.pictureBox1.TabStop = false;
+            this.toolTip1.SetToolTip(this.pictureBox1, "Our icon.\r\nIsn\'t it nifty?");
+            // 
+            // toolTip1
+            // 
+            this.toolTip1.IsBalloon = true;
             // 
             // AboutDialog
             // 
@@ -118,6 +132,7 @@ namespace com.gpfcomics.Cryptnos
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "AboutDialog";
+            this.toolTip1.SetToolTip(this, "Our about box.\r\nIsn\'t it nifty?");
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -132,5 +147,6 @@ namespace com.gpfcomics.Cryptnos
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.TextBox txtLicense;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
