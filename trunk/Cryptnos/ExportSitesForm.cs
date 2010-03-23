@@ -22,7 +22,7 @@
  * sites they want to export, they can click the Export button to proceed to the next step
  * (choosing an export passphrase).  If the user clicks Cancel, the process is aborted.
  * 
- * This program is Copyright 2009, Jeffrey T. Darlington.
+ * This program is Copyright 2010, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
  * 
@@ -83,7 +83,9 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         /// <param name="sites">An object array containing the strings of the site tokens,
         /// which should be taken from the Sites combo box on the main Cryptnos form.</param>
-        public ExportSitesForm(object[] sites)
+        /// <param name="showTooltips">A boolean value specifying whether or not to show
+        /// tooltip help.</param>
+        public ExportSitesForm(object[] sites, bool showTooltips)
         {
             // The normal initializaition:
             InitializeComponent();
@@ -102,6 +104,8 @@ namespace com.gpfcomics.Cryptnos
             rbExportAll.Checked = true;
             rbExportSome.Checked = false;
             lbSiteList.Enabled = false;
+            // Turn tooltips on or off depending on the value passed in from the main form:
+            toolTip1.Active = showTooltips;
         }
 
         /// <summary>
