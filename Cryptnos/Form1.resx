@@ -132,18 +132,6 @@ unique).  Obviously, the stronger this
 passphrase is, the stronger your final
 password will become.</value>
   </data>
-  <data name="groupBox1.ToolTip" xml:space="preserve">
-    <value>This section contains optional settings
-or rules which allow you to modify the
-final password value.  Here you can
-specify a password length, what
-characters will be used, and which hash
-algorithm to use to generate your new
-password.  While the default values are
-usually OK, changing these can help
-adjust the value to better fit certain
-edge use cases.</value>
-  </data>
   <data name="txtIterations.ToolTip" xml:space="preserve">
     <value>This box contains the number of iterations
 of the hash algorithm to use while genera-
@@ -153,7 +141,10 @@ The default is 1, which is usually sufficient,
 but higher values create further distance
 between the input values and the final
 password.  Higher values can also taken
-longer to generate on slower systems.</value>
+longer to generate on slower systems.
+Values higher than 500 will generate a
+warning, as they may be incompatible with
+versions of Cryptnos on other platforms.</value>
   </data>
   <data name="cbHashes.ToolTip" xml:space="preserve">
     <value>This drop-down list contains the available
@@ -193,7 +184,22 @@ number greater than one (positive integer).
 Note that this limit is applied after the
 character type limit is applied, so it is possible
 to end up with a password shorter than the
-value you specify.</value>
+value you specify.  Limits less than 8 will
+generate a warning, short passwords are
+extremely insecure.
+</value>
+  </data>
+  <data name="groupBox1.ToolTip" xml:space="preserve">
+    <value>This section contains optional settings
+or rules which allow you to modify the
+final password value.  Here you can
+specify a password length, what
+characters will be used, and which hash
+algorithm to use to generate your new
+password.  While the default values are
+usually OK, changing these can help
+adjust the value to better fit certain
+edge use cases.</value>
   </data>
   <data name="chkRemember.ToolTip" xml:space="preserve">
     <value>If this checkbox is checked, Cryptnos will
@@ -215,6 +221,18 @@ site or application asking for the pass-
 word.  Note that this field is read only
 and cannot be changed except by pressing
 the Generate button.</value>
+  </data>
+  <data name="btnGenerate.ToolTip" xml:space="preserve">
+    <value>Click this button to generate your
+password.  Note that you must
+enter a site name and passphrase
+before this button will work.
+The generated password will be
+copied to the system clipboard.
+If Remember Parameters is checked
+and Lock Parameters is not checked,
+this will also save your parameters
+to the registry.</value>
   </data>
   <data name="btnClose.ToolTip" xml:space="preserve">
     <value>Click this button to close Cryptnos.  If you have

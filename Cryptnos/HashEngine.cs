@@ -23,7 +23,19 @@
  * a string to the caller.  Base64 is used because it provides us with the highest number of
  * possible characters per slot in the result, making for a stronger pseudo-random password.
  * 
- * This program is Copyright 2009, Jeffrey T. Darlington.
+ * APRIL 28, 2010:  Several new methods have been added to HashEngine, mostly because I didn't
+ * know where better to add them.  I made a rather poor choice naming the hash algorithm
+ * enumeration values, omitting the hyphen in quite a few names.  This, unfortunately, makes
+ * these values incompatible across platforms, so they can't be used directly.  They're also
+ * ugly when users are probably used to seeing the names properly hyphenated.  Thus, you'll
+ * find a few new static methods below which convert from "display hashes" to "hash enums" and
+ * back.  Essentially, the enums are used whenever the Hashes enumeration is needed, while the
+ * "display hash" is shown in the Hash Algorithm drop-down of the main app as well as being
+ * used in the new cross-platform export format.  Also note that there are methods that use
+ * "hash menu strings", which is basically the Hashes enumeration name converted to a string.
+ * Those values are used internally for writing to the registry, so they need to be preserved.
+ * 
+ * This program is Copyright 2010, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
  * 
@@ -134,6 +146,85 @@ namespace com.gpfcomics.Cryptnos
         public static string HashString(Hashes hash, string text, int count)
         {
             return HashString(hash, Encoding.Default, text, count);
+        }
+
+        /// <summary>
+        /// Given a nicely formatted, user-friendly string rerpesenting one of our hashes,
+        /// convert it to the internal <see cref="Hashes"/> enumeration.
+        /// </summary>
+        /// <param name="hash">The string containing the displayable hash</param>
+        /// <returns>The <see cref="Hashes"/> enum object</returns>
+        public static Hashes DisplayHashToHashEnum(string hash)
+        {
+            try { return (Hashes)Enum.Parse(typeof(Hashes), hash.Replace("-", "")); }
+            catch (Exception e) { throw e; }
+        }
+
+        /// <summary>
+        /// Given a nicely formatted, user-friendly string rerpesenting one of our hashes,
+        /// return a string representing the internal <see cref="Hashes"/> enumeration it
+        /// represents.  This is used for compatibility with older versions of Cryptnos.
+        /// </summary>
+        /// <param name="hash">The string containing the displayable hash</param>
+        /// <returns>A string representing the <see cref="Hashes"/> enum object</returns>
+        public static string DisplayHashToHashEnumString(string hash)
+        {
+            try { return DisplayHashToHashEnum(hash).ToString(); }
+            catch (Exception e) { throw e; }
+        }
+
+        /// <summary>
+        /// Given a <see cref="Hashes"/> enumeration object, convert it to a user-friendly
+        /// string suitable for display.  This is also used for compatibility when exporting
+        /// site parameters to the cross-platform export file format.
+        /// </summary>
+        /// <param name="hash">A <see cref="Hashes"/> enumeration object</param>
+        /// <returns>A user-friendly display string representing the hash</returns>
+        public static string HashEnumToDisplayHash(Hashes hash)
+        {
+            string displayHash = null;
+            switch (hash)
+            {
+                case Hashes.MD5:
+                    displayHash = "MD-5";
+                    break;
+                case Hashes.RIPEMD160:
+                    displayHash = "RIPEMD-160";
+                    break;
+                case Hashes.SHA1:
+                    displayHash = "SHA-1";
+                    break;
+                case Hashes.SHA256:
+                    displayHash = "SHA-256";
+                    break;
+                case Hashes.SHA384:
+                    displayHash = "SHA-384";
+                    break;
+                case Hashes.SHA512:
+                    displayHash = "SHA-512";
+                    break;
+                case Hashes.Tiger:
+                case Hashes.Whirlpool:
+                    displayHash = hash.ToString();
+                    break;
+                default:
+                    break;
+            }
+            return displayHash;
+        }
+
+        /// <summary>
+        /// Given a string equivalent to a <see cref="Hashes"/> enumeration object, convert it
+        /// to a user-friendly string suitable for display.  This is also used for compatibility
+        /// with older versions of Cryptnos.
+        /// </summary>
+        /// <param name="hash">A string representing a <see cref="Hashes"/> enumeration
+        /// object</param>
+        /// <returns>A user-friendly display string representing the hash</returns>
+        public static string HashEnumStringToDisplayHash(string hash)
+        {
+            try { return HashEnumToDisplayHash((Hashes)Enum.Parse(typeof(Hashes), hash)); }
+            catch (Exception e) { throw e; }
         }
 
         #endregion

@@ -1,15 +1,15 @@
 [Setup]
 InternalCompressLevel=ultra
 OutputDir=C:\Documents and Settings\Jeff\My Documents\Visual Studio 2005\Projects\Cryptnos\InnoSetup\bin
-OutputBaseFilename=Cryptnos_1.0_Setup
-VersionInfoVersion=1.0.0.$WCREV$
+OutputBaseFilename=Cryptnos_1.1_Setup
+VersionInfoVersion=1.1.0.$WCREV$
 VersionInfoCompany=GPF Comics
 VersionInfoDescription=This program will install Cryptnos on your computer.  Cryptnos is a cryptographic passphrase generator using the Microsoft .NET 2.0 Framework.
-VersionInfoTextVersion=Cryptnos Setup 1.0
+VersionInfoTextVersion=Cryptnos Setup 1.1
 VersionInfoCopyright=Copyright $WCDATE=%Y$, Jeffrey T. Darlington.
 AppCopyright=Copyright $WCDATE=%Y$, Jeffrey T. Darlington.
 AppName=Cryptnos
-AppVerName=Cryptnos 1.0
+AppVerName=Cryptnos 1.1
 LicenseFile=C:\Documents and Settings\Jeff\My Documents\Visual Studio 2005\Projects\Cryptnos\InnoSetup\gpl.rtf
 PrivilegesRequired=poweruser
 MinVersion=4.1.1998,5.0.2195sp3
@@ -21,13 +21,15 @@ Compression=lzma/ultra
 ChangesEnvironment=true
 AppPublisher=GPF Comics
 AppPublisherURL=http://www.gpf-comics.com/
-AppSupportURL=http://www.gpf-comics.com/dl/cryptnos/
-AppUpdatesURL=http://www.gpf-comics.com/dl/cryptnos/
-AppVersion=Cryptnos 1.0
-UninstallDisplayName=Cryptnos 1.0
+AppSupportURL=http://www.cryptnos.com/
+AppUpdatesURL=http://www.cryptnos.com/
+AppVersion=Cryptnos 1.1
+UninstallDisplayName=Cryptnos 1.1
 SetupIconFile=C:\Documents and Settings\Jeff\My Documents\Visual Studio 2005\Projects\Cryptnos\Cryptnos\Lock.ico
 [Files]
 Source: ..\Cryptnos\bin\Release\Cryptnos.exe; DestDir: {app}
+Source: ..\BouncyCastle.Crypto.dll; DestDir: {app}
+Source: ..\cryptnos_export1.xsd; DestDir: {app}
 Source: help.html; DestDir: {app}; Flags: ignoreversion
 Source: gpl.html; DestDir: {app}; Flags: ignoreversion
 [Icons]
@@ -112,4 +114,4 @@ end;
 // doing a release build, make sure to change the random string below to some-
 // thing new to force SubWCRev to add the new info.
 //
-// Revision Tag: 302e30373638313237343431
+// Revision Tag: 302e32313734393837373932

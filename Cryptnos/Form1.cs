@@ -4,7 +4,8 @@
  * DATE:          September 17, 2009
  * PROJECT:       Cryptnos
  * .NET VERSION:  2.0
- * REQUIRES:      AboutDialog, PassphraseDialog, ExportSitesForm
+ * REQUIRES:      AboutDialog, PassphraseDialog, ExportSitesForm, ImportExportHandler,
+ *                HashEngine
  * REQUIRED BY:   (None)
  * 
  * The main Cryptnos application form.  Cryptnos is a small .NET GUI utility for generating
@@ -87,6 +88,27 @@ namespace com.gpfcomics.Cryptnos
             Assembly.GetExecutingAssembly().GetName().Version.Minor.ToString();
 
         /// <summary>
+        /// The "generator" value to use in the new cross-platform export format
+        /// </summary>
+        private static string exportGenerator = "Cryptnos for Windows " +
+            Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+        /// <summary>
+        /// The parent registry key name under which we'll create our Crypntos registry
+        /// entries.  This has been pulled to the definitions at top so it can be easily
+        /// changed in one place if required.
+        /// </summary>
+        private static string GPFRegKeyName = "GPF Comics";
+
+        /// <summary>
+        /// The Cryptnos parent registry key name.  This will be created under the key
+        /// specified by <see cref="GPFRegKeyName"/> and will contain all the registry
+        /// entries for the program.  This has been pulled to the definitions at top so
+        /// it can be easilychanged in one place if required.
+        /// </summary>
+        private static string CryptnosRegKeyName = "Cryptnos";
+
+        /// <summary>
         /// The copyright string for the About dialog
         /// </summary>
         string copyright = "";
@@ -127,10 +149,17 @@ namespace com.gpfcomics.Cryptnos
             InitializeComponent();
             // Default to using all the available characters in the hash:
             cbCharTypes.SelectedIndex = 0;
-            // Bind the hash drop-down to the WinHasher Hashes enum and force SHA-1 to
-            // be the default (it can be overridden below):
-            cbHashes.DataSource = Enum.GetNames(typeof(Hashes));
-            cbHashes.SelectedItem = Hashes.SHA1.ToString();
+            // Originally we bound the hash drop-down to the HashEngine Hashes enum, but that
+            // no longer works with our cross-platform compatibility code.  Instead, step
+            // through the enumeration and convert its value to the "display" value, using
+            // the handy method provided by HashEngine.
+            foreach (Hashes item in Enum.GetValues(typeof(Hashes)))
+            {
+                cbHashes.Items.Add(HashEngine.HashEnumToDisplayHash(item));
+            }
+            // Default the hash selection to SHA-1.  We probably ought to default this to
+            // something stronger eventually.
+            cbHashes.SelectedItem = HashEngine.HashEnumToDisplayHash(Hashes.SHA1);
             // Now put on our asbestos underpants, because now we're playing with
             // dynamite:
             try
@@ -188,7 +217,7 @@ namespace com.gpfcomics.Cryptnos
                 txtPassphrase.Text = String.Empty;
                 txtCharLimit.Text = String.Empty;
                 txtIterations.Text = "1";
-                cbHashes.SelectedItem = Hashes.SHA1.ToString();
+                cbHashes.SelectedItem = HashEngine.HashEnumToDisplayHash(Hashes.SHA1);
                 btnForget.Enabled = false;
                 btnForgetAll.Enabled = false;
                 btnExport.Enabled = false;
@@ -263,8 +292,8 @@ namespace com.gpfcomics.Cryptnos
             {
                 // Go ahead and get the selected hash algorithm now.  Then find out the
                 // length of the generated hash and hold on to that value for now.
-                Hashes hashAlgo = (Hashes)Enum.Parse(typeof(Hashes),
-                        (string)cbHashes.SelectedItem);
+                Hashes hashAlgo =
+                    HashEngine.DisplayHashToHashEnum((string)cbHashes.SelectedItem);
                 int hashLength = (int)hashLengths[hashAlgo];
                 // Error checking:  Since the check is more complex, start by checking the
                 // iteration count text box.  Try parsing the text value of that box and
@@ -316,12 +345,9 @@ namespace com.gpfcomics.Cryptnos
                 // If all those are OK, move on to the actual work:
                 else
                 {
-                    // Generate the hash.  We'll take advantage of WinHasher's HashEngine
-                    // here to do the grunt work.  For the text, combine the site name with
+                    // Generate the hash.  For the text, combine the site name with
                     // the passphrase text to give us a unique plaintext input.  Note that
                     // the output is Base64 to give us a healthy output.
-                    //string hash = HashEngine.HashText(hashAlgo, cbSites.Text +
-                    //    txtPassphrase.Text, Encoding.Default, OutputType.Base64);
                     string hash = HashEngine.HashString(hashAlgo, Encoding.Default,
                         cbSites.Text + txtPassphrase.Text, iterations);
                     // Now that we have the hash, we'll wittle it down based on the user's
@@ -353,6 +379,8 @@ namespace com.gpfcomics.Cryptnos
                     // Now that the hash has been generated and tweaked, display it in the
                     // password box:
                     txtPassword.Text = hash;
+                    // Copy the value of the hash to the system clipboard:
+                    Clipboard.SetText(hash);
                     // If the user has elected to save their settings, do so now:
                     if (chkRemember.Checked && !chkLock.Checked) SaveSiteParams(cbSites.Text);
                 }
@@ -481,10 +509,15 @@ namespace com.gpfcomics.Cryptnos
                             if (ofd.ShowDialog() == DialogResult.OK)
                             {
                                 // Take note of the file name, as well as update the last
-                                // import/export path for later use:
+                                // import/export path for later use.  Note that if, for some
+                                // bizarre reason, the last import/export path fetch fails,
+                                // we don't sweat it.  That's not important right now.
                                 string filename = ofd.FileName;
-                                try { lastImportExportPath =
-                                    (new FileInfo(filename)).DirectoryName; }
+                                try
+                                {
+                                    lastImportExportPath =
+                                        (new FileInfo(filename)).DirectoryName;
+                                }
                                 catch { }
                                 // Prompt the user for their passphrase (Cryptnos files are always
                                 // encrypted):
@@ -494,18 +527,13 @@ namespace com.gpfcomics.Cryptnos
                                 {
                                     string passphrase = pd.Passphrase;
                                     pd.Dispose();
-                                    // Read all the raw data of the import file.  Note that
-                                    // SecureFile files are always encrypted.
-                                    byte[] rawData = SecureFile.ReadAllBytes(filename, passphrase);
-                                    // The raw data should contain a binary formatted generic List
-                                    // of SiteParameter objects.  So attempt to deserialize that
-                                    // List:
-                                    BinaryFormatter bf = new BinaryFormatter();
-                                    MemoryStream ms = new MemoryStream(rawData);
+                                    // Read the data from the import file.  For this, we hand
+                                    // the heavy lifting to the ImportExportHandler.  Note that
+                                    // this should transparently handle both the old and new
+                                    // export formats, so we don't have to sweat that detail.
                                     List<SiteParameters> siteParamList =
-                                        (List<SiteParameters>)bf.Deserialize(ms);
-                                    ms.Close();
-                                    // If the deserialization didn't blow up, step through the list
+                                        ImportExportHandler.ImportFromFile(filename, passphrase);
+                                    // If the import didn't blow up, step through the list
                                     // and save each set of parameters to the registry.  Note that
                                     // if a given site already exists in the registry, this will
                                     // overwrite it.
@@ -530,8 +558,15 @@ namespace com.gpfcomics.Cryptnos
                     }
                 }
             }
-            // If something blew up, notify the user.  This needs to be more robust with more
-            // user-friendly messages.
+            // If we got an ImportHandlerException, it probably has some sort of very specific
+            // message we can show back to the user:
+            catch (ImportHandlerException ihe)
+            {
+                MessageBox.Show(ihe.Message, "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            // Otherwise, if something else blew up, notify the user.  This needs to be more
+            // robust with more specific and user-friendly messages.
             catch
             {
                 MessageBox.Show("I was unable to import site parameters from the specified " +
@@ -591,7 +626,7 @@ namespace com.gpfcomics.Cryptnos
                                         {
                                             string filename = sfd.FileName;
                                             // Save the last import/export path for later
-                                            // user:
+                                            // use.  Note that if this fails, don't sweat it.
                                             try { lastImportExportPath =
                                                 (new FileInfo(filename)).DirectoryName; }
                                             catch { }
@@ -610,14 +645,12 @@ namespace com.gpfcomics.Cryptnos
                                                     SiteParameters.GenerateKeyFromSite((string)site));
                                                 siteParams.Add(sp);
                                             }
-                                            // Serialize the List into an array of bytes:
-                                            BinaryFormatter bf = new BinaryFormatter();
-                                            MemoryStream ms = new MemoryStream();
-                                            bf.Serialize(ms, siteParams);
-                                            ms.Close();
-                                            byte[] serializedParams = ms.ToArray();
-                                            // Now write out those bytes in a secure form to disk:
-                                            SecureFile.Write(filename, serializedParams, passphrase);
+                                            // Hand the actual heavy lifting off to the
+                                            // import/export handler class:
+                                            ImportExportHandler.ExportToFile(filename,
+                                                passphrase, exportGenerator, siteParams);
+                                            // If we get this far, we must have been successful.
+                                            // Display a success message to the user:
                                             MessageBox.Show("Your site parameters have been " +
                                                 "successfully  exported.", "Information",
                                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -861,6 +894,142 @@ namespace com.gpfcomics.Cryptnos
             else toolTip1.Active = false;
         }
 
+        /// <summary>
+        /// What to do when the text in the iterations box changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtIterations_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                // Try to parse the value of the iterations box as an integer:
+                int iters = Int32.Parse(txtIterations.Text);
+                // If that works, make sure the value isn't less than one.  We need at least
+                // one iteration to be performed, so anything less won't work.
+                if (iters < 1)
+                {
+                    MessageBox.Show("The number of hash iterations must be a positive integer " +
+                        "greater than zero, with a minimum of 1. Values greater than 500 are " +
+                        "discouraged because they may not be compatible with versions of Cryptnos " +
+                        "on other platforms.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtIterations.Focus();
+                    txtIterations.SelectAll();
+                }
+                // Similarly, test to see if the value is over 500.  That's the maximum number
+                // of iterations currently set for Cryptnos for Android.  Anything higher than
+                // that causes serious performance issues on Android, so we cap this value
+                // there.  Windows machines likely have a lot more power than Android phones,
+                // and who knows, there might be folks out there actually using values this
+                // high.  If they are, warn them that this may not be supported on other
+                // platforms, but don't force them to change it.  We don't want to break things
+                // for folks who actually are using it this way.
+                else if (iters > 500)
+                    MessageBox.Show("Hash iteration values greater than 500 are discouraged " +
+                        "because they may not be compatible with versions of Cryptnos on " +
+                        "other platforms.", "Warning", MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+            }
+            // This may not be the most efficient way of doing this, but if the user enters
+            // anything other than an integer, the parse above will fail.  Complain and make
+            // them change it here.
+            catch
+            {
+                MessageBox.Show("The number of hash iterations must be a positive integer " +
+                    "greater than zero, with a minimum of 1. Values greater than 500 are " +
+                    "discouraged because they may not be compatible with versions of Cryptnos " +
+                    "on other platforms.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtIterations.Focus();
+                txtIterations.SelectAll();
+            }
+        }
+
+        /// <summary>
+        /// What to do when the character limit value changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtCharLimit_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                // Don't bother with this test if the character limit box is empty, as that's
+                // a valid setting:
+                if (!String.IsNullOrEmpty(txtCharLimit.Text))
+                {
+                    // Try to parse the value of the box as an integer:
+                    int limit = Int32.Parse(txtCharLimit.Text);
+                    // We can't have zero length passwords (or less!):
+                    if (limit < 1)
+                    {
+                        MessageBox.Show("The character count limit must be either empty (meaning " +
+                            "no limit) or a positive integer greater than zero.", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        txtCharLimit.Focus();
+                        txtCharLimit.SelectAll();
+                    }
+                }
+            }
+            // If the parse above blew up, they must have entered something that's not a valid
+            // integer.  Complain and make them change it:
+            catch
+            {
+                MessageBox.Show("The character count limit must be either empty (meaning " +
+                    "no limit) or a positive integer greater than zero.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtCharLimit.Focus();
+                txtCharLimit.SelectAll();
+            }
+        }
+
+        /// <summary>
+        /// What to do when the user leave the character limit box
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtCharLimit_Leave(object sender, EventArgs e)
+        {
+            try
+            {
+                // Don't bother with this test if the character limit box is empty, as that's
+                // a valid setting:
+                if (!String.IsNullOrEmpty(txtCharLimit.Text))
+                {
+                    // Try to parse the value of the box as an integer:
+                    int limit = Int32.Parse(txtCharLimit.Text);
+                    // We can't have zero length passwords (or less!):
+                    if (limit < 1)
+                    {
+                        MessageBox.Show("The character count limit must be either empty (meaning " +
+                            "no limit) or a positive integer greater than zero.", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        txtCharLimit.Focus();
+                        txtCharLimit.SelectAll();
+                    }
+                    // If the value is less than eight, warn the user that this isn't a good
+                    // idea.  This check used to occur in the text changed event, but that
+                    // got annoying when the user tried to enter a value like "15".  This
+                    // check would complain when the user typed the "1" before they even got
+                    // to the "5".
+                    else if (limit < 8)
+                        MessageBox.Show("Passwords shorter than eight characters should be " +
+                            "avoided. If possible, completely remove your character count " +
+                            "limit. Otherwise, try to make it as long as possible.", "Warning",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            // If the parse above blew up, they must have entered something that's not a valid
+            // integer.  Complain and make them change it:
+            catch
+            {
+                MessageBox.Show("The character count limit must be either empty (meaning " +
+                    "no limit) or a positive integer greater than zero.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtCharLimit.Focus();
+                txtCharLimit.SelectAll();
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -887,13 +1056,13 @@ namespace com.gpfcomics.Cryptnos
                         Registry.CurrentUser.OpenSubKey("Software", true);
                     // However, the GPF Comics subkey may not exist unless someone is already
                     // using one of our programs.  If it doesn't exist, create it:
-                    RegistryKey GPF = HKCU_Software.OpenSubKey("GPF Comics", true);
+                    RegistryKey GPF = HKCU_Software.OpenSubKey(GPFRegKeyName, true);
                     if (GPF == null)
-                        HKCU_Software.CreateSubKey("GPF Comics");
+                        HKCU_Software.CreateSubKey(GPFRegKeyName);
                     // Now do the same with the Cryptnos key:
-                    CryptnosSettings = GPF.OpenSubKey("Cryptnos", true);
+                    CryptnosSettings = GPF.OpenSubKey(CryptnosRegKeyName, true);
                     if (CryptnosSettings == null)
-                        CryptnosSettings = GPF.CreateSubKey("Cryptnos");
+                        CryptnosSettings = GPF.CreateSubKey(CryptnosRegKeyName);
                     // Now that we've opened the Cryptnos master key, open the Sites
                     // subkey:
                     if (CryptnosSettings != null)
@@ -1001,13 +1170,14 @@ namespace com.gpfcomics.Cryptnos
                         // or empty.  Since we're saving it as a number, we represent the empty
                         // value with a -1.  If we got a -1, set the text box to the empty
                         // string; otherwise, set it to the value of the key.
-                        txtCharLimit.Text = siteParams.CharLimit.ToString();
-                        if (txtCharLimit.Text == "-1") txtCharLimit.Text = String.Empty;
+                        if (siteParams.CharLimit < 0) txtCharLimit.Text = String.Empty;
+                        else txtCharLimit.Text = siteParams.CharLimit.ToString();
                         // If the site is in the registry, it should be in the site drop-down,
                         // so select it:
                         cbSites.SelectedItem = siteParams.Site;
                         // The hash algorithm:
-                        cbHashes.SelectedItem = siteParams.Hash;
+                        cbHashes.SelectedItem =
+                            HashEngine.HashEnumStringToDisplayHash(siteParams.Hash);
                         // The iteration count:
                         txtIterations.Text = siteParams.Iterations.ToString();
                         // Close the individual site parameters and update the last site key
@@ -1080,7 +1250,8 @@ namespace com.gpfcomics.Cryptnos
                         // empty, while the rest go in pretty much as is.
                         SiteParameters siteParams = new SiteParameters(cbSites.Text,
                             cbCharTypes.SelectedIndex, (String.IsNullOrEmpty(txtCharLimit.Text) ?
-                            -1 : Int32.Parse(txtCharLimit.Text)), (string)cbHashes.SelectedItem,
+                            -1 : Int32.Parse(txtCharLimit.Text)),
+                            HashEngine.DisplayHashToHashEnumString((string)cbHashes.SelectedItem),
                             iterations);
                         // Attempt to save the site parameters to the registry.  If that works,
                         // proceed:
