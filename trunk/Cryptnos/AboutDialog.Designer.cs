@@ -68,7 +68,7 @@ namespace com.gpfcomics.Cryptnos
             this.lblLink.Size = new System.Drawing.Size(221, 23);
             this.lblLink.TabIndex = 2;
             this.lblLink.TabStop = true;
-            this.lblLink.Text = "http://www.gpf-comics.com/dl/cryptnos/";
+            this.lblLink.Text = "http://www.cryptnos.com/";
             this.lblLink.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.toolTip1.SetToolTip(this.lblLink, "Click this link to find out more\r\ninformation about Cryptnos\r\nonline.");
             // 

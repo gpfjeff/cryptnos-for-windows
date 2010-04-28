@@ -130,6 +130,7 @@ namespace com.gpfcomics.Cryptnos
             this.txtIterations.Text = "1";
             this.txtIterations.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.toolTip1.SetToolTip(this.txtIterations, resources.GetString("txtIterations.ToolTip"));
+            this.txtIterations.TextChanged += new System.EventHandler(this.txtIterations_TextChanged);
             // 
             // label8
             // 
@@ -209,6 +210,8 @@ namespace com.gpfcomics.Cryptnos
             this.txtCharLimit.Size = new System.Drawing.Size(51, 20);
             this.txtCharLimit.TabIndex = 3;
             this.toolTip1.SetToolTip(this.txtCharLimit, resources.GetString("txtCharLimit.ToolTip"));
+            this.txtCharLimit.TextChanged += new System.EventHandler(this.txtCharLimit_TextChanged);
+            this.txtCharLimit.Leave += new System.EventHandler(this.txtCharLimit_Leave);
             // 
             // chkRemember
             // 
@@ -249,8 +252,7 @@ namespace com.gpfcomics.Cryptnos
             this.btnGenerate.Size = new System.Drawing.Size(264, 23);
             this.btnGenerate.TabIndex = 2;
             this.btnGenerate.Text = "Generate";
-            this.toolTip1.SetToolTip(this.btnGenerate, "Click this button to generate your\r\npassword.  Note that you must\r\nenter a site n" +
-                    "ame and passphrase\r\nbefore this button will work.");
+            this.toolTip1.SetToolTip(this.btnGenerate, resources.GetString("btnGenerate.ToolTip"));
             this.btnGenerate.UseVisualStyleBackColor = true;
             this.btnGenerate.Click += new System.EventHandler(this.btnGenerate_Click);
             // 

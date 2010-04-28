@@ -6,8 +6,8 @@ blockquote { background: #EEEEEE; }
 </style>
 </head>
 <body><h1>Cryptnos Help</h1>
-<p>Official Cryptnos Site: <a href="http://www.gpf-comics.com/dl/cryptnos/">http://www.gpf-comics.com/dl/cryptnos/</a><br />
-Last Updated March 23, 2010</p>
+<p>Official Cryptnos Site: <a href="http://www.cryptnos.com/">http://www.cryptnos.com/</a><br />
+Last Updated April 28, 2010</p>
 
 <a name="toc"><h2>Table of Contents</h2></a>
 <ul>
@@ -103,7 +103,7 @@ Last Updated March 23, 2010</p>
 
 <a name="portable"><h3>Portable Cryptnos</h3></a>
 
-<p>Cryptnos requires installation on the target machine. However, all the installer really does is set up Cryptnos in a predictable (yet user-customizable) location. In theory, Cryptnos <em>should</em> be able to be used in a "portable" fashion which does not require installation. In order to use Cryptnos as a portable app, you will need to install it on one machine and copy the <code>WinHasherCore.dll</code> library and the Cryptnos executable. The DLL <em>must</em> be in the same location as the executable, as it contains the core hashing engine for all the programs. You can then run the Cryptnos anywhere you wish.</p>
+<p>Cryptnos requires installation on the target machine. However, all the installer really does is set up Cryptnos in a predictable (yet user-customizable) location. In theory, Cryptnos <em>should</em> be able to be used in a "portable" fashion which does not require installation. In order to use Cryptnos as a portable app, you will need to install it on one machine and copy the <code>BouncyCastle.Crypto.dll</code> library, the <code>cryptnos_export1.xsd</code> XML schema file, and the Cryptnos executable. The DLL and XSD files <em>must</em> be in the same location as the executable, as they are required for the executable to function. You can then run the Cryptnos anywhere you wish.</p>
 <p>However, portable use of Cryptnos is <em>strongly</em> discouraged. The implied use of a portable application is the ability to run it on any machine, including one you do not own, while leaving a minimal amount of "debris" behind. While this may work fine for many applications, the very nature of Cryptnos as a secure passphrase generator should suggest that the data it collects and stores is highly sensitive. Running <em>any</em> passphrase generator on an untrusted machine, which may be loaded with any manner of spying hardware or software, is akin to inviting an attacker to compromise your accounts. Therefore, we never have and never will provide an official portable implementation of Cryptnos and we strong recommend that it not be used in such a fashion.</p>
 <p>However, if you insist on giving it a try, There are a few caveats to point out with using Cryptnos in a portable manner:</p>
 <p><ul>
@@ -125,6 +125,7 @@ Last Updated March 23, 2010</p>
 <p>By default, the <strong>Site name</strong> box is a combo-box, meaning it can be both an editable text box and a drop-down list. To add a new site, enter the site token into the box like any ordinary text. Once you generate a passphrase for that site, it will be added to the drop-down list so it can be selected later. The behavior of this box changes slightly with the checkboxes in the <a href="#rememberingsettings">Remembering Settings</a> group. If the <strong>Remember parameters</strong> checkbox is unchecked, the drop-down portion is cleared and Cryptnos will not remember site parameters when the <strong>Generate</strong> button is pressed. If the <strong>Lock parameters</strong> checkbox is checked, the <strong>Site name</strong> box becomes a read-only drop-down list; new items cannot be added and only existing sites can be selected.</p>
 <p>The <strong>Passphrase</strong> text box is where you should enter your "secret" token. Like most Windows password controls, what you type here is masked so people cannot read over your shoulder what you type. Note, however, that observers can still see how <em>long</em> your secret is by counting the number of masking characters. Therefore, your secret should always be long and pseudo-random, just like any other passphrase. You cannot copy text out of this field, but you <em>can</em> paste.</p>
 <p>Once you have entered or selected your site token and typed in your passphrase, the <strong>Generate</strong> button combines these values, hashes them, and applies any of the <a href="#optionalrules">optional rules</a> you have set. The resulting passphrase is placed in the read-only <strong>Password</strong> text box. If the <strong>Remember parameters</strong> checkbox is checked and the <strong>Lock parameters</strong> checkbox is unchecked (i.e. the default), clicking the <strong>Generate</strong> button also saves the site parameters&mdash;the site token and any optional rules&mdash;to the Windows registry. (The secret passphrase is <em>never</em> saved, nor is the generated passphrase.)</p>
+<p>As of Cryptnos 1.1, clicking <strong>Generate</strong> also automatically copies the generated password to the system clipboard. Most of the time, you'll probably be copying this password anyway to paste it into whatever form you authenticating with, so this just eliminates the extra step of copying it yourself.</p>
 
 <a name="optionalrules"><h3>Optional Rules</h3></a>
 
