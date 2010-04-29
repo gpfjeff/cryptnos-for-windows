@@ -7,7 +7,7 @@ blockquote { background: #EEEEEE; }
 </head>
 <body><h1>Cryptnos Help</h1>
 <p>Official Cryptnos Site: <a href="http://www.cryptnos.com/">http://www.cryptnos.com/</a><br />
-Last Updated April 28, 2010</p>
+Last Updated April 29, 2010</p>
 
 <a name="toc"><h2>Table of Contents</h2></a>
 <ul>
@@ -34,6 +34,7 @@ Last Updated April 28, 2010</p>
 		<li><a href="#cmdbuttons">Command Controls</a></li>
 	</ul>
 	<li><a href="#security">Security Considerations</a></li>
+	<li><a href="#changelog">Change Log</a></li>
 </ul>
 
 <a name="intro"><h2>Introduction</h2></a>
@@ -132,6 +133,7 @@ Last Updated April 28, 2010</p>
 <p>The <strong>Optional Rules</strong> group contains additional controls that let you refine the passphrase you generate. As described in the <a href="#whycryptnos">Why Cryptnos?</a> section, sometimes the default settings will not generate a passphrase that you want or can use. Modifying these settings can let you use stronger hashes, limit the type of characters to use, or limit the number of characters to generate.</p>
 <p>The <strong>Hash algorithm</strong> drop-down allows you to select which <a href="#hashes">cryptographic hash</a> to use when generating your passphrase. The default is SHA-1. You may, however, prefer to use a stronger or weaker hash for various reasons. For example, stronger hashes such as SHA-512 produce very long strings that may be impractical as a passphrase. However, SHA-1 has weaknesses that SHA-512 does not, so the stronger hash may in theory produce a better passphrase. If the generated passphrase is too long, you can always refine the result with additional rules. That said, stronger hashes take longer to generate; if speed is important to you, weaker hashes like MD5 or SHA-1 will give you results faster. Which hash you use is entirely up to you, but we recommend that you use the strongest hash that is practical for you. Using different hashes for different sites may also be a good idea, as this makes it harder for an attacker to guess which hash has been used.</p>
 <p>The <strong>Perform this hash <em>x</em> times</strong> box instructs Cryptnos to perform the selected cryptographic hash a set number of times. This value must be a whole number greater than zero (i.e., positive integers), with a default value of one. In other words, if the value is one, Cryptnos will run the core parameters through the hash once and return the result (after other optional rules have been applied). If the value is two, it will hash the core parameters once, then pass the result of that hash back through the hash algorithm again before returning the result. The more iterations of the hash that are performed, the further away the result will be from the original parameters, making it harder for an attacker to guess the inputs. Once is usually enough (which is why it is the default), but multiple iterations can provide a slightly higher level of security. The trade off, however, is that multiple iterations take longer to generate the password, which could be a problem for slower computers.</p>
+<p>Starting with Cryptnos 1.1, you will now receive a warning if you set a number of hash iterations greater than 500. This is because versions of Cryptnos on other platforms (in specific, Google Android) are capped at this value for performance reasons. Thus, if you create a set of parameters that includes an excessively high number of hash iterations, it may not be compatible with other versions of Cryptnos outside of .NET. We don't want to prevent you from setting such a high value, and we certainly don't want to break the passwords of anyone who has already done so, but you should be made aware that this incompatibility exists. 500 iterations should be more than enough for most people (the WPA standard for WiFi encryption uses 400) and should not significantly impact the performance of Cryptnos for Windows nor compromise your security.</p>
 <p>The <strong>Character class ("Use...")</strong> drop-down lets you limit the generated passphrase to certain subsets of characters. Some sites may restrict you to certain character classes, such as only alphanumerics (i.e., letters and numbers). Cryptnos uses the Base64 encoding scheme to generate many pseudo-random-looking characters. Base64 output includes additional characters (the plus sign (+), the forward slash (/), and the equal sign (=)) that a site may reject in a passphrase. By tweaking this setting, you can tell Cryptnos to exclude certain characters from the generated passphrase and then remember your settings for future use. The options currently available are:</p>
 <p><ul>
 <li><strong>all generated characters</strong>, i.e. use the complete Base64-encoded output of the hash;</li>
@@ -184,6 +186,25 @@ Last Updated April 28, 2010</p>
 <p>.NET includes a <code>SecureString</code> class that encrypts text data whenever it is stored in memory and attempts to lock it into memory to prevent it from being swapped out into the system's virtual memory page file. While it would certainly be possible for us to use this functionality in Cryptnos, careful consideration of the facts reveals that this "protection" isn't very useful. For one thing, the controls on the Cryptnos window that display your inputs and generated passphrase cannot use the <code>SecureString</code> class; they can only use the normal <code>String</code> class, which offers no protection at all. Thus, in order to display your inputs and generated passphrase, this data must be converted from a <code>SecureString</code> to a <code>String</code>, completely negating any protection the <code>SecureString</code> may have offered. There has also been criticism concerning the <code>SecureString</code> implementation that implies that some of its protection mechanisms (namely preventing the data from being swapped to the hard disk) do not offer the protection they claim. Thus, you should be aware that Cryptnos does <em>not</em> use this mechanism to protect its data and in theory <em>any</em> process that runs on the machine <em>may</em> be able to read these values from memory. Thus, you should only use Cryptnos on a "trusted" system as described above.</p>
 <p>Serious crypto-heads should take note that the AES encryption used by Cryptnos uses an initialization vector (IV) that is programmatically generated rather than being truly random. There are two reasons for this decision. The first, with respect to saving the site parameters to the registry, the IV would need to be stored somewhere on the system in order for it to be used later to retrieved the saved data. Storing the IV in the registry would be counterproductive (similar to storing the combination to a safe under the safe's foot), and saving it to disk would simply be transferring the problem somewhere else (storing the safe combination in the unlocked desk drawer nearby). On the second item, concerning the export/import process, the IV must be something that may be generated on multiple machines; if you are moving your parameters from one machine to another, you will obviously want to decrypt the data to import it. A truly random IV would be difficult to deal with in this case, and the user would be required to enter it as well as the passphrase to decrypt the import. Thus, despite the fact that a truly random or pseudo-random IV would offer far superior protection for this encrypted data, we instead use a generated IV in our encryption methods. This IV is generated using various cryptographic hashes, salts, and similar data, so we consider it to be "good enough" for most circumstances. However, we point this distinction out so you can decide for yourself if "good enough" is good enough for your personal needs.</p>
 <p>Because of the nature of this application, it is strongly recommended that you create a full backup of your site parameters (via the Export feature) any time you make a change. For the highest level of protection, this backup should be stored in a safe place external of your machine, even though the data is encrypted. Any number of events may occur to destroy or attempt to modify your saved parameters, such as virus or malware infections, catastrophic hard disk failures, or even malicious (or incompetent) system administrators. Even a change as simple as changing your Windows login user name or the machine's network name may render your parameters useless, since these items are used (along with several other things) to seed encryption keys and hashes when storing your data. Therefore, a redundant, external, independently encrypted copy of your parameters should be maintained at all times in order to restore your parameters should they become destroyed or unusable. We consider this to be the user's responsibility and we cannot be held responsible for your inability or unwillingness to keep such a backup.</p>
+
+<p>[ <a href="#toc">Return to Table of Contents</a> ]</p>
+
+<a name="changelog"><h2>Change Log</h2></a>
+
+<ul>
+<li><strong>Version 1.0:</strong>
+<ul>
+<li>Initial release</li>
+</ul>
+<li><strong>Version 1.1:</strong>
+<ul>
+<li>Introduced cross-platform export format. Exports from this version onward should now be readable by compatible versions of Cryptnos on other platforms (Java, Google Android, etc.). Read-only support for original export format is still included, but new export format is not backward compatible.</li>
+<li>Clicking the <strong>Generate</strong> button now copies the generated password to the system clipboard, a behavior introduced in Cryptnos for Android 1.0.</li>
+<li>Minor improvements to UI appearance and error checking.</li>
+<li>Added Legion of the Bouncy Castle Crypto API license information to the About dialog, in addition to the GPL 2 license info specific to Cryptnos that was already there.</li>
+</ul>
+</li>
+</ul>
 
 <p>[ <a href="#toc">Return to Table of Contents</a> ]</p>
 
