@@ -223,6 +223,7 @@ namespace com.gpfcomics.Cryptnos
                     xw.WriteElementString("generator", generator);
                 if (!String.IsNullOrEmpty(comment))
                     xw.WriteElementString("comment", comment);
+                xw.WriteElementString("siteCount", siteList.Count.ToString());
                 // Start writing out the <sites> tag
                 xw.WriteStartElement("sites");
                 // Now step through each site parameter group and write out a <site>
@@ -456,6 +457,8 @@ namespace com.gpfcomics.Cryptnos
         {
             try
             {
+                // Declare somewhere to hold the site count as read from the file:
+                int siteCount = 0;
                 // Try to open a file stream for the file:
                 FileStream fs = new FileStream(filename, FileMode.Open);
                 // The process below will blow up if we try to read a file that is so large
@@ -533,10 +536,25 @@ namespace com.gpfcomics.Cryptnos
                 // At this point, the next few tags should be the <generator> and/or <comment>
                 // tags, neither of which we care about.  Therefore, just read ahead until we
                 // hit the <sites> tag, which is where we really want to go to next.
-                while (xr.Name.CompareTo("sites") != 0)
+                while (xr.Name.CompareTo("siteCount") != 0)
                 {
                     do xr.Read(); while (xr.NodeType != XmlNodeType.Element);
                 }
+                // The next tag should be the <siteCount> tag.  This contains the number of
+                // site blocks in the file.  This technically isn't necessary, but it was added
+                // to improve reporting on Android, where performance is much more of an issue.
+                // The main thing we'll worry about here is that (a) it's an integer greater
+                // than zero and (b) the number of sites we eventually read must equal the
+                // count listed here.
+                if (xr.NodeType == XmlNodeType.Element && xr.Name.CompareTo("siteCount") == 0)
+                {
+                    xr.Read();
+                    if (xr.NodeType == XmlNodeType.Text) siteCount = Int32.Parse(xr.Value);
+                    if (siteCount <= 0) throw new ImportHandlerException("Invalid Cryptnos export file; <siteCount> is " + siteCount.ToString());
+                }
+                // Read on to the next tag:
+                xr.Read();
+                while (xr.NodeType == XmlNodeType.EndElement) xr.Read();
                 // Now we need to check to make sure we actually got a <sites> tag:
                 if (xr.NodeType == XmlNodeType.Element && xr.Name.CompareTo("sites") == 0)
                 {
@@ -636,6 +654,8 @@ namespace com.gpfcomics.Cryptnos
                     ms.Close();
                     ms.Dispose();
                     plaintext = null;
+                    if (siteList.Count != siteCount)
+                        throw new ImportHandlerException("Invalid Cryptnos export file; File reported " + siteCount.ToString() + " sites in the file, but actually read " + siteList.Count.ToString());
                     return siteList;
                 }
                 else throw new ImportHandlerException("Invalid Cryptnos export file; could not find <sites> tag");
