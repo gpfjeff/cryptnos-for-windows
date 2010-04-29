@@ -123,6 +123,11 @@
 					 just in case it's needed later. -->
 				<xs:element name="comment" type="xs:string" minOccurs="0" maxOccurs="1"/>
 
+				<!-- The count of the number of sites listed in the site block
+				     below.  Technically, this isn't really necessary, but it
+					 makes some reporting on Android a bit easier. -->
+				<xs:element name="siteCount" type="cryptnos:integer" minOccurs="1" maxOccurs="1"/>
+
 				<!-- The site list block, as defined above.  There should be
 				     only one site list block per file. -->
 				<xs:element name="sites" type="cryptnos:siteListType" minOccurs="1" maxOccurs="1"/>
