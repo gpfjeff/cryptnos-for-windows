@@ -307,17 +307,6 @@ will also be displayed here.  You can
 fine tune your parameters further using
 the options in the sections below.</value>
   </data>
-  <data name="groupBox3.ToolTip" xml:space="preserve">
-    <value>This section allows you to specify if and how
-Cryptnos remembers your password para-
-meter information.  Remember that YOUR
-PASSWORD IS NEVER SAVED; only the
-parameters used to generate it are
-remembered, and that information is ALWAYS
-encrypted.  You can also make Cryptnos
-"forget" one or more of your parameters if
-you decide to discontinue their use.</value>
-  </data>
   <data name="chkLock.ToolTip" xml:space="preserve">
     <value>If this checkbox is checked, Cryptnos will lock
 your parameter information to prevent it from
@@ -329,6 +318,17 @@ checked for this box to be enabled.  Checking
 this box disables that checkbox and the Forget,
 Forget All, and Import buttons.</value>
   </data>
+  <data name="groupBox3.ToolTip" xml:space="preserve">
+    <value>This section allows you to specify if and how
+Cryptnos remembers your password para-
+meter information.  Remember that YOUR
+PASSWORD IS NEVER SAVED; only the
+parameters used to generate it are
+remembered, and that information is ALWAYS
+encrypted.  You can also make Cryptnos
+"forget" one or more of your parameters if
+you decide to discontinue their use.</value>
+  </data>
   <data name="chkShowTooltips.ToolTip" xml:space="preserve">
     <value>Clear this checkbox if you find these help
 tooltips to be annoying or no longer
@@ -338,6 +338,15 @@ they sure can get in the way.  If you ever
 want to bring them back, just check this
 box again and we'll be happy to help you
 once more.</value>
+  </data>
+  <data name="chkCopyToClipboard.ToolTip" xml:space="preserve">
+    <value>When this checkbox is checked, the
+generated password will be copied
+to the system clipboard as soon as
+it is created, saving you the step of
+copying it yourself.  If unchecked,
+the password will not be copied to
+the clipboard.</value>
   </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>43</value>

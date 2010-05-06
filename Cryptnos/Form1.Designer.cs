@@ -60,6 +60,7 @@ namespace com.gpfcomics.Cryptnos
             this.chkLock = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.chkShowTooltips = new System.Windows.Forms.CheckBox();
+            this.chkCopyToClipboard = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -387,14 +388,25 @@ namespace com.gpfcomics.Cryptnos
             this.chkShowTooltips.AutoSize = true;
             this.chkShowTooltips.Checked = true;
             this.chkShowTooltips.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkShowTooltips.Location = new System.Drawing.Point(70, 347);
+            this.chkShowTooltips.Location = new System.Drawing.Point(7, 347);
             this.chkShowTooltips.Name = "chkShowTooltips";
-            this.chkShowTooltips.Size = new System.Drawing.Size(153, 17);
+            this.chkShowTooltips.Size = new System.Drawing.Size(112, 17);
             this.chkShowTooltips.TabIndex = 3;
-            this.chkShowTooltips.Text = "Show verbose tooltips help";
+            this.chkShowTooltips.Text = "Show tooltips help";
             this.toolTip1.SetToolTip(this.chkShowTooltips, resources.GetString("chkShowTooltips.ToolTip"));
             this.chkShowTooltips.UseVisualStyleBackColor = true;
             this.chkShowTooltips.CheckedChanged += new System.EventHandler(this.chkShowTooltips_CheckedChanged);
+            // 
+            // chkCopyToClipboard
+            // 
+            this.chkCopyToClipboard.AutoSize = true;
+            this.chkCopyToClipboard.Location = new System.Drawing.Point(129, 347);
+            this.chkCopyToClipboard.Name = "chkCopyToClipboard";
+            this.chkCopyToClipboard.Size = new System.Drawing.Size(156, 17);
+            this.chkCopyToClipboard.TabIndex = 8;
+            this.chkCopyToClipboard.Text = "Copy password to clipboard";
+            this.toolTip1.SetToolTip(this.chkCopyToClipboard, resources.GetString("chkCopyToClipboard.ToolTip"));
+            this.chkCopyToClipboard.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -403,6 +415,7 @@ namespace com.gpfcomics.Cryptnos
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(292, 405);
+            this.Controls.Add(this.chkCopyToClipboard);
             this.Controls.Add(this.chkShowTooltips);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -460,6 +473,7 @@ namespace com.gpfcomics.Cryptnos
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.CheckBox chkShowTooltips;
+        private System.Windows.Forms.CheckBox chkCopyToClipboard;
     }
 }
 

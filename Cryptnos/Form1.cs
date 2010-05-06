@@ -205,6 +205,9 @@ namespace com.gpfcomics.Cryptnos
                     // Get the user's tooltip help preference:
                     chkShowTooltips.Checked = (int)CryptnosSettings.GetValue("ToolTips", 1)
                         == 1 ? true : false;
+                    // Get the user's copy to clipboard preference:
+                    chkCopyToClipboard.Checked = (int)CryptnosSettings.GetValue("CopyToClipboard", 0)
+                        == 1 ? true : false;
                 }
             }
             // If anything above blew up, set some sensible defaults:
@@ -222,6 +225,7 @@ namespace com.gpfcomics.Cryptnos
                 btnForgetAll.Enabled = false;
                 btnExport.Enabled = false;
                 chkShowTooltips.Checked = true;
+                chkCopyToClipboard.Checked = false;
             }
             // Turn on or off tooltip help depending on the user's save preference:
             toolTip1.Active = chkShowTooltips.Checked;
@@ -380,7 +384,7 @@ namespace com.gpfcomics.Cryptnos
                     // password box:
                     txtPassword.Text = hash;
                     // Copy the value of the hash to the system clipboard:
-                    Clipboard.SetText(hash);
+                    if (chkCopyToClipboard.Checked) Clipboard.SetText(hash);
                     // If the user has elected to save their settings, do so now:
                     if (chkRemember.Checked && !chkLock.Checked) SaveSiteParams(cbSites.Text);
                 }
@@ -1125,6 +1129,8 @@ namespace com.gpfcomics.Cryptnos
                 CryptnosSettings.SetValue("ToolTips", (chkShowTooltips.Checked ? 1 : 0),
                     RegistryValueKind.DWord);
                 CryptnosSettings.SetValue("LockParams", (chkLock.Checked ? 1 : 0),
+                    RegistryValueKind.DWord);
+                CryptnosSettings.SetValue("CopyToClipboard", (chkCopyToClipboard.Checked ? 1 : 0),
                     RegistryValueKind.DWord);
                 CryptnosSettings.SetValue("Version",
                     Assembly.GetExecutingAssembly().GetName().Version.ToString(),
