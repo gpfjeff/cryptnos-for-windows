@@ -5,7 +5,7 @@
  * PROJECT:       Cryptnos
  * .NET VERSION:  2.0
  * REQUIRES:      AboutDialog, PassphraseDialog, ExportSitesForm, ImportExportHandler,
- *                HashEngine
+ *                UpdateChecker, IUpdateCheckListener
  * REQUIRED BY:   (None)
  * 
  * The main Cryptnos application form.  Cryptnos is a small .NET GUI utility for generating
@@ -32,6 +32,12 @@
  * Of course, the final generated password requires the user's secret, which is *NEVER* stored,
  * so even if the site parameters in the registry are decrypted, the final passphrase cannot
  * be generated without social engineering or similar external means.
+ * 
+ * UPDATES FOR 1.1:  Added the "Copy password to clipboard" checkbox and code behind it.  If
+ * this box is checked, the generated password is immediately copied to the system clipboard,
+ * a feature first introduced in Cryptnos for Android 1.0.  This defaults to off, however,
+ * which replicates the Cryptnos for Windows 1.0 functionality.  Also added the GPFUpdateChecker
+ * library to let Cryptnos check the official website for updates.
  * 
  * This program is Copyright 2010, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
@@ -64,13 +70,14 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using Microsoft.Win32;
+using com.gpfcomics.UpdateChecker;
 
 namespace com.gpfcomics.Cryptnos
 {
     /// <summary>
     /// The main Cryptnos application form
     /// </summary>
-    public partial class Form1 : Form
+    public partial class Form1 : Form, IUpdateCheckListener
     {
         #region Private Variables
 
@@ -138,6 +145,32 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         private string lastImportExportPath = null;
 
+        /// <summary>
+        /// A <see cref="Uri"/> for the official Cryptnos updates feed.  The
+        /// <see cref="UpdateChecker"/> will use this feed to look for updated versions of
+        /// Cryptnos.
+        /// </summary>
+        private Uri updateFeedUri =
+            new Uri("http://www.cryptnos.com/files/cryptnos_updates_feed.xml");
+
+        /// <summary>
+        /// The unique app string for <see cref="UpdateChecker"/> lookups
+        /// </summary>
+        private string updateFeedAppName = "Cryptnos for Windows";
+
+        /// <summary>
+        /// The last update check timestamp for <see cref="UpdateChecker"/> lookups.  Note
+        /// that this defaults to <see cref="DateTime"/>.MinValue, which should force an
+        /// update on the first check, but that will be overwritten during initialization.
+        /// </summary>
+        private DateTime updateFeedLastCheck = DateTime.MinValue;
+
+        /// <summary>
+        /// The actual <see cref="UpdateChecker"/> object, which will check for Cryptnos
+        /// updates
+        /// </summary>
+        private UpdateChecker.UpdateChecker updateChecker = null;
+
         #endregion
 
         /// <summary>
@@ -160,6 +193,9 @@ namespace com.gpfcomics.Cryptnos
             // Default the hash selection to SHA-1.  We probably ought to default this to
             // something stronger eventually.
             cbHashes.SelectedItem = HashEngine.HashEnumToDisplayHash(Hashes.SHA1);
+            // Declare a boolean to disable the update check.  This isn't recommended, so
+            // we default this to false.
+            bool disableUpdateCheck = false;
             // Now put on our asbestos underpants, because now we're playing with
             // dynamite:
             try
@@ -208,6 +244,25 @@ namespace com.gpfcomics.Cryptnos
                     // Get the user's copy to clipboard preference:
                     chkCopyToClipboard.Checked = (int)CryptnosSettings.GetValue("CopyToClipboard", 0)
                         == 1 ? true : false;
+                    // Get the last update check date.  I'm not sure if the try/catch block is
+                    // really necessary, but I'm a belt-and-suspenders guy.  Also note that
+                    // the default, whether the parse fails for the registry value isn't set,
+                    // is DateTime.MinValue, which pretty much guarantees an update check on
+                    // the first go-around.
+                    try
+                    {
+                        updateFeedLastCheck =
+                            DateTime.Parse((string)CryptnosSettings.GetValue("LastUpdateCheck",
+                            DateTime.MinValue.ToString()));
+                    }
+                    catch { updateFeedLastCheck = DateTime.MinValue; }
+                    // Get the disable update check flag.  This is an "undocumented" feature
+                    // with no user interface option because, frankly, we really don't want
+                    // the user to disable it.  However, we'll add it in for the really
+                    // paranoid.  Note again that the default is false, meaning we will *not*
+                    // disable the check by default.
+                    disableUpdateCheck = (int)CryptnosSettings.GetValue("DisableUpdateCheck",
+                        0) == 1 ? true : false;
                 }
             }
             // If anything above blew up, set some sensible defaults:
@@ -226,6 +281,7 @@ namespace com.gpfcomics.Cryptnos
                 btnExport.Enabled = false;
                 chkShowTooltips.Checked = true;
                 chkCopyToClipboard.Checked = false;
+                updateFeedLastCheck = DateTime.MinValue;
             }
             // Turn on or off tooltip help depending on the user's save preference:
             toolTip1.Active = chkShowTooltips.Checked;
@@ -254,6 +310,17 @@ namespace com.gpfcomics.Cryptnos
             try { lastImportExportPath =
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments); }
             catch { lastImportExportPath = Environment.CurrentDirectory; }
+
+            // Finally, initialize the update checker and set it to work.  The update check
+            // should occur in a separate thread, which will allow the main UI thread to
+            // continue without any problems.  The entire process *should* be transparent to
+            // the user unless an update is actually found.
+            if (!disableUpdateCheck)
+            {
+                updateChecker = new UpdateChecker.UpdateChecker(updateFeedUri, updateFeedAppName,
+                    Assembly.GetExecutingAssembly().GetName().Version, this, updateFeedLastCheck);
+                updateChecker.CheckForNewVersion();
+            }
         }
 
         #region GUI Event Handlers
@@ -1135,6 +1202,8 @@ namespace com.gpfcomics.Cryptnos
                 CryptnosSettings.SetValue("Version",
                     Assembly.GetExecutingAssembly().GetName().Version.ToString(),
                     RegistryValueKind.String);
+                CryptnosSettings.SetValue("LastUpdateCheck", updateFeedLastCheck.ToString(),
+                    RegistryValueKind.String);
                 // Close the Cryptnos registry keys:
                 siteParamsKey.Close();
                 CryptnosSettings.Close();
@@ -1330,5 +1399,53 @@ namespace com.gpfcomics.Cryptnos
 
         #endregion
 
+        #region IUpdateCheckListener Members
+
+        // These methods implement the IUpdateCheckListener interface, which is used to check
+        // for updates for Cryptnos.  They shouldn't have to actually do much, as the update
+        // checker does msot of the work.
+
+        /// <summary>
+        /// What to do if a new update is found.
+        /// </summary>
+        public void OnFoundNewerVersion()
+        {
+            // This is pretty simple.  If the update check found a new version, tell it to
+            // go ahead and download it.  Note that the update checker will handle any user
+            // notifications, which includes a prompt on whether or not they'd like to
+            // upgrade.  The null check is probably redudant--this method should never be
+            // called if the update checker is null--but it's a belt-and-suspenders thing.
+            if (updateChecker != null) updateChecker.GetNewerVersion();
+        }
+
+        /// <summary>
+        /// What to do if the update checker says to record a new last update check date.
+        /// This gets called by the update checker whenever a check is started, whether it
+        /// is successful or not.
+        /// </summary>
+        /// <param name="lastCheck">The new date of the last update check</param>
+        public void OnRecordLastUpdateCheck(DateTime lastCheck)
+        {
+            // Update the last update check date, both within our private copy in memory
+            // and in the registry:
+            updateFeedLastCheck = lastCheck;
+            if (CryptnosRegistryKeyOpen())
+                CryptnosSettings.SetValue("LastUpdateCheck", updateFeedLastCheck.ToString(),
+                    RegistryValueKind.String);
+        }
+
+        /// <summary>
+        /// What to do if the update checker wants us to close.  This gets called if the
+        /// update check has successfully download the file and now wants to install the
+        /// new version.
+        /// </summary>
+        public void OnRequestGracefulClose()
+        {
+            // We don't have a lot to do to close up shop.  Fortunately, we already have
+            // a method to do all that stuff, so call it:
+            ExitApplication();
+        }
+
+        #endregion
     }
 }

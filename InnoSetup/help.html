@@ -1,13 +1,15 @@
 <html><head><title>Cryptnos Help</title>
 <style type="text/css">
+body { font-family: Arial,Helvetica,sans-serif; font-size: 10pt; margin: 1em; padding: 1em; }
+li { padding-bottom: 0.5em; }
 .alert { color: red; font-weight: bold; background: #FFFFBB; }
 code, pre { color: maroon; }
 blockquote { background: #EEEEEE; }
 </style>
 </head>
 <body><h1>Cryptnos Help</h1>
-<p>Official Cryptnos Site: <a href="http://www.cryptnos.com/">http://www.cryptnos.com/</a><br />
-Last Updated May 6, 2010</p>
+<p>Official Cryptnos Site: <a href="http://www.cryptnos.com/" target="_blank">http://www.cryptnos.com/</a><br />
+Last Updated May 18, 2010</p>
 
 <a name="toc"><h2>Table of Contents</h2></a>
 <ul>
@@ -33,6 +35,7 @@ Last Updated May 6, 2010</p>
 		<li><a href="#rememberingsettings">Remembering Settings</a></li>
 		<li><a href="#cmdbuttons">Command Controls</a></li>
 	</ul>
+	<li><a href="#updates">Finding Cryptnos Updates</a></li>
 	<li><a href="#security">Security Considerations</a></li>
 	<li><a href="#changelog">Change Log</a></li>
 </ul>
@@ -104,12 +107,8 @@ Last Updated May 6, 2010</p>
 
 <a name="portable"><h3>Portable Cryptnos</h3></a>
 
-<p>Cryptnos requires installation on the target machine. However, all the installer really does is set up Cryptnos in a predictable (yet user-customizable) location. In theory, Cryptnos <em>should</em> be able to be used in a "portable" fashion which does not require installation. In order to use Cryptnos as a portable app, you will need to install it on one machine and copy the <code>BouncyCastle.Crypto.dll</code> library, the <code>cryptnos_export1.xsd</code> XML schema file, and the Cryptnos executable. The DLL and XSD files <em>must</em> be in the same location as the executable, as they are required for the executable to function. You can then run the Cryptnos anywhere you wish.</p>
-<p>However, portable use of Cryptnos is <em>strongly</em> discouraged. The implied use of a portable application is the ability to run it on any machine, including one you do not own, while leaving a minimal amount of "debris" behind. While this may work fine for many applications, the very nature of Cryptnos as a secure passphrase generator should suggest that the data it collects and stores is highly sensitive. Running <em>any</em> passphrase generator on an untrusted machine, which may be loaded with any manner of spying hardware or software, is akin to inviting an attacker to compromise your accounts. Therefore, we never have and never will provide an official portable implementation of Cryptnos and we strong recommend that it not be used in such a fashion.</p>
-<p>However, if you insist on giving it a try, There are a few caveats to point out with using Cryptnos in a portable manner:</p>
-<p><ul>
-<li>By default, Cryptnos stores your site parameters in the Windows registry. These settings are encrypted, but remain after the program closes. You can instruct Cryptnos <em>not</em> to store these parameters by unchecking the <strong>Remember parameters</strong> checkbox. If any parameters are saved before this box is cleared, you can use the <strong>Forget All</strong> button to delete all site parameter information currently saved. Note, however, that Cryptnos will <em>always</em> remember the state of the <strong>Remember parameters</strong> checkbox, even if you click the <strong>Forget All</strong> button, so this is technically not a completely clean portable application. Thus, if you use Cryptnos as a portable app, you will have to manually delete these registry keys if you want to maintain a completely zero-impact portable status. These registry keys may be found in <code>HKCU\Software\GPF Comics\Cryptnos</code>. Do note that the <strong>Remember parameters</strong> checkbox setting itself is benign so if you uncheck it, the only thing someone perusing the registry can learn is that Cryptnos has been run on the system, not what parameters were used to generate any passphrases.</li>
-</ul></p>
+<p>Cryptnos is not designed to be used as a "portable" app, or one that can be placed on removable media (such as a USB memory stick) and transfered cleanly from machine to machine. This is due in large part to the severe security implications of moving your passwords from one machine to another. Cryptnos should only ever be run on a system that you own and trust, one that you can reasonably guarantee to be free of viruses, malware, or surreptitious logging. To use a password generator on a system you do not trust is not only counterintuitive, but extremely dangerous. Therefore the use of Cryptnos as a portable app is <em>strongly</em> discouraged, and we no longer provide instructions on how to do so. We apologize for any inconvenience this may cause.</p>
+<p>If you would like to move your parameter data from one trusted machine to another, you can always use the <strong>Export</strong> and <strong>Import</strong> features. Cryptnos export files are always encrypted, so they should be safe to move from place to place. See the <a href="#cmdbuttons">Command Controls</a> section below for import and export information.</p>
 
 <p>[ <a href="#toc">Return to Table of Contents</a> ]</p>
 
@@ -174,6 +173,14 @@ Last Updated May 6, 2010</p>
 
 <p>[ <a href="#toc">Return to Table of Contents</a> ]</p>
 
+<a name="updates"><h2>Finding Cryptnos Updates</h2></a>
+
+<p>Beginning with version 1.1, Cryptnos now includes a small bit of code that checks for updates to the application. When it comes to security products, making sure you have the latest version is very important as updates may contain security patches and bug fixes that may affect the security of your data. Once per week, Cryptnos will contact the official Cryptnos website to see if a newer version is available. This check will occur in the background so it should not interrupt your current workflow. If a new version is found, you will be asked if you would like to download and install the new version. If no new update is found or if an error occurs during the check (i.e., you are not connected to the Internet, the update feed is invalid, etc.), the update check process will silently close. Thus, you never have to worry about being interrupted unless a new update is actually found.</p>
+<p>The update checker will only download a specially formatted XML file, validate it, and if an update has been found, optionally download the installer executable. No personally identifiable information will be shared with the Cryptnos server during this update check process. The only information we will be able to see will be your IP address, which is required for all Internet communication. No other information will be sent to the Cryptnos server, including the current of Cryptnos you have installed. Your privacy is very important to us, and we do not want the extra burden of logging information we do not want or need.</p>
+<p>For the truly paranoid, very advanced users who do not wish for this check to be performed at all, you may disable the update check by adding the registry key <code>DisableUpdateCheck</code> with a <code>REG_DWORD</code> value of 1 within the registry key <code>HKCU\Software\GPF Comics\Cryptnos</code>. There is no user interface option for this check; it requires a manual registry edit. This is because we strongly discourage disabling this check unless you have a very important reason for doing so. Modifying the registry is considered an advanced topic that is extremely dangerous and beyond the scope of this document. Extreme caution should be taken if you decided to disable this feature and we cannot be held responsible for any loss of data or damage to your system if you decide to do so.</p>
+
+<p>[ <a href="#toc">Return to Table of Contents</a> ]</p>
+
 <a name="security"><h2>Security Considerations</h2></a>
 
 <p>Since Cryptnos is designed to generate strong, pseudo-random passphrases, security should be a paramount concern for both you and us. It would be safe to assume that if you're considering Cryptnos for your passphrase generation needs, you likely have deep concern for the protection of your data and account credentials. Fortunately, Cryptnos is right behind you, protecting your data as best it can.</p>
@@ -186,6 +193,7 @@ Last Updated May 6, 2010</p>
 <p>.NET includes a <code>SecureString</code> class that encrypts text data whenever it is stored in memory and attempts to lock it into memory to prevent it from being swapped out into the system's virtual memory page file. While it would certainly be possible for us to use this functionality in Cryptnos, careful consideration of the facts reveals that this "protection" isn't very useful. For one thing, the controls on the Cryptnos window that display your inputs and generated passphrase cannot use the <code>SecureString</code> class; they can only use the normal <code>String</code> class, which offers no protection at all. Thus, in order to display your inputs and generated passphrase, this data must be converted from a <code>SecureString</code> to a <code>String</code>, completely negating any protection the <code>SecureString</code> may have offered. There has also been criticism concerning the <code>SecureString</code> implementation that implies that some of its protection mechanisms (namely preventing the data from being swapped to the hard disk) do not offer the protection they claim. Thus, you should be aware that Cryptnos does <em>not</em> use this mechanism to protect its data and in theory <em>any</em> process that runs on the machine <em>may</em> be able to read these values from memory. Thus, you should only use Cryptnos on a "trusted" system as described above.</p>
 <p>Serious crypto-heads should take note that the AES encryption used by Cryptnos uses an initialization vector (IV) that is programmatically generated rather than being truly random. There are two reasons for this decision. The first, with respect to saving the site parameters to the registry, the IV would need to be stored somewhere on the system in order for it to be used later to retrieved the saved data. Storing the IV in the registry would be counterproductive (similar to storing the combination to a safe under the safe's foot), and saving it to disk would simply be transferring the problem somewhere else (storing the safe combination in the unlocked desk drawer nearby). On the second item, concerning the export/import process, the IV must be something that may be generated on multiple machines; if you are moving your parameters from one machine to another, you will obviously want to decrypt the data to import it. A truly random IV would be difficult to deal with in this case, and the user would be required to enter it as well as the passphrase to decrypt the import. Thus, despite the fact that a truly random or pseudo-random IV would offer far superior protection for this encrypted data, we instead use a generated IV in our encryption methods. This IV is generated using various cryptographic hashes, salts, and similar data, so we consider it to be "good enough" for most circumstances. However, we point this distinction out so you can decide for yourself if "good enough" is good enough for your personal needs.</p>
 <p>Because of the nature of this application, it is strongly recommended that you create a full backup of your site parameters (via the Export feature) any time you make a change. For the highest level of protection, this backup should be stored in a safe place external of your machine, even though the data is encrypted. Any number of events may occur to destroy or attempt to modify your saved parameters, such as virus or malware infections, catastrophic hard disk failures, or even malicious (or incompetent) system administrators. Even a change as simple as changing your Windows login user name or the machine's network name may render your parameters useless, since these items are used (along with several other things) to seed encryption keys and hashes when storing your data. Therefore, a redundant, external, independently encrypted copy of your parameters should be maintained at all times in order to restore your parameters should they become destroyed or unusable. We consider this to be the user's responsibility and we cannot be held responsible for your inability or unwillingness to keep such a backup.</p>
+<p>See the <a href="#updates">Finding Cryptnos Updates</a> section above for details on how to keep your installation of Cryptnos up-to-date. Also see the <a href="#portable">Portable Cryptnos</a> section for reasons why running Cryptnos as a portable app is strongly discouraged.</p>
 
 <p>[ <a href="#toc">Return to Table of Contents</a> ]</p>
 
@@ -200,6 +208,7 @@ Last Updated May 6, 2010</p>
 <ul>
 <li>Introduced cross-platform export format. Exports from this version onward should now be readable by compatible versions of Cryptnos on other platforms (Java, Google Android, etc.). Read-only support for original export format is still included, but new export format is not backward compatible.</li>
 <li>Added the <strong>Copy password to clipboard</strong> checkbox. When checked, clicking the <strong>Generate</strong> button now copies the generated password to the system clipboard, a behavior introduced in Cryptnos for Android 1.0. The default is unchecked, which replicates the behavior of Cryptnos for Windows 1.0.</li>
+<li>Added update check feature that checks the Cryptnos site periodically to see if there are newer versions of the application available.</li>
 <li>Minor improvements to UI appearance and error checking.</li>
 <li>Added Legion of the Bouncy Castle Crypto API license information to the About dialog, in addition to the GPL 2 license info specific to Cryptnos that was already there.</li>
 </ul>
