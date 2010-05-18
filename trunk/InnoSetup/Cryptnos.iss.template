@@ -30,6 +30,8 @@ SetupIconFile=C:\Documents and Settings\Jeff\My Documents\Visual Studio 2005\Pro
 Source: ..\Cryptnos\bin\Release\Cryptnos.exe; DestDir: {app}
 Source: ..\BouncyCastle.Crypto.dll; DestDir: {app}
 Source: ..\cryptnos_export1.xsd; DestDir: {app}; Flags: ignoreversion
+Source: ..\GPFUpdateChecker.dll; DestDir: {app}
+Source: ..\gpf_update_checker1.xsd; DestDir: {app}; Flags: ignoreversion
 Source: help.html; DestDir: {app}; Flags: ignoreversion
 Source: gpl.html; DestDir: {app}; Flags: ignoreversion
 [Icons]
@@ -114,4 +116,4 @@ end;
 // doing a release build, make sure to change the random string below to some-
 // thing new to force SubWCRev to add the new info.
 //
-// Revision Tag: 302e36383037383631333238
+// Revision Tag: 302e30373131393735303937
