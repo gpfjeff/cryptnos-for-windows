@@ -171,6 +171,13 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         private UpdateChecker.UpdateChecker updateChecker = null;
 
+        /// <summary>
+        /// This Boolean flag sets the program to be in full debug mode, showing much more
+        /// detailed error messages than if debugging mode is turned off.  This should be
+        /// set to false for official releases.
+        /// </summary>
+        private bool debug = true;
+
         #endregion
 
         /// <summary>
@@ -178,148 +185,162 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         public Form1()
         {
-            // Begin with the default initialization:
-            InitializeComponent();
-            // Default to using all the available characters in the hash:
-            cbCharTypes.SelectedIndex = 0;
-            // Originally we bound the hash drop-down to the HashEngine Hashes enum, but that
-            // no longer works with our cross-platform compatibility code.  Instead, step
-            // through the enumeration and convert its value to the "display" value, using
-            // the handy method provided by HashEngine.
-            foreach (Hashes item in Enum.GetValues(typeof(Hashes)))
-            {
-                cbHashes.Items.Add(HashEngine.HashEnumToDisplayHash(item));
-            }
-            // Default the hash selection to SHA-1.  We probably ought to default this to
-            // something stronger eventually.
-            cbHashes.SelectedItem = HashEngine.HashEnumToDisplayHash(Hashes.SHA1);
-            // Declare a boolean to disable the update check.  This isn't recommended, so
-            // we default this to false.
-            bool disableUpdateCheck = false;
-            // Now put on our asbestos underpants, because now we're playing with
-            // dynamite:
             try
             {
-                // Attempt to open the Cryptnos registry key:
-                if (CryptnosRegistryKeyOpen())
+                // Begin with the default initialization:
+                InitializeComponent();
+                // Default to using all the available characters in the hash:
+                cbCharTypes.SelectedIndex = 0;
+                // Originally we bound the hash drop-down to the HashEngine Hashes enum, but that
+                // no longer works with our cross-platform compatibility code.  Instead, step
+                // through the enumeration and convert its value to the "display" value, using
+                // the handy method provided by HashEngine.
+                foreach (Hashes item in Enum.GetValues(typeof(Hashes)))
                 {
-                    // If that worked, get the state of the remember parameters value:
-                    chkRemember.Checked = (int)CryptnosSettings.GetValue("RememberParams", 1)
-                        == 1 ? true : false;
-                    // If we're remembering things, try to get any settings they've saved
-                    // from the registry so they're ready to go:
-                    if (chkRemember.Checked)
+                    cbHashes.Items.Add(HashEngine.HashEnumToDisplayHash(item));
+                }
+                // Default the hash selection to SHA-1.  We probably ought to default this to
+                // something stronger eventually.
+                cbHashes.SelectedItem = HashEngine.HashEnumToDisplayHash(Hashes.SHA1);
+                // Declare a boolean to disable the update check.  This isn't recommended, so
+                // we default this to false.
+                bool disableUpdateCheck = false;
+                // Now put on our asbestos underpants, because now we're playing with
+                // dynamite:
+                try
+                {
+                    // Attempt to open the Cryptnos registry key:
+                    if (CryptnosRegistryKeyOpen())
                     {
-                        PopulateSitesDropdown();
-                        GetLastSiteParams();
-                        if (cbSites.Items.Count > 0)
+                        // If that worked, get the state of the remember parameters value:
+                        chkRemember.Checked = (int)CryptnosSettings.GetValue("RememberParams", 1)
+                            == 1 ? true : false;
+                        // If we're remembering things, try to get any settings they've saved
+                        // from the registry so they're ready to go:
+                        if (chkRemember.Checked)
                         {
-                            btnForget.Enabled = true;
-                            btnForgetAll.Enabled = true;
-                            btnExport.Enabled = true;
+                            PopulateSitesDropdown();
+                            GetLastSiteParams();
+                            if (cbSites.Items.Count > 0)
+                            {
+                                btnForget.Enabled = true;
+                                btnForgetAll.Enabled = true;
+                                btnExport.Enabled = true;
+                            }
+                            else
+                            {
+                                btnForget.Enabled = false;
+                                btnForgetAll.Enabled = false;
+                                btnExport.Enabled = false;
+                            }
+                            chkLock.Enabled = true;
                         }
+                        // Otherwise, set some sensible defaults and clear out the sites drop-down:
                         else
                         {
+                            cbSites.Items.Clear();
                             btnForget.Enabled = false;
                             btnForgetAll.Enabled = false;
                             btnExport.Enabled = false;
+                            chkLock.Enabled = false;
                         }
-                        chkLock.Enabled = true;
+                        // If that worked, get the state of the lock parameters value:
+                        chkLock.Checked = (int)CryptnosSettings.GetValue("LockParams", 0)
+                            == 1 ? true : false;
+                        // Get the user's tooltip help preference:
+                        chkShowTooltips.Checked = (int)CryptnosSettings.GetValue("ToolTips", 1)
+                            == 1 ? true : false;
+                        // Get the user's copy to clipboard preference:
+                        chkCopyToClipboard.Checked = (int)CryptnosSettings.GetValue("CopyToClipboard", 0)
+                            == 1 ? true : false;
+                        // Get the last update check date.  I'm not sure if the try/catch block is
+                        // really necessary, but I'm a belt-and-suspenders guy.  Also note that
+                        // the default, whether the parse fails for the registry value isn't set,
+                        // is DateTime.MinValue, which pretty much guarantees an update check on
+                        // the first go-around.
+                        try
+                        {
+                            updateFeedLastCheck =
+                                DateTime.Parse((string)CryptnosSettings.GetValue("LastUpdateCheck",
+                                DateTime.MinValue.ToString()));
+                        }
+                        catch { updateFeedLastCheck = DateTime.MinValue; }
+                        // Get the disable update check flag.  This is an "undocumented" feature
+                        // with no user interface option because, frankly, we really don't want
+                        // the user to disable it.  However, we'll add it in for the really
+                        // paranoid.  Note again that the default is false, meaning we will *not*
+                        // disable the check by default.
+                        disableUpdateCheck = (int)CryptnosSettings.GetValue("DisableUpdateCheck",
+                            0) == 1 ? true : false;
                     }
-                    // Otherwise, set some sensible defaults and clear out the sites drop-down:
-                    else
-                    {
-                        cbSites.Items.Clear();
-                        btnForget.Enabled = false;
-                        btnForgetAll.Enabled = false;
-                        btnExport.Enabled = false;
-                        chkLock.Enabled = false;
-                    }
-                    // If that worked, get the state of the lock parameters value:
-                    chkLock.Checked = (int)CryptnosSettings.GetValue("LockParams", 0)
-                        == 1 ? true : false;
-                    // Get the user's tooltip help preference:
-                    chkShowTooltips.Checked = (int)CryptnosSettings.GetValue("ToolTips", 1)
-                        == 1 ? true : false;
-                    // Get the user's copy to clipboard preference:
-                    chkCopyToClipboard.Checked = (int)CryptnosSettings.GetValue("CopyToClipboard", 0)
-                        == 1 ? true : false;
-                    // Get the last update check date.  I'm not sure if the try/catch block is
-                    // really necessary, but I'm a belt-and-suspenders guy.  Also note that
-                    // the default, whether the parse fails for the registry value isn't set,
-                    // is DateTime.MinValue, which pretty much guarantees an update check on
-                    // the first go-around.
-                    try
-                    {
-                        updateFeedLastCheck =
-                            DateTime.Parse((string)CryptnosSettings.GetValue("LastUpdateCheck",
-                            DateTime.MinValue.ToString()));
-                    }
-                    catch { updateFeedLastCheck = DateTime.MinValue; }
-                    // Get the disable update check flag.  This is an "undocumented" feature
-                    // with no user interface option because, frankly, we really don't want
-                    // the user to disable it.  However, we'll add it in for the really
-                    // paranoid.  Note again that the default is false, meaning we will *not*
-                    // disable the check by default.
-                    disableUpdateCheck = (int)CryptnosSettings.GetValue("DisableUpdateCheck",
-                        0) == 1 ? true : false;
+                }
+                // If anything above blew up, set some sensible defaults:
+                catch
+                {
+                    chkRemember.Checked = true;
+                    chkLock.Checked = false;
+                    cbCharTypes.SelectedIndex = 0;
+                    cbSites.Text = String.Empty;
+                    txtPassphrase.Text = String.Empty;
+                    txtCharLimit.Text = String.Empty;
+                    txtIterations.Text = "1";
+                    cbHashes.SelectedItem = HashEngine.HashEnumToDisplayHash(Hashes.SHA1);
+                    btnForget.Enabled = false;
+                    btnForgetAll.Enabled = false;
+                    btnExport.Enabled = false;
+                    chkShowTooltips.Checked = true;
+                    chkCopyToClipboard.Checked = false;
+                    updateFeedLastCheck = DateTime.MinValue;
+                }
+                // Turn on or off tooltip help depending on the user's save preference:
+                toolTip1.Active = chkShowTooltips.Checked;
+                // Generate the hash lengths list.  The idea here is to enforce the character
+                // limit ranges depending on which hash algorithm has been selected.  To do that,
+                // we'll quickly generate each available hash and get the length of the output
+                // string, then save all these to a Hashtable so we can quickly look it up later.
+                hashLengths = new Hashtable();
+                foreach (Hashes item in Enum.GetValues(typeof(Hashes)))
+                {
+                    string tmp = HashEngine.HashString(item, "null", 1);
+                    hashLengths.Add(item, tmp.Length);
+                }
+                // Set the window title to include the short version number:
+                Text = versionShort;
+                // Get our copyright information.  It seems a bit silly to do it this way,
+                // but this seems to be the only way to do it that I can find.  We'll pull this
+                // from the assembly so we only need to change it in one place, and it can be
+                // automatically fetched from SVN.
+                object[] obj = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+                if (obj != null && obj.Length > 0)
+                    copyright = ((AssemblyCopyrightAttribute)obj[0]).Copyright;
+
+                // Default the last import/export path to My Documents (or its equivalent) or,
+                // if that fails, the current working directory:
+                try
+                {
+                    lastImportExportPath =
+                  Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                }
+                catch { lastImportExportPath = Environment.CurrentDirectory; }
+
+                // Finally, initialize the update checker and set it to work.  The update check
+                // should occur in a separate thread, which will allow the main UI thread to
+                // continue without any problems.  The entire process *should* be transparent to
+                // the user unless an update is actually found.
+                if (!disableUpdateCheck)
+                {
+                    updateChecker = new UpdateChecker.UpdateChecker(updateFeedUri, updateFeedAppName,
+                        Assembly.GetExecutingAssembly().GetName().Version, this, updateFeedLastCheck);
+                    updateChecker.CheckForNewVersion();
                 }
             }
-            // If anything above blew up, set some sensible defaults:
-            catch
+            catch (Exception ex)
             {
-                chkRemember.Checked = true;
-                chkLock.Checked = false;
-                cbCharTypes.SelectedIndex = 0;
-                cbSites.Text = String.Empty;
-                txtPassphrase.Text = String.Empty;
-                txtCharLimit.Text = String.Empty;
-                txtIterations.Text = "1";
-                cbHashes.SelectedItem = HashEngine.HashEnumToDisplayHash(Hashes.SHA1);
-                btnForget.Enabled = false;
-                btnForgetAll.Enabled = false;
-                btnExport.Enabled = false;
-                chkShowTooltips.Checked = true;
-                chkCopyToClipboard.Checked = false;
-                updateFeedLastCheck = DateTime.MinValue;
-            }
-            // Turn on or off tooltip help depending on the user's save preference:
-            toolTip1.Active = chkShowTooltips.Checked;
-            // Generate the hash lengths list.  The idea here is to enforce the character
-            // limit ranges depending on which hash algorithm has been selected.  To do that,
-            // we'll quickly generate each available hash and get the length of the output
-            // string, then save all these to a Hashtable so we can quickly look it up later.
-            hashLengths = new Hashtable();
-            foreach (Hashes item in Enum.GetValues(typeof(Hashes)))
-            {
-                string tmp = HashEngine.HashString(item, "null", 1);
-                hashLengths.Add(item, tmp.Length);
-            }
-            // Set the window title to include the short version number:
-            Text = versionShort;
-            // Get our copyright information.  It seems a bit silly to do it this way,
-            // but this seems to be the only way to do it that I can find.  We'll pull this
-            // from the assembly so we only need to change it in one place, and it can be
-            // automatically fetched from SVN.
-            object[] obj = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-            if (obj != null && obj.Length > 0)
-                copyright = ((AssemblyCopyrightAttribute)obj[0]).Copyright;
-
-            // Default the last import/export path to My Documents (or its equivalent) or,
-            // if that fails, the current working directory:
-            try { lastImportExportPath =
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments); }
-            catch { lastImportExportPath = Environment.CurrentDirectory; }
-
-            // Finally, initialize the update checker and set it to work.  The update check
-            // should occur in a separate thread, which will allow the main UI thread to
-            // continue without any problems.  The entire process *should* be transparent to
-            // the user unless an update is actually found.
-            if (!disableUpdateCheck)
-            {
-                updateChecker = new UpdateChecker.UpdateChecker(updateFeedUri, updateFeedAppName,
-                    Assembly.GetExecutingAssembly().GetName().Version, this, updateFeedLastCheck);
-                updateChecker.CheckForNewVersion();
+                if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                else MessageBox.Show("I encountered an error while trying to launch " +
+                    "Cryptnos. Please close the application and try to restart it.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -460,7 +481,12 @@ namespace com.gpfcomics.Cryptnos
             // robust and user-friendly.
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (debug)
+                    MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                else
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
             }
         }
 
@@ -752,7 +778,12 @@ namespace com.gpfcomics.Cryptnos
             // Something blew up.  We need more robust, user-friendly error messages here.
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (debug)
+                    MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                else
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
             }
         }
 
@@ -825,7 +856,12 @@ namespace com.gpfcomics.Cryptnos
             // When you play with dynamite...:
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (debug)
+                    MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                else
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
             }
         }
 
@@ -897,7 +933,12 @@ namespace com.gpfcomics.Cryptnos
             // We should really have something more user-friendly here:
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (debug)
+                    MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                else
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
             }
         }
 
@@ -1149,7 +1190,11 @@ namespace com.gpfcomics.Cryptnos
                 return CryptnosSettings != null && siteParamsKey != null;
             }
             // If anything blew up above, obviously the keys should not be open:
-            catch { return false; }
+            catch (Exception ex) {
+                if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return false;
+            }
         }
 
         /// <summary>
@@ -1158,55 +1203,63 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         private void ExitApplication()
         {
-            // Only bother recording out parameter info if the registry key is available:
-            if (CryptnosRegistryKeyOpen())
+            try
             {
-                // If we have any settings saved and we've chosen not to remember them, we'll
-                // give the user the chance to completely delete any information saved in the
-                // registry.  If they say no (to keeping them) below, we'll wipe out all the
-                // subkeys of the master Cryptnos key, effectively removing all the settings.
-                // Otherwise, if they say yes, we'll take note of the change of the remember
-                // checkbox but otherwise keep the subkeys intact.
-                if (siteParamsKey.GetValueNames().Length > 0 && !chkRemember.Checked)
+                // Only bother recording out parameter info if the registry key is available:
+                if (CryptnosRegistryKeyOpen())
                 {
-                    if (MessageBox.Show("You have selected not to remember your site parameters.  " +
-                        "This will erase any previously saved site parameters.  Are you sure " +
-                        "you want to erase them?  If you say no, I'll keep them, but I won't " +
-                        "populate the parameter fields next time you open this program.",
-                        "Information", MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question) == DialogResult.Yes)
+                    // If we have any settings saved and we've chosen not to remember them, we'll
+                    // give the user the chance to completely delete any information saved in the
+                    // registry.  If they say no (to keeping them) below, we'll wipe out all the
+                    // subkeys of the master Cryptnos key, effectively removing all the settings.
+                    // Otherwise, if they say yes, we'll take note of the change of the remember
+                    // checkbox but otherwise keep the subkeys intact.
+                    if (siteParamsKey.GetValueNames().Length > 0 && !chkRemember.Checked)
                     {
-                        // Step through the subkeys and delete them all, "forgetting" all the
-                        // saved parameter info:
-                        foreach (string key in siteParamsKey.GetValueNames())
-                            siteParamsKey.DeleteValue(key, false);
-                        // Clear out the last site value so we won't try to look up a non-
-                        // existant subkey the next time we load:
-                        CryptnosSettings.SetValue("LastSite", String.Empty,
-                            RegistryValueKind.String);
+                        if (MessageBox.Show("You have selected not to remember your site parameters.  " +
+                            "This will erase any previously saved site parameters.  Are you sure " +
+                            "you want to erase them?  If you say no, I'll keep them, but I won't " +
+                            "populate the parameter fields next time you open this program.",
+                            "Information", MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question) == DialogResult.Yes)
+                        {
+                            // Step through the subkeys and delete them all, "forgetting" all the
+                            // saved parameter info:
+                            foreach (string key in siteParamsKey.GetValueNames())
+                                siteParamsKey.DeleteValue(key, false);
+                            // Clear out the last site value so we won't try to look up a non-
+                            // existant subkey the next time we load:
+                            CryptnosSettings.SetValue("LastSite", String.Empty,
+                                RegistryValueKind.String);
+                        }
                     }
+                    // Otherwise, if they've selected to save their info, save it for the
+                    // currently selected site:
+                    if (chkRemember.Checked && !chkLock.Checked) SaveSiteParams(cbSites.Text);
+                    // Always remember the state of the remember, tooltip help, and lock
+                    // parameters checkboxes, as well as the version info:
+                    CryptnosSettings.SetValue("RememberParams", (chkRemember.Checked ? 1 : 0),
+                        RegistryValueKind.DWord);
+                    CryptnosSettings.SetValue("ToolTips", (chkShowTooltips.Checked ? 1 : 0),
+                        RegistryValueKind.DWord);
+                    CryptnosSettings.SetValue("LockParams", (chkLock.Checked ? 1 : 0),
+                        RegistryValueKind.DWord);
+                    CryptnosSettings.SetValue("CopyToClipboard", (chkCopyToClipboard.Checked ? 1 : 0),
+                        RegistryValueKind.DWord);
+                    CryptnosSettings.SetValue("Version",
+                        Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+                        RegistryValueKind.String);
+                    CryptnosSettings.SetValue("LastUpdateCheck", updateFeedLastCheck.ToString(),
+                        RegistryValueKind.String);
+                    // Close the Cryptnos registry keys:
+                    siteParamsKey.Close();
+                    CryptnosSettings.Close();
                 }
-                // Otherwise, if they've selected to save their info, save it for the
-                // currently selected site:
-                if (chkRemember.Checked && !chkLock.Checked) SaveSiteParams(cbSites.Text);
-                // Always remember the state of the remember, tooltip help, and lock
-                // parameters checkboxes, as well as the version info:
-                CryptnosSettings.SetValue("RememberParams", (chkRemember.Checked ? 1 : 0),
-                    RegistryValueKind.DWord);
-                CryptnosSettings.SetValue("ToolTips", (chkShowTooltips.Checked ? 1 : 0),
-                    RegistryValueKind.DWord);
-                CryptnosSettings.SetValue("LockParams", (chkLock.Checked ? 1 : 0),
-                    RegistryValueKind.DWord);
-                CryptnosSettings.SetValue("CopyToClipboard", (chkCopyToClipboard.Checked ? 1 : 0),
-                    RegistryValueKind.DWord);
-                CryptnosSettings.SetValue("Version",
-                    Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-                    RegistryValueKind.String);
-                CryptnosSettings.SetValue("LastUpdateCheck", updateFeedLastCheck.ToString(),
-                    RegistryValueKind.String);
-                // Close the Cryptnos registry keys:
-                siteParamsKey.Close();
-                CryptnosSettings.Close();
+            }
+            catch (Exception ex)
+            {
+                if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 
@@ -1290,7 +1343,11 @@ namespace com.gpfcomics.Cryptnos
                 }
             }
             // Silently ignore any errors:
-            catch { }
+            catch (Exception ex)
+            {
+                if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
@@ -1394,7 +1451,11 @@ namespace com.gpfcomics.Cryptnos
                 }
             }
             // Silently ignore errors:
-            catch { }
+            catch (Exception ex)
+            {
+                if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         #endregion
@@ -1415,7 +1476,12 @@ namespace com.gpfcomics.Cryptnos
             // notifications, which includes a prompt on whether or not they'd like to
             // upgrade.  The null check is probably redudant--this method should never be
             // called if the update checker is null--but it's a belt-and-suspenders thing.
-            if (updateChecker != null) updateChecker.GetNewerVersion();
+            try { if (updateChecker != null) updateChecker.GetNewerVersion(); }
+            catch (Exception ex)
+            {
+                if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
@@ -1428,10 +1494,18 @@ namespace com.gpfcomics.Cryptnos
         {
             // Update the last update check date, both within our private copy in memory
             // and in the registry:
-            updateFeedLastCheck = lastCheck;
-            if (CryptnosRegistryKeyOpen())
-                CryptnosSettings.SetValue("LastUpdateCheck", updateFeedLastCheck.ToString(),
-                    RegistryValueKind.String);
+            try
+            {
+                updateFeedLastCheck = lastCheck;
+                if (CryptnosRegistryKeyOpen())
+                    CryptnosSettings.SetValue("LastUpdateCheck", updateFeedLastCheck.ToString(),
+                        RegistryValueKind.String);
+            }
+            catch (Exception ex)
+            {
+                if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
