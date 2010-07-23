@@ -12,7 +12,11 @@
  * message to display back.  In general, catch all HashEngineExceptions thrown by HashEngine
  * methods and echo their Message properites for the user to see.  That's all there is to it.
  *  
- * This program is Copyright 2007, Jeffrey T. Darlington.
+ * UPDATES FOR 1.1.1:  Cleaned up the code a bit to eliminate warnings in Visual Studio.
+ * Basically, I got rid of the private message variable and had the constructors pass the
+ * message on to the base class.  Not sure why I didn't do this before.
+ * 
+ * This program is Copyright 2010, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
  * 
@@ -34,29 +38,20 @@ using System.Text;
 
 namespace com.gpfcomics.Cryptnos
 {
+    /// <summary>
+    /// This derivative of <see cref="Exception"/> applies specifically to errors generated
+    /// by the Cryptnos <see cref="HashEngine"/>.
+    /// </summary>
     public class HashEngineException : Exception
     {
-        private string message;
-        
-        public HashEngineException(string message)
-        {
-            this.message = message;
-        }
+        public HashEngineException(string message) : base(message) { }
 
-        public HashEngineException()
-        {
-            message = "An unknown exception occured in the hashing engine.";
-        }
-
-        public string Message
-        {
-            get { return message; }
-            set { message = value; }
-        }
+        public HashEngineException() :
+            base("An unknown exception occured in the hashing engine.") { }
 
         public override string ToString()
         {
-            return "Hash Engine Exception: " + message;
+            return "Hash Engine Exception: " + Message;
         }
     }
 }

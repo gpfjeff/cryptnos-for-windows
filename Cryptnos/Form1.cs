@@ -38,6 +38,10 @@
  * a feature first introduced in Cryptnos for Android 1.0.  This defaults to off, however,
  * which replicates the Cryptnos for Windows 1.0 functionality.  Also added the GPFUpdateChecker
  * library to let Cryptnos check the official website for updates.
+ *
+ * UPDATES FOR 1.1.1:  Additional error checking for GPFUpdateChecker.  Added dedicated
+ * try/catch for "copy to clipboard" operation to give it a more friendly and useful error
+ * message.
  * 
  * This program is Copyright 2010, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
@@ -472,7 +476,20 @@ namespace com.gpfcomics.Cryptnos
                     // password box:
                     txtPassword.Text = hash;
                     // Copy the value of the hash to the system clipboard:
-                    if (chkCopyToClipboard.Checked) Clipboard.SetText(hash);
+                    try { if (chkCopyToClipboard.Checked) Clipboard.SetText(hash); }
+                    // For some reason, copying stuff to the clipboard doesn't always work.
+                    // This may be a known problem with Windows itself, but there's no consensus
+                    // on the issue.  Anyway, we don't want the entire process to bomb on this
+                    // trivial little issue, so we'll catch it separately, inform the user that
+                    // we couldn't copy it, and ask them to do it themselves.
+                    catch
+                    {
+                        MessageBox.Show("I was unable to copy the generated password to " +
+                            "the clipboard. This is usually a transient problem within " +
+                            "Windows itself that does not occur regularly. Please copy your " +
+                            "password manually this time.", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                     // If the user has elected to save their settings, do so now:
                     if (chkRemember.Checked && !chkLock.Checked) SaveSiteParams(cbSites.Text);
                 }

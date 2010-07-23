@@ -33,6 +33,9 @@
  * parsing or encryption errors while importing a file.  When using ImportExportHandler, make
  * sure to catch these exceptions first and then handle any other exception after that.
  * 
+ * UPDATES FOR 1.1.1:  Removed an extraneous catch Exception variable that wasn't being used
+ * to remove a warning in Visual Studio.
+ * 
  * This program is Copyright 2010, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
@@ -149,7 +152,7 @@ namespace com.gpfcomics.Cryptnos
                         // If we got any other type of exception, go ahead and try to read the
                         // file as an original format file.  If *this* blows up, then the file
                         // must be bad to begin with.
-                        catch (Exception xmlEx)
+                        catch
                         {
                             try { return ImportFromOriginalExportFile(filename, password); }
                             catch (Exception origEx) { throw origEx; }
