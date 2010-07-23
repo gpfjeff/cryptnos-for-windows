@@ -14,7 +14,12 @@ goto endofperl
 #line 15
 # Random SVN Revision Tagger
 
-my $workingpath = "C:\\Documents and Settings\\Jeff\\My Documents\\Visual Studio 2005\\Projects\\Cryptnos\\";
+##############################################################################
+# Change this to be the path to your working copy.  Make sure to escape
+# backslashes ("\\") if working on Windows.  Also don't forget the final
+# slash on the end.  DO NOT COMMIT THESE CHANGES TO THE REPOSITORY!
+my $workingpath = ".";
+##############################################################################
 
 my @templates = (
 		"Cryptnos\\Properties\\AssemblyInfo.cs.template",
