@@ -1,6 +1,6 @@
 [Setup]
 InternalCompressLevel=ultra
-OutputDir=C:\Documents and Settings\Jeff\My Documents\Visual Studio 2005\Projects\Cryptnos\InnoSetup\bin
+OutputDir=.\bin
 OutputBaseFilename=Cryptnos_1.1_Setup
 VersionInfoVersion=1.1.1.$WCREV$
 VersionInfoCompany=GPF Comics
@@ -10,7 +10,7 @@ VersionInfoCopyright=Copyright $WCDATE=%Y$, Jeffrey T. Darlington.
 AppCopyright=Copyright $WCDATE=%Y$, Jeffrey T. Darlington.
 AppName=Cryptnos
 AppVerName=Cryptnos 1.1
-LicenseFile=C:\Documents and Settings\Jeff\My Documents\Visual Studio 2005\Projects\Cryptnos\InnoSetup\gpl.rtf
+LicenseFile=.\gpl.rtf
 PrivilegesRequired=poweruser
 MinVersion=4.1.1998,5.0.2195sp3
 DefaultDirName={pf}\Cryptnos
@@ -25,7 +25,7 @@ AppSupportURL=http://www.cryptnos.com/
 AppUpdatesURL=http://www.cryptnos.com/
 AppVersion=Cryptnos 1.1
 UninstallDisplayName=Cryptnos 1.1
-SetupIconFile=C:\Documents and Settings\Jeff\My Documents\Visual Studio 2005\Projects\Cryptnos\Cryptnos\Lock.ico
+SetupIconFile=..\Cryptnos\Lock.ico
 [Files]
 Source: ..\Cryptnos\bin\Release\Cryptnos.exe; DestDir: {app}
 Source: ..\BouncyCastle.Crypto.dll; DestDir: {app}
