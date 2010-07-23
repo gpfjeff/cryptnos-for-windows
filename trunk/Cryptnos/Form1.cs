@@ -41,7 +41,7 @@
  *
  * UPDATES FOR 1.1.1:  Additional error checking for GPFUpdateChecker.  Added dedicated
  * try/catch for "copy to clipboard" operation to give it a more friendly and useful error
- * message.
+ * message.  Moved debug mode flag out of hard-coded source to a flag in the registry.
  * 
  * This program is Copyright 2010, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
@@ -180,7 +180,7 @@ namespace com.gpfcomics.Cryptnos
         /// detailed error messages than if debugging mode is turned off.  This should be
         /// set to false for official releases.
         /// </summary>
-        private bool debug = true;
+        private bool debug = false;
 
         #endregion
 
@@ -275,6 +275,9 @@ namespace com.gpfcomics.Cryptnos
                         // paranoid.  Note again that the default is false, meaning we will *not*
                         // disable the check by default.
                         disableUpdateCheck = (int)CryptnosSettings.GetValue("DisableUpdateCheck",
+                            0) == 1 ? true : false;
+                        // Turn debug mode on or off:
+                        debug = (int)CryptnosSettings.GetValue("DebugMode",
                             0) == 1 ? true : false;
                     }
                 }
@@ -1268,6 +1271,8 @@ namespace com.gpfcomics.Cryptnos
                         RegistryValueKind.String);
                     CryptnosSettings.SetValue("LastUpdateCheck", updateFeedLastCheck.ToString(),
                         RegistryValueKind.String);
+                    CryptnosSettings.SetValue("DebugMode", (debug ? 1 : 0),
+                        RegistryValueKind.DWord);
                     // Close the Cryptnos registry keys:
                     siteParamsKey.Close();
                     CryptnosSettings.Close();
