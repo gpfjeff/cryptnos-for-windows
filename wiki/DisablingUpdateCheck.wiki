@@ -1,0 +1,20 @@
+#summary How to disable Cryptnos' automatic update check
+
+= Disabling the Update Check =
+
+We have a report of what seems to be a [http://code.google.com/p/cryptnos-for-windows/issues/detail?id=1 major bug] in the update notification code in the recently released Cryptnos for Windows 1.1. If after installation you get a rather cryptic "Object reference not set to an instance of an object" error that prevents Cryptnos from ever starting, you've likely encountered it. It does not seem to be affecting every user. It's going to take me a while to take a look at it and fix it, but we have found a way to bypass the error so you can get Cryptnos 1.1 to work.
+
+A few warnings up front: This workaround will completely disable the update checking code until it is removed. You will have to manually check for updates while the workaround is in effect. You will also have to manually remove the workaround later to disable it. It requires registry hacking by hand. Modifying the Windows registry can be dangerous if you don't know what you're doing. If you are not comfortable making this change, please uninstall Cryptnos 1.1 and fall back to Cryptnos 1.0 until an official fix can be released. Note that Cryptnos 1.0 is unaffected by this issue.
+
+ # Open the registry editor by going to the Start button and clicking Run.
+ # In the Run dialog, type `regedit` and click OK. The registry editor will open.
+ # Navigate to `HKEY_CURRENT_USER\Software`.
+ # Look for the registry key folder `GPF Comics`. If it exists, open it. If not, create it. Note that this is a folder, not a key/value pair.
+ # Under `GPF Comics`, look for the registry key folder `Cryptnos`.  If it exists, open it; if not, create it.
+ # Inside this `Cryptnos` folder, right-click to bring up a context menu. Select New -> DWORD Value.
+ # Name this new key `DisableUpdateCheck`.
+ # Double-click the newly created key. Give it the value of 1 (the number one). Click OK.
+ # Close the registry editor.
+ # If you have multiple logins on this computer, this hack will only affect the currently logged in user. You will need to apply this change to all users on the system to make Cryptnos usable for those users.
+
+This should bypass the update check on start-up and Cryptnos should load successfully. Note that when we finally release the fix, you will need to manually remove this registry key value to re-enable the update check.
