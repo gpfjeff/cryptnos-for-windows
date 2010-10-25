@@ -1,4 +1,4 @@
-/* Program.cs
+/* SiteParameters.cs
  * 
  * PROGRAMMER:    Jeffrey T. Darlington
  * DATE:          September 21, 2009
@@ -358,7 +358,9 @@ namespace com.gpfcomics.Cryptnos
                 if (!String.IsNullOrEmpty(site) && site.Length > 0)
                 {
                     // Get the SHA-512 of the site name.  We'll also include the user's
-                    // username and the machine name as a salt:
+                    // username and the machine name as a salt.  We really should change
+                    // the encoding here to something like UTF-8, but we'll leave this
+                    // at the default to keep from breaking the user's data.
                     SHA512Managed hasher = new SHA512Managed();
                     byte[] keyBytes = Encoding.Default.GetBytes(site + Environment.UserName +
                         Environment.MachineName);
