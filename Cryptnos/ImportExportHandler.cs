@@ -33,8 +33,10 @@
  * parsing or encryption errors while importing a file.  When using ImportExportHandler, make
  * sure to catch these exceptions first and then handle any other exception after that.
  * 
- * UPDATES FOR 1.1.1:  Removed an extraneous catch Exception variable that wasn't being used
- * to remove a warning in Visual Studio.
+ * UPDATES FOR 1.2.0:  Forced UTF-8 for XML import/export format.  I *think* this is what .NET
+ * did anyway, but it's a good idea to explicitly enforce it anyway; improves compatibility
+ * with other platform versions.  Removed an extraneous catch Exception variable that wasn't
+ * being used to remove a warning in Visual Studio.
  * 
  * This program is Copyright 2010, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
@@ -208,6 +210,7 @@ namespace com.gpfcomics.Cryptnos
                 xws.Indent = true;
                 xws.IndentChars = "\t";
                 xws.CloseOutput = true;
+                xws.Encoding = Encoding.UTF8;
                 // We won't be writing directly to a file, at least not yet.  Create a memory
                 // stream for us to write to initially, then open up the XML writer to point
                 // to that stream.  Note that we'll also gzip the XML as it goes into the

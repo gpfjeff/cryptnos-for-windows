@@ -61,6 +61,7 @@ namespace com.gpfcomics.Cryptnos
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.chkShowTooltips = new System.Windows.Forms.CheckBox();
             this.chkCopyToClipboard = new System.Windows.Forms.CheckBox();
+            this.btnAdvanced = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -263,7 +264,7 @@ namespace com.gpfcomics.Cryptnos
             this.btnClose.Location = new System.Drawing.Point(228, 370);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(57, 23);
-            this.btnClose.TabIndex = 7;
+            this.btnClose.TabIndex = 4;
             this.btnClose.Text = "Close";
             this.toolTip1.SetToolTip(this.btnClose, resources.GetString("btnClose.ToolTip"));
             this.btnClose.UseVisualStyleBackColor = true;
@@ -282,10 +283,10 @@ namespace com.gpfcomics.Cryptnos
             // 
             // btnAbout
             // 
-            this.btnAbout.Location = new System.Drawing.Point(164, 370);
+            this.btnAbout.Location = new System.Drawing.Point(7, 370);
             this.btnAbout.Name = "btnAbout";
             this.btnAbout.Size = new System.Drawing.Size(58, 23);
-            this.btnAbout.TabIndex = 6;
+            this.btnAbout.TabIndex = 2;
             this.btnAbout.Text = "About...";
             this.toolTip1.SetToolTip(this.btnAbout, "Click this button to see the copyright and\r\nlicensing information about Cryptnos," +
                     " as\r\nwell as a hyperlink to find Cryptnos\r\nonline.");
@@ -294,9 +295,9 @@ namespace com.gpfcomics.Cryptnos
             // 
             // btnImport
             // 
-            this.btnImport.Location = new System.Drawing.Point(5, 370);
+            this.btnImport.Location = new System.Drawing.Point(141, 42);
             this.btnImport.Name = "btnImport";
-            this.btnImport.Size = new System.Drawing.Size(72, 23);
+            this.btnImport.Size = new System.Drawing.Size(66, 23);
             this.btnImport.TabIndex = 4;
             this.btnImport.Text = "Import...";
             this.toolTip1.SetToolTip(this.btnImport, resources.GetString("btnImport.ToolTip"));
@@ -305,9 +306,9 @@ namespace com.gpfcomics.Cryptnos
             // 
             // btnForgetAll
             // 
-            this.btnForgetAll.Location = new System.Drawing.Point(143, 42);
+            this.btnForgetAll.Location = new System.Drawing.Point(69, 42);
             this.btnForgetAll.Name = "btnForgetAll";
-            this.btnForgetAll.Size = new System.Drawing.Size(120, 23);
+            this.btnForgetAll.Size = new System.Drawing.Size(66, 23);
             this.btnForgetAll.TabIndex = 3;
             this.btnForgetAll.Text = "Forget All";
             this.toolTip1.SetToolTip(this.btnForgetAll, resources.GetString("btnForgetAll.ToolTip"));
@@ -316,9 +317,9 @@ namespace com.gpfcomics.Cryptnos
             // 
             // btnExport
             // 
-            this.btnExport.Location = new System.Drawing.Point(83, 370);
+            this.btnExport.Location = new System.Drawing.Point(213, 42);
             this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(75, 23);
+            this.btnExport.Size = new System.Drawing.Size(57, 23);
             this.btnExport.TabIndex = 5;
             this.btnExport.Text = "Export...";
             this.toolTip1.SetToolTip(this.btnExport, resources.GetString("btnExport.ToolTip"));
@@ -327,9 +328,9 @@ namespace com.gpfcomics.Cryptnos
             // 
             // btnForget
             // 
-            this.btnForget.Location = new System.Drawing.Point(16, 42);
+            this.btnForget.Location = new System.Drawing.Point(9, 42);
             this.btnForget.Name = "btnForget";
-            this.btnForget.Size = new System.Drawing.Size(120, 23);
+            this.btnForget.Size = new System.Drawing.Size(54, 23);
             this.btnForget.TabIndex = 2;
             this.btnForget.Text = "Forget";
             this.toolTip1.SetToolTip(this.btnForget, resources.GetString("btnForget.ToolTip"));
@@ -359,6 +360,8 @@ namespace com.gpfcomics.Cryptnos
             this.groupBox3.Controls.Add(this.chkRemember);
             this.groupBox3.Controls.Add(this.btnForget);
             this.groupBox3.Controls.Add(this.btnForgetAll);
+            this.groupBox3.Controls.Add(this.btnExport);
+            this.groupBox3.Controls.Add(this.btnImport);
             this.groupBox3.Location = new System.Drawing.Point(7, 263);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(278, 77);
@@ -391,7 +394,7 @@ namespace com.gpfcomics.Cryptnos
             this.chkShowTooltips.Location = new System.Drawing.Point(7, 347);
             this.chkShowTooltips.Name = "chkShowTooltips";
             this.chkShowTooltips.Size = new System.Drawing.Size(112, 17);
-            this.chkShowTooltips.TabIndex = 3;
+            this.chkShowTooltips.TabIndex = 0;
             this.chkShowTooltips.Text = "Show tooltips help";
             this.toolTip1.SetToolTip(this.chkShowTooltips, resources.GetString("chkShowTooltips.ToolTip"));
             this.chkShowTooltips.UseVisualStyleBackColor = true;
@@ -403,10 +406,21 @@ namespace com.gpfcomics.Cryptnos
             this.chkCopyToClipboard.Location = new System.Drawing.Point(129, 347);
             this.chkCopyToClipboard.Name = "chkCopyToClipboard";
             this.chkCopyToClipboard.Size = new System.Drawing.Size(156, 17);
-            this.chkCopyToClipboard.TabIndex = 8;
+            this.chkCopyToClipboard.TabIndex = 1;
             this.chkCopyToClipboard.Text = "Copy password to clipboard";
             this.toolTip1.SetToolTip(this.chkCopyToClipboard, resources.GetString("chkCopyToClipboard.ToolTip"));
             this.chkCopyToClipboard.UseVisualStyleBackColor = true;
+            // 
+            // btnAdvanced
+            // 
+            this.btnAdvanced.Location = new System.Drawing.Point(107, 370);
+            this.btnAdvanced.Name = "btnAdvanced";
+            this.btnAdvanced.Size = new System.Drawing.Size(75, 23);
+            this.btnAdvanced.TabIndex = 3;
+            this.btnAdvanced.Text = "Advanced...";
+            this.toolTip1.SetToolTip(this.btnAdvanced, resources.GetString("btnAdvanced.ToolTip"));
+            this.btnAdvanced.UseVisualStyleBackColor = true;
+            this.btnAdvanced.Click += new System.EventHandler(this.btnAdvanced_Click);
             // 
             // Form1
             // 
@@ -415,12 +429,11 @@ namespace com.gpfcomics.Cryptnos
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(292, 405);
+            this.Controls.Add(this.btnAdvanced);
             this.Controls.Add(this.chkCopyToClipboard);
             this.Controls.Add(this.chkShowTooltips);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.btnExport);
-            this.Controls.Add(this.btnImport);
             this.Controls.Add(this.btnAbout);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.groupBox1);
@@ -474,6 +487,7 @@ namespace com.gpfcomics.Cryptnos
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.CheckBox chkShowTooltips;
         private System.Windows.Forms.CheckBox chkCopyToClipboard;
+        private System.Windows.Forms.Button btnAdvanced;
     }
 }
 

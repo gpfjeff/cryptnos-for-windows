@@ -39,9 +39,12 @@
  * which replicates the Cryptnos for Windows 1.0 functionality.  Also added the GPFUpdateChecker
  * library to let Cryptnos check the official website for updates.
  *
- * UPDATES FOR 1.1.1:  Additional error checking for GPFUpdateChecker.  Added dedicated
- * try/catch for "copy to clipboard" operation to give it a more friendly and useful error
- * message.  Moved debug mode flag out of hard-coded source to a flag in the registry.
+ * UPDATES FOR 1.2.0:  Tentatively commented out and removed GPFUpdateChecker from the project.
+ * It's just been creating too many problems than it was intended to fix, so we'll walk away
+ * from it now and address it again later.  Added dedicated try/catch for "copy to clipboard"
+ * operation to give it a more friendly and useful error message.  Moved debug mode flag out of
+ * hard-coded source to a flag in the registry.  Added Advanced settings button to launch
+ * Advanced Settings dialog and let the user specify the text encoding.
  * 
  * This program is Copyright 2010, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
@@ -74,14 +77,14 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using Microsoft.Win32;
-using com.gpfcomics.UpdateChecker;
+//using com.gpfcomics.UpdateChecker;
 
 namespace com.gpfcomics.Cryptnos
 {
     /// <summary>
     /// The main Cryptnos application form
     /// </summary>
-    public partial class Form1 : Form, IUpdateCheckListener
+    public partial class Form1 : Form//, IUpdateCheckListener
     {
         #region Private Variables
 
@@ -150,6 +153,16 @@ namespace com.gpfcomics.Cryptnos
         private string lastImportExportPath = null;
 
         /// <summary>
+        /// The encoding to use for password generation.
+        /// </summary>
+        private Encoding encoding = Encoding.Default;
+
+        /// <summary>
+        /// This flag helps us show the Advanced settings warning button only once per session.
+        /// </summary>
+        private bool showAdvancedWarning = true;
+
+        /// <summary>
         /// A <see cref="Uri"/> for the official Cryptnos updates feed.  The
         /// <see cref="UpdateChecker"/> will use this feed to look for updated versions of
         /// Cryptnos.
@@ -173,7 +186,7 @@ namespace com.gpfcomics.Cryptnos
         /// The actual <see cref="UpdateChecker"/> object, which will check for Cryptnos
         /// updates
         /// </summary>
-        private UpdateChecker.UpdateChecker updateChecker = null;
+        //private UpdateChecker.UpdateChecker updateChecker = null;
 
         /// <summary>
         /// This Boolean flag sets the program to be in full debug mode, showing much more
@@ -181,6 +194,12 @@ namespace com.gpfcomics.Cryptnos
         /// set to false for official releases.
         /// </summary>
         private bool debug = false;
+
+        /// <summary>
+        /// This flag gets set to true if this is the very first time Cryptnos has been
+        /// run for this user.
+        /// </summary>
+        private bool veryFirstTime = false;
 
         #endregion
 
@@ -279,6 +298,20 @@ namespace com.gpfcomics.Cryptnos
                         // Turn debug mode on or off:
                         debug = (int)CryptnosSettings.GetValue("DebugMode",
                             0) == 1 ? true : false;
+                        // Get the encoding.  Note the funky way we'll try to set the default.
+                        // If this is the very first time the user has tried to run Cryptnos
+                        // (determined within CryptnosRegistryKeyOpen()), we'll try to default
+                        // the user to UTF-8.  However, if they've run the app before, we'll
+                        // use the system default, which is the old behavior.  Then we'll pass
+                        // this "default" as the default to the registry check.  Thus, if the
+                        // user has already set an encoding preference, that takes precedence.
+                        // If there's no user preference, use the "default" we set depending
+                        // on whether or not the user has run Cryptnos before.  This same
+                        // process goes for the catch block below.
+                        Encoding defaultEncoding = Encoding.Default;
+                        if (veryFirstTime) defaultEncoding = Encoding.UTF8;
+                        encoding = Encoding.GetEncoding((string)CryptnosSettings.GetValue("Encoding",
+                            defaultEncoding.WebName));
                     }
                 }
                 // If anything above blew up, set some sensible defaults:
@@ -298,6 +331,8 @@ namespace com.gpfcomics.Cryptnos
                     chkShowTooltips.Checked = true;
                     chkCopyToClipboard.Checked = false;
                     updateFeedLastCheck = DateTime.MinValue;
+                    if (veryFirstTime) encoding = Encoding.UTF8;
+                    else encoding = Encoding.Default;
                 }
                 // Turn on or off tooltip help depending on the user's save preference:
                 toolTip1.Active = chkShowTooltips.Checked;
@@ -326,7 +361,7 @@ namespace com.gpfcomics.Cryptnos
                 try
                 {
                     lastImportExportPath =
-                  Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 }
                 catch { lastImportExportPath = Environment.CurrentDirectory; }
 
@@ -334,12 +369,12 @@ namespace com.gpfcomics.Cryptnos
                 // should occur in a separate thread, which will allow the main UI thread to
                 // continue without any problems.  The entire process *should* be transparent to
                 // the user unless an update is actually found.
-                if (!disableUpdateCheck)
-                {
-                    updateChecker = new UpdateChecker.UpdateChecker(updateFeedUri, updateFeedAppName,
-                        Assembly.GetExecutingAssembly().GetName().Version, this, updateFeedLastCheck);
-                    updateChecker.CheckForNewVersion();
-                }
+                //if (!disableUpdateCheck)
+                //{
+                //    updateChecker = new UpdateChecker.UpdateChecker(updateFeedUri, updateFeedAppName,
+                //        Assembly.GetExecutingAssembly().GetName().Version, this, updateFeedLastCheck);
+                //    updateChecker.CheckForNewVersion();
+                //}
             }
             catch (Exception ex)
             {
@@ -447,7 +482,7 @@ namespace com.gpfcomics.Cryptnos
                     // Generate the hash.  For the text, combine the site name with
                     // the passphrase text to give us a unique plaintext input.  Note that
                     // the output is Base64 to give us a healthy output.
-                    string hash = HashEngine.HashString(hashAlgo, Encoding.Default,
+                    string hash = HashEngine.HashString(hashAlgo, encoding,
                         cbSites.Text + txtPassphrase.Text, iterations);
                     // Now that we have the hash, we'll wittle it down based on the user's
                     // preferences.  First we'll eliminate any undesireable character types:
@@ -1162,6 +1197,50 @@ namespace com.gpfcomics.Cryptnos
             }
         }
 
+        /// <summary>
+        /// What to do when the Advanced button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnAdvanced_Click(object sender, EventArgs e)
+        {
+            // Start off by declaring the advanced settings dialog, but don't initialize
+            // it yet.  We'll get to that in a bit.
+            AdvancedSettingsDialog ads = null;
+            // The first time the user attempts to access the advanced settings, show them
+            // a warning box letting them know they could be setting themselves up for
+            // trouble if they go mucking around with this.  Once they click through,
+            // don't bother again until the next session.
+            if (showAdvancedWarning)
+            {
+                showAdvancedWarning = false;
+                if (MessageBox.Show("Modifying the advanced settings of Cryptnos may " +
+                    "\"break\" your existing passwords. Are you sure you wish to continue?",
+                    "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) ==
+                    DialogResult.Yes)
+                {
+                    ads = new AdvancedSettingsDialog(encoding); 
+                }
+            }
+            else
+            {
+                ads = new AdvancedSettingsDialog(encoding);
+            }
+            // Now if the user got to here and the dialog was created, go ahead and
+            // show it.  If they click OK, get the new encoding value and take note of
+            // it.  We'll go ahead and write the value into the registry too.
+            if (ads != null)
+            {
+                if (ads.ShowDialog() == DialogResult.OK)
+                {
+                    encoding = ads.Encoding;
+                    if (CryptnosRegistryKeyOpen())
+                        CryptnosSettings.SetValue("Encoding", encoding.WebName,
+                            RegistryValueKind.String);
+                }
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -1194,7 +1273,14 @@ namespace com.gpfcomics.Cryptnos
                     // Now do the same with the Cryptnos key:
                     CryptnosSettings = GPF.OpenSubKey(CryptnosRegKeyName, true);
                     if (CryptnosSettings == null)
+                    {
                         CryptnosSettings = GPF.CreateSubKey(CryptnosRegKeyName);
+                        // If the Cryptnos registry has never been created, this is likely
+                        // the very first time the user has ever run Cryptnos.  In that
+                        // case, we want to take note of that so we can set some defaults
+                        // later.
+                        veryFirstTime = true;
+                    }
                     // Now that we've opened the Cryptnos master key, open the Sites
                     // subkey:
                     if (CryptnosSettings != null)
@@ -1273,6 +1359,8 @@ namespace com.gpfcomics.Cryptnos
                         RegistryValueKind.String);
                     CryptnosSettings.SetValue("DebugMode", (debug ? 1 : 0),
                         RegistryValueKind.DWord);
+                    CryptnosSettings.SetValue("Encoding", encoding.WebName,
+                        RegistryValueKind.String);
                     // Close the Cryptnos registry keys:
                     siteParamsKey.Close();
                     CryptnosSettings.Close();
@@ -1491,20 +1579,20 @@ namespace com.gpfcomics.Cryptnos
         /// <summary>
         /// What to do if a new update is found.
         /// </summary>
-        public void OnFoundNewerVersion()
-        {
-            // This is pretty simple.  If the update check found a new version, tell it to
-            // go ahead and download it.  Note that the update checker will handle any user
-            // notifications, which includes a prompt on whether or not they'd like to
-            // upgrade.  The null check is probably redudant--this method should never be
-            // called if the update checker is null--but it's a belt-and-suspenders thing.
-            try { if (updateChecker != null) updateChecker.GetNewerVersion(); }
-            catch (Exception ex)
-            {
-                if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-        }
+        //public void OnFoundNewerVersion()
+        //{
+        //    // This is pretty simple.  If the update check found a new version, tell it to
+        //    // go ahead and download it.  Note that the update checker will handle any user
+        //    // notifications, which includes a prompt on whether or not they'd like to
+        //    // upgrade.  The null check is probably redudant--this method should never be
+        //    // called if the update checker is null--but it's a belt-and-suspenders thing.
+        //    try { if (updateChecker != null) updateChecker.GetNewerVersion(); }
+        //    catch (Exception ex)
+        //    {
+        //        if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+        //            MessageBoxIcon.Error);
+        //    }
+        //}
 
         /// <summary>
         /// What to do if the update checker says to record a new last update check date.
@@ -1512,35 +1600,35 @@ namespace com.gpfcomics.Cryptnos
         /// is successful or not.
         /// </summary>
         /// <param name="lastCheck">The new date of the last update check</param>
-        public void OnRecordLastUpdateCheck(DateTime lastCheck)
-        {
-            // Update the last update check date, both within our private copy in memory
-            // and in the registry:
-            try
-            {
-                updateFeedLastCheck = lastCheck;
-                if (CryptnosRegistryKeyOpen())
-                    CryptnosSettings.SetValue("LastUpdateCheck", updateFeedLastCheck.ToString(),
-                        RegistryValueKind.String);
-            }
-            catch (Exception ex)
-            {
-                if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-        }
+        //public void OnRecordLastUpdateCheck(DateTime lastCheck)
+        //{
+        //    // Update the last update check date, both within our private copy in memory
+        //    // and in the registry:
+        //    try
+        //    {
+        //        updateFeedLastCheck = lastCheck;
+        //        if (CryptnosRegistryKeyOpen())
+        //            CryptnosSettings.SetValue("LastUpdateCheck", updateFeedLastCheck.ToString(),
+        //                RegistryValueKind.String);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+        //            MessageBoxIcon.Error);
+        //    }
+        //}
 
         /// <summary>
         /// What to do if the update checker wants us to close.  This gets called if the
         /// update check has successfully download the file and now wants to install the
         /// new version.
         /// </summary>
-        public void OnRequestGracefulClose()
-        {
-            // We don't have a lot to do to close up shop.  Fortunately, we already have
-            // a method to do all that stuff, so call it:
-            ExitApplication();
-        }
+        //public void OnRequestGracefulClose()
+        //{
+        //    // We don't have a lot to do to close up shop.  Fortunately, we already have
+        //    // a method to do all that stuff, so call it:
+        //    ExitApplication();
+        //}
 
         #endregion
     }
