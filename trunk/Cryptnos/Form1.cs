@@ -77,14 +77,14 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using Microsoft.Win32;
-//using com.gpfcomics.UpdateChecker;
+using com.gpfcomics.UpdateChecker;
 
 namespace com.gpfcomics.Cryptnos
 {
     /// <summary>
     /// The main Cryptnos application form
     /// </summary>
-    public partial class Form1 : Form//, IUpdateCheckListener
+    public partial class Form1 : Form, IUpdateCheckListener
     {
         #region Private Variables
 
@@ -186,7 +186,7 @@ namespace com.gpfcomics.Cryptnos
         /// The actual <see cref="UpdateChecker"/> object, which will check for Cryptnos
         /// updates
         /// </summary>
-        //private UpdateChecker.UpdateChecker updateChecker = null;
+        private UpdateChecker.UpdateChecker updateChecker = null;
 
         /// <summary>
         /// This Boolean flag sets the program to be in full debug mode, showing much more
@@ -369,12 +369,12 @@ namespace com.gpfcomics.Cryptnos
                 // should occur in a separate thread, which will allow the main UI thread to
                 // continue without any problems.  The entire process *should* be transparent to
                 // the user unless an update is actually found.
-                //if (!disableUpdateCheck)
-                //{
-                //    updateChecker = new UpdateChecker.UpdateChecker(updateFeedUri, updateFeedAppName,
-                //        Assembly.GetExecutingAssembly().GetName().Version, this, updateFeedLastCheck);
-                //    updateChecker.CheckForNewVersion();
-                //}
+                if (!disableUpdateCheck)
+                {
+                    updateChecker = new UpdateChecker.UpdateChecker(updateFeedUri, updateFeedAppName,
+                        Assembly.GetExecutingAssembly().GetName().Version, this, updateFeedLastCheck);
+                    updateChecker.CheckForNewVersion();
+                }
             }
             catch (Exception ex)
             {
@@ -1579,20 +1579,20 @@ namespace com.gpfcomics.Cryptnos
         /// <summary>
         /// What to do if a new update is found.
         /// </summary>
-        //public void OnFoundNewerVersion()
-        //{
-        //    // This is pretty simple.  If the update check found a new version, tell it to
-        //    // go ahead and download it.  Note that the update checker will handle any user
-        //    // notifications, which includes a prompt on whether or not they'd like to
-        //    // upgrade.  The null check is probably redudant--this method should never be
-        //    // called if the update checker is null--but it's a belt-and-suspenders thing.
-        //    try { if (updateChecker != null) updateChecker.GetNewerVersion(); }
-        //    catch (Exception ex)
-        //    {
-        //        if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
-        //            MessageBoxIcon.Error);
-        //    }
-        //}
+        public void OnFoundNewerVersion()
+        {
+            // This is pretty simple.  If the update check found a new version, tell it to
+            // go ahead and download it.  Note that the update checker will handle any user
+            // notifications, which includes a prompt on whether or not they'd like to
+            // upgrade.  The null check is probably redudant--this method should never be
+            // called if the update checker is null--but it's a belt-and-suspenders thing.
+            try { if (updateChecker != null) updateChecker.GetNewerVersion(); }
+            catch (Exception ex)
+            {
+                if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
 
         /// <summary>
         /// What to do if the update checker says to record a new last update check date.
@@ -1600,35 +1600,35 @@ namespace com.gpfcomics.Cryptnos
         /// is successful or not.
         /// </summary>
         /// <param name="lastCheck">The new date of the last update check</param>
-        //public void OnRecordLastUpdateCheck(DateTime lastCheck)
-        //{
-        //    // Update the last update check date, both within our private copy in memory
-        //    // and in the registry:
-        //    try
-        //    {
-        //        updateFeedLastCheck = lastCheck;
-        //        if (CryptnosRegistryKeyOpen())
-        //            CryptnosSettings.SetValue("LastUpdateCheck", updateFeedLastCheck.ToString(),
-        //                RegistryValueKind.String);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
-        //            MessageBoxIcon.Error);
-        //    }
-        //}
+        public void OnRecordLastUpdateCheck(DateTime lastCheck)
+        {
+            // Update the last update check date, both within our private copy in memory
+            // and in the registry:
+            try
+            {
+                updateFeedLastCheck = lastCheck;
+                if (CryptnosRegistryKeyOpen())
+                    CryptnosSettings.SetValue("LastUpdateCheck", updateFeedLastCheck.ToString(),
+                        RegistryValueKind.String);
+            }
+            catch (Exception ex)
+            {
+                if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
 
         /// <summary>
         /// What to do if the update checker wants us to close.  This gets called if the
         /// update check has successfully download the file and now wants to install the
         /// new version.
         /// </summary>
-        //public void OnRequestGracefulClose()
-        //{
-        //    // We don't have a lot to do to close up shop.  Fortunately, we already have
-        //    // a method to do all that stuff, so call it:
-        //    ExitApplication();
-        //}
+        public void OnRequestGracefulClose()
+        {
+            // We don't have a lot to do to close up shop.  Fortunately, we already have
+            // a method to do all that stuff, so call it:
+            ExitApplication();
+        }
 
         #endregion
     }
