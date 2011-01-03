@@ -80,11 +80,19 @@ namespace com.gpfcomics.Cryptnos
                 // the very first time.  Go for it!
                 else StartIt();
             }
-            // If anything blew up, warn the user and just exit:
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            // Originally, if anything blew up above, this just put up an error message and
+            // exited.  Unfortunately, this seemed to cause some bizarre and difficult to trace
+            // errors, the worst of which was a dreaded "Object reference not set to an
+            // instance of an object" that offered no hope of debugging.  This only seemed to
+            // crop up in unpredictable occasions and baffled me for months.  Unfortunately,
+            // here's where the problem lay:  If the app was running for the very first time,
+            // some systems (especially Windows 7) would blow up trying to open the registry
+            // keys above which did not exist (obviously since this was the first time the
+            // program ran).  So if the above blows up, just try to run the program anyway.
+            // The main form has redundant checks here to handle similiar situations, but
+            // the check here just didn't have it.  See Issue #1 in the Google Code issue
+            // tracker for more details.
+            catch (Exception) { StartIt(); }
 
         }
 
