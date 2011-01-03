@@ -1269,7 +1269,7 @@ namespace com.gpfcomics.Cryptnos
                     // using one of our programs.  If it doesn't exist, create it:
                     RegistryKey GPF = HKCU_Software.OpenSubKey(GPFRegKeyName, true);
                     if (GPF == null)
-                        HKCU_Software.CreateSubKey(GPFRegKeyName);
+                        GPF = HKCU_Software.CreateSubKey(GPFRegKeyName);
                     // Now do the same with the Cryptnos key:
                     CryptnosSettings = GPF.OpenSubKey(CryptnosRegKeyName, true);
                     if (CryptnosSettings == null)
