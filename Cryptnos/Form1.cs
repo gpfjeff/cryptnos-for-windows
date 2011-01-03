@@ -39,14 +39,13 @@
  * which replicates the Cryptnos for Windows 1.0 functionality.  Also added the GPFUpdateChecker
  * library to let Cryptnos check the official website for updates.
  *
- * UPDATES FOR 1.2.0:  Tentatively commented out and removed GPFUpdateChecker from the project.
- * It's just been creating too many problems than it was intended to fix, so we'll walk away
- * from it now and address it again later.  Added dedicated try/catch for "copy to clipboard"
- * operation to give it a more friendly and useful error message.  Moved debug mode flag out of
- * hard-coded source to a flag in the registry.  Added Advanced settings button to launch
- * Advanced Settings dialog and let the user specify the text encoding.
+ * UPDATES FOR 1.2.0:  Fixed a major bug that was causing "Object reference not set to an
+ * instance of an object" errros on start-up on certain systems.  Added dedicated try/catch for
+ * "copy to clipboard" operation to give it a more friendly and useful error message.  Moved
+ * debug mode flag out of hard-coded source to a flag in the registry.  Added Advanced settings
+ * button to launch Advanced Settings dialog and let the user specify the text encoding.
  * 
- * This program is Copyright 2010, Jeffrey T. Darlington.
+ * This program is Copyright 2011, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
  * 

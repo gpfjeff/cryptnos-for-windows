@@ -9,7 +9,10 @@
  * 
  * The Cryptnos launching application.  See the Cryptnos form code for more details.
  * 
- * This program is Copyright 2009, Jeffrey T. Darlington.
+ * UPDATES FOR 1.2.0: Fixed a bug in the initial version check which blew up on certain systems
+ * if the registry keys did not exist.
+ * 
+ * This program is Copyright 2011, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
  * 
