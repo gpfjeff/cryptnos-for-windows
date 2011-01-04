@@ -117,4 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="lblWarning.Text" xml:space="preserve">
+    <value>Modifying these settings may "break" your existing passwords or result in unexpected or undesired behavior.  Please do not modify this setting unless you know what you're doing or you've been directed to do so by Cryptnos support.</value>
+  </data>
 </root>
