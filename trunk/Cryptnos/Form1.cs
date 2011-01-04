@@ -45,6 +45,12 @@
  * debug mode flag out of hard-coded source to a flag in the registry.  Added Advanced settings
  * button to launch Advanced Settings dialog and let the user specify the text encoding.
  * 
+ * UPDATES FOR 1.2.1:  Moved debug mode and disable update check from "undocumented" settings
+ * (i.e. you have to hack the registry to enable them) to the Advanced Settings dialog.  Users
+ * can now go there to turn these settings on or off.  The updates here save those settings to
+ * the registry with everything else.  Also fixed a typo on the main form ("Remebering
+ * Settings"); oops.
+ * 
  * This program is Copyright 2011, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
@@ -195,6 +201,12 @@ namespace com.gpfcomics.Cryptnos
         private bool debug = false;
 
         /// <summary>
+        /// This Boolean flag determines whether or not to disable the built-in check for
+        /// updates.  This isn't recommended, of course, but a feature nonetheless.
+        /// </summary>
+        private bool disableUpdateCheck = false;
+
+        /// <summary>
         /// This flag gets set to true if this is the very first time Cryptnos has been
         /// run for this user.
         /// </summary>
@@ -224,9 +236,6 @@ namespace com.gpfcomics.Cryptnos
                 // Default the hash selection to SHA-1.  We probably ought to default this to
                 // something stronger eventually.
                 cbHashes.SelectedItem = HashEngine.HashEnumToDisplayHash(Hashes.SHA1);
-                // Declare a boolean to disable the update check.  This isn't recommended, so
-                // we default this to false.
-                bool disableUpdateCheck = false;
                 // Now put on our asbestos underpants, because now we're playing with
                 // dynamite:
                 try
@@ -287,11 +296,10 @@ namespace com.gpfcomics.Cryptnos
                                 DateTime.MinValue.ToString()));
                         }
                         catch { updateFeedLastCheck = DateTime.MinValue; }
-                        // Get the disable update check flag.  This is an "undocumented" feature
-                        // with no user interface option because, frankly, we really don't want
-                        // the user to disable it.  However, we'll add it in for the really
-                        // paranoid.  Note again that the default is false, meaning we will *not*
-                        // disable the check by default.
+                        // Get the disable update check flag.  This used to be an "undocumented"
+                        // feature with no user interface option but I felt giving the user the
+                        // choice is always better than not.  Note that the default is false,
+                        // meaning we will *not* disable the check by default.
                         disableUpdateCheck = (int)CryptnosSettings.GetValue("DisableUpdateCheck",
                             0) == 1 ? true : false;
                         // Turn debug mode on or off:
@@ -1212,30 +1220,44 @@ namespace com.gpfcomics.Cryptnos
             // don't bother again until the next session.
             if (showAdvancedWarning)
             {
-                showAdvancedWarning = false;
                 if (MessageBox.Show("Modifying the advanced settings of Cryptnos may " +
-                    "\"break\" your existing passwords. Are you sure you wish to continue?",
-                    "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) ==
-                    DialogResult.Yes)
+                    "\"break\" your existing passwords or result in unexpected or undesired " +
+                    "behavior. Are you sure you wish to continue?", "Warning",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
-                    ads = new AdvancedSettingsDialog(encoding); 
+                    showAdvancedWarning = false;
+                    ads = new AdvancedSettingsDialog(encoding, debug, disableUpdateCheck); 
                 }
             }
-            else
-            {
-                ads = new AdvancedSettingsDialog(encoding);
-            }
+            else ads = new AdvancedSettingsDialog(encoding, debug, disableUpdateCheck);
             // Now if the user got to here and the dialog was created, go ahead and
-            // show it.  If they click OK, get the new encoding value and take note of
-            // it.  We'll go ahead and write the value into the registry too.
+            // show it.  If they click OK, get the new settings and take note of
+            // them.  We'll go ahead and write the values into the registry too.
             if (ads != null)
             {
                 if (ads.ShowDialog() == DialogResult.OK)
                 {
                     encoding = ads.Encoding;
+                    debug = ads.Debug;
+                    disableUpdateCheck = ads.DisableUpdateCheck;
+                    // If the user did not disable the update check and they requested that
+                    // we force an update check the next time we launch, set the last update
+                    // check date/time to the minimum value of DateTime, which will be well
+                    // outside the expiration window and which will force an update check the
+                    // next time we launch.
+                    if (!disableUpdateCheck && ads.ForceUpdateCheck)
+                        updateFeedLastCheck = DateTime.MinValue;
                     if (CryptnosRegistryKeyOpen())
+                    {
                         CryptnosSettings.SetValue("Encoding", encoding.WebName,
                             RegistryValueKind.String);
+                        CryptnosSettings.SetValue("DisableUpdateCheck",
+                            (disableUpdateCheck ? 1 : 0), RegistryValueKind.DWord);
+                        CryptnosSettings.SetValue("DebugMode", (debug ? 1 : 0),
+                            RegistryValueKind.DWord);
+                        CryptnosSettings.SetValue("LastUpdateCheck",
+                            updateFeedLastCheck.ToString(), RegistryValueKind.String); ;
+                    }
                 }
             }
         }
@@ -1341,8 +1363,9 @@ namespace com.gpfcomics.Cryptnos
                     // Otherwise, if they've selected to save their info, save it for the
                     // currently selected site:
                     if (chkRemember.Checked && !chkLock.Checked) SaveSiteParams(cbSites.Text);
-                    // Always remember the state of the remember, tooltip help, and lock
-                    // parameters checkboxes, as well as the version info:
+                    // Store the rest of our settings.  Note that booleans are saved as DWORDs
+                    // while the others are saved as strings.  The version information is used
+                    // for the "downgrade" warning when the program starts.
                     CryptnosSettings.SetValue("RememberParams", (chkRemember.Checked ? 1 : 0),
                         RegistryValueKind.DWord);
                     CryptnosSettings.SetValue("ToolTips", (chkShowTooltips.Checked ? 1 : 0),
@@ -1351,14 +1374,16 @@ namespace com.gpfcomics.Cryptnos
                         RegistryValueKind.DWord);
                     CryptnosSettings.SetValue("CopyToClipboard", (chkCopyToClipboard.Checked ? 1 : 0),
                         RegistryValueKind.DWord);
-                    CryptnosSettings.SetValue("Version",
-                        Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-                        RegistryValueKind.String);
                     CryptnosSettings.SetValue("LastUpdateCheck", updateFeedLastCheck.ToString(),
                         RegistryValueKind.String);
+                    CryptnosSettings.SetValue("DisableUpdateCheck", (disableUpdateCheck ? 1: 0),
+                        RegistryValueKind.DWord);
                     CryptnosSettings.SetValue("DebugMode", (debug ? 1 : 0),
                         RegistryValueKind.DWord);
                     CryptnosSettings.SetValue("Encoding", encoding.WebName,
+                        RegistryValueKind.String);
+                    CryptnosSettings.SetValue("Version",
+                        Assembly.GetExecutingAssembly().GetName().Version.ToString(),
                         RegistryValueKind.String);
                     // Close the Cryptnos registry keys:
                     siteParamsKey.Close();

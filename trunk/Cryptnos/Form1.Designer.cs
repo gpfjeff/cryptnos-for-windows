@@ -367,7 +367,7 @@ namespace com.gpfcomics.Cryptnos
             this.groupBox3.Size = new System.Drawing.Size(278, 77);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Remebering Settings:";
+            this.groupBox3.Text = "Remembering Settings:";
             this.toolTip1.SetToolTip(this.groupBox3, resources.GetString("groupBox3.ToolTip"));
             // 
             // chkLock
