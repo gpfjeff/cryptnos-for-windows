@@ -2,7 +2,7 @@
 InternalCompressLevel=ultra
 OutputDir=.\bin
 OutputBaseFilename=Cryptnos_1.2_Setup
-VersionInfoVersion=1.2.0.$WCREV$
+VersionInfoVersion=1.2.1.$WCREV$
 VersionInfoCompany=GPF Comics
 VersionInfoDescription=This program will install Cryptnos on your computer.  Cryptnos is a cryptographic passphrase generator using the Microsoft .NET 2.0 Framework.
 VersionInfoTextVersion=Cryptnos Setup 1.2
@@ -116,4 +116,4 @@ end;
 // doing a release build, make sure to change the random string below to some-
 // thing new to force SubWCRev to add the new info.
 //
-// Revision Tag: 302e35303238303736313731
+// Revision Tag: 302e36383336323432363735
