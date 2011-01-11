@@ -1598,7 +1598,7 @@ namespace com.gpfcomics.Cryptnos
 
         // These methods implement the IUpdateCheckListener interface, which is used to check
         // for updates for Cryptnos.  They shouldn't have to actually do much, as the update
-        // checker does msot of the work.
+        // checker does most of the work.
 
         /// <summary>
         /// What to do if a new update is found.
