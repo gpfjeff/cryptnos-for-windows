@@ -1,5 +1,7 @@
 #summary How to enable Debug Mode in Cryptnos
 
+_*Note:* This hack is no longer required. Starting with version 1.2.1, a checkbox has been added to the Advanced Settings dialog to enable and disable Debug Mode without having to manually modify the registry. If you need Debug Mode for any reason, please upgrade to 1.2.1 or later and use this setting rather than performing the manual tweak below._
+
 = How to Enable Debug Mode in Cryptnos =
 
 Cryptnos 1.1.1 and higher now has a "debug mode" that produces more robust but less user friendly error messages. This can help users troubleshoot problems when they are encountered and provide additional feedback to the developers. It is an entirely optional and undocumented (well, except for right here) "feature" and there is no user interface for turning it on or off. Debug mode is turned off by default and requires manual editing of the Windows registry to turn it on.
