@@ -10,7 +10,10 @@
  * The About dialog for Cryptnos.  Nothing fancy here.  It just takes a version string and a
  * string containing the copyright information.
  * 
- * This program is Copyright 2010, Jeffrey T. Darlington.
+ * UPDATES FOR 1.2.2: Added Help button that launched the default browser with the HTML help
+ * file.
+ * 
+ * This program is Copyright 2011, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
  * 
@@ -31,6 +34,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
@@ -66,6 +70,44 @@ namespace com.gpfcomics.Cryptnos
         private void btnOK_Click(object sender, EventArgs e)
         {
             Dispose();
+        }
+
+        /// <summary>
+        /// What to do when the Hep button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnHelp_Click(object sender, EventArgs e)
+        {
+            // The HTML help file sits in the same folder as the Cryptnos executable.
+            // So to get the location of the EXE and append the help file name to the
+            // folder's path.
+            FileInfo mainExePath = new FileInfo(Application.ExecutablePath);
+            string helpIndex = mainExePath.DirectoryName + 
+                Char.ToString(System.IO.Path.DirectorySeparatorChar) +
+                "help.html";
+            // The file should exist, but just in case it doesn't:
+            if ((new FileInfo(helpIndex)).Exists)
+            {
+                // Try to launch the default browser.  We'll pass the path to the HTML file
+                // to the system and let it handle what browser to open.  Whatever is
+                // associated with HTML files should be launched.  However, just in case
+                // something blows up, we'll include this in a try/catch and display an
+                // error if it fails.
+                try { System.Diagnostics.Process.Start(helpIndex); }
+                catch
+                {
+                    MessageBox.Show("I was unable to launch your default browser to display " +
+                        "the Cryptnos help file. Please use the shortcut icon in the Start " +
+                        "menu instead.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            // If the help files can't be found, complain:
+            else
+            {
+                MessageBox.Show("The Cryptnos HTML help file could not be found. Please " +
+                    "reinstall Cryptnos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
