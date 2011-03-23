@@ -51,6 +51,11 @@
  * the registry with everything else.  Also fixed a typo on the main form ("Remebering
  * Settings"); oops.
  * 
+ * UPDATES FOR 1.2.2:  Replaced length restrction text box with drop-down list, which should
+ * give us tighter control over the values entered as well as make the case where no restriction
+ * is selected a little more clear.  Added stricter validation on the iterations text box to
+ * explicitly deny non-numeric input.  Added build number to short version string for display.
+ * 
  * This program is Copyright 2011, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
@@ -104,7 +109,8 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         private static string versionShort = "Cryptnos v. " +
             Assembly.GetExecutingAssembly().GetName().Version.Major.ToString() + "." +
-            Assembly.GetExecutingAssembly().GetName().Version.Minor.ToString();
+            Assembly.GetExecutingAssembly().GetName().Version.Minor.ToString() + "." +
+            Assembly.GetExecutingAssembly().GetName().Version.Build.ToString();
 
         /// <summary>
         /// The "generator" value to use in the new cross-platform export format
@@ -233,6 +239,16 @@ namespace com.gpfcomics.Cryptnos
                 {
                     cbHashes.Items.Add(HashEngine.HashEnumToDisplayHash(item));
                 }
+                // Generate the hash lengths list.  The idea here is to enforce the character
+                // limit ranges depending on which hash algorithm has been selected.  To do that,
+                // we'll quickly generate each available hash and get the length of the output
+                // string, then save all these to a Hashtable so we can quickly look it up later.
+                hashLengths = new Hashtable();
+                foreach (Hashes item in Enum.GetValues(typeof(Hashes)))
+                {
+                    string tmp = HashEngine.HashString(item, "null", 1);
+                    hashLengths.Add(item, tmp.Length);
+                }
                 // Default the hash selection to SHA-1.  We probably ought to default this to
                 // something stronger eventually.
                 cbHashes.SelectedItem = HashEngine.HashEnumToDisplayHash(Hashes.SHA1);
@@ -329,9 +345,9 @@ namespace com.gpfcomics.Cryptnos
                     cbCharTypes.SelectedIndex = 0;
                     cbSites.Text = String.Empty;
                     txtPassphrase.Text = String.Empty;
-                    txtCharLimit.Text = String.Empty;
                     txtIterations.Text = "1";
                     cbHashes.SelectedItem = HashEngine.HashEnumToDisplayHash(Hashes.SHA1);
+                    cbCharLimit.SelectedIndex = 0;
                     btnForget.Enabled = false;
                     btnForgetAll.Enabled = false;
                     btnExport.Enabled = false;
@@ -343,16 +359,6 @@ namespace com.gpfcomics.Cryptnos
                 }
                 // Turn on or off tooltip help depending on the user's save preference:
                 toolTip1.Active = chkShowTooltips.Checked;
-                // Generate the hash lengths list.  The idea here is to enforce the character
-                // limit ranges depending on which hash algorithm has been selected.  To do that,
-                // we'll quickly generate each available hash and get the length of the output
-                // string, then save all these to a Hashtable so we can quickly look it up later.
-                hashLengths = new Hashtable();
-                foreach (Hashes item in Enum.GetValues(typeof(Hashes)))
-                {
-                    string tmp = HashEngine.HashString(item, "null", 1);
-                    hashLengths.Add(item, tmp.Length);
-                }
                 // Set the window title to include the short version number:
                 Text = versionShort;
                 // Get our copyright information.  It seems a bit silly to do it this way,
@@ -463,26 +469,6 @@ namespace com.gpfcomics.Cryptnos
                         MessageBoxIcon.Error);
                     txtPassphrase.Focus();
                 }
-                // If the character limit box is populated, make sure it's only digits
-                // (i.e. positive integers):
-                else if (!String.IsNullOrEmpty(txtCharLimit.Text) &&
-                    !Regex.IsMatch(txtCharLimit.Text, @"^\d+$"))
-                {
-                    MessageBox.Show("The character limit box must only contain numbers.", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    txtCharLimit.Focus();
-                }
-                // Likewise, the character limit must be between one (since zero characters
-                // is completely useless) and the max size of the generated hash:
-                else if (!String.IsNullOrEmpty(txtCharLimit.Text) && 
-                    (Int32.Parse(txtCharLimit.Text) > hashLength ||
-                    Int32.Parse(txtCharLimit.Text) <= 0))
-                {
-                    MessageBox.Show("The character limit, if set, must be between 1 and " +
-                        hashLength.ToString() + " characters.", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    txtCharLimit.Focus();
-                }
                 // If all those are OK, move on to the actual work:
                 else
                 {
@@ -514,9 +500,8 @@ namespace com.gpfcomics.Cryptnos
                     // Now that we've eliminated unwanted characters, we'll work on the
                     // length.  If the character limit has been set and it is less than
                     // the current length of the hash, crop the hash to the desired length:
-                    if (!String.IsNullOrEmpty(txtCharLimit.Text) &&
-                        Int32.Parse(txtCharLimit.Text) < hash.Length)
-                        hash = hash.Substring(0, Int32.Parse(txtCharLimit.Text));
+                    if (cbCharLimit.SelectedIndex != 0)
+                        hash = hash.Substring(0, cbCharLimit.SelectedIndex);
                     // Now that the hash has been generated and tweaked, display it in the
                     // password box:
                     txtPassword.Text = hash;
@@ -1022,8 +1007,8 @@ namespace com.gpfcomics.Cryptnos
                 // Disable a bunch of controls to prevent changes:
                 cbHashes.Enabled = false;
                 cbCharTypes.Enabled = false;
-                txtCharLimit.ReadOnly = true;
-                txtIterations.ReadOnly = true;
+                cbCharLimit.Enabled = false;
+                txtIterations.Enabled = false;
                 btnForgetAll.Enabled = false;
                 btnForget.Enabled = false;
                 btnImport.Enabled = false;
@@ -1040,8 +1025,8 @@ namespace com.gpfcomics.Cryptnos
                 // Turn back on this UI controls:
                 cbHashes.Enabled = true;
                 cbCharTypes.Enabled = true;
-                txtCharLimit.ReadOnly = false;
-                txtIterations.ReadOnly = false;
+                cbCharLimit.Enabled = true;
+                txtIterations.Enabled = true;
                 btnImport.Enabled = true;
                 // Let the uncheck the Remember box now:
                 chkRemember.Enabled = true;
@@ -1077,7 +1062,20 @@ namespace com.gpfcomics.Cryptnos
         {
             try
             {
-                // Try to parse the value of the iterations box as an integer:
+                // We're going to be a little more brute-force with this text box than we
+                // used to be.  We're going to absolutely deny input of any non-numeric
+                // characters.  So the first thing we'll do is use a regular expression to
+                // eliminate any non-numeric characters right off the bat.
+                txtIterations.Text = Regex.Replace(txtIterations.Text, @"\D", "");
+                // Also eliminate any leading zeros that might be present:
+                txtIterations.Text = Regex.Replace(txtIterations.Text, @"^0+", "");
+                // Of course, a caveat of the above is that we now might end up with an
+                // empty field, which is also unacceptable.  If that occurs, set the value
+                // of the box back to the default, which is one.
+                if (String.IsNullOrEmpty(txtIterations.Text)) txtIterations.Text = "1";
+                // After those steps, this should never fail to parse, but we'll keep it in
+                // the try/catch just to make sure.  Try to parse the value of the iterations
+                // box as an integer:
                 int iters = Int32.Parse(txtIterations.Text);
                 // If that works, make sure the value isn't less than one.  We need at least
                 // one iteration to be performed, so anything less won't work.
@@ -1115,92 +1113,6 @@ namespace com.gpfcomics.Cryptnos
                     "on other platforms.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtIterations.Focus();
                 txtIterations.SelectAll();
-            }
-        }
-
-        /// <summary>
-        /// What to do when the character limit value changes
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void txtCharLimit_TextChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                // Don't bother with this test if the character limit box is empty, as that's
-                // a valid setting:
-                if (!String.IsNullOrEmpty(txtCharLimit.Text))
-                {
-                    // Try to parse the value of the box as an integer:
-                    int limit = Int32.Parse(txtCharLimit.Text);
-                    // We can't have zero length passwords (or less!):
-                    if (limit < 1)
-                    {
-                        MessageBox.Show("The character count limit must be either empty (meaning " +
-                            "no limit) or a positive integer greater than zero.", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        txtCharLimit.Focus();
-                        txtCharLimit.SelectAll();
-                    }
-                }
-            }
-            // If the parse above blew up, they must have entered something that's not a valid
-            // integer.  Complain and make them change it:
-            catch
-            {
-                MessageBox.Show("The character count limit must be either empty (meaning " +
-                    "no limit) or a positive integer greater than zero.", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                txtCharLimit.Focus();
-                txtCharLimit.SelectAll();
-            }
-        }
-
-        /// <summary>
-        /// What to do when the user leave the character limit box
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void txtCharLimit_Leave(object sender, EventArgs e)
-        {
-            try
-            {
-                // Don't bother with this test if the character limit box is empty, as that's
-                // a valid setting:
-                if (!String.IsNullOrEmpty(txtCharLimit.Text))
-                {
-                    // Try to parse the value of the box as an integer:
-                    int limit = Int32.Parse(txtCharLimit.Text);
-                    // We can't have zero length passwords (or less!):
-                    if (limit < 1)
-                    {
-                        MessageBox.Show("The character count limit must be either empty (meaning " +
-                            "no limit) or a positive integer greater than zero.", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        txtCharLimit.Focus();
-                        txtCharLimit.SelectAll();
-                    }
-                    // If the value is less than eight, warn the user that this isn't a good
-                    // idea.  This check used to occur in the text changed event, but that
-                    // got annoying when the user tried to enter a value like "15".  This
-                    // check would complain when the user typed the "1" before they even got
-                    // to the "5".
-                    else if (limit < 8)
-                        MessageBox.Show("Passwords shorter than eight characters should be " +
-                            "avoided. If possible, completely remove your character count " +
-                            "limit. Otherwise, try to make it as long as possible.", "Warning",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
-            // If the parse above blew up, they must have entered something that's not a valid
-            // integer.  Complain and make them change it:
-            catch
-            {
-                MessageBox.Show("The character count limit must be either empty (meaning " +
-                    "no limit) or a positive integer greater than zero.", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                txtCharLimit.Focus();
-                txtCharLimit.SelectAll();
             }
         }
 
@@ -1260,6 +1172,38 @@ namespace com.gpfcomics.Cryptnos
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// What to do when the hash combo box is changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cbHashes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Get the newly selected hash algorithm, and from there get the new
+            // maximum hash length:
+            Hashes newHashAlgo =
+                    HashEngine.DisplayHashToHashEnum((string)cbHashes.SelectedItem);
+            int newHashLength = (int)hashLengths[newHashAlgo];
+            // Next, get the originally selected old character limit, which for our
+            // purposes just has to be the selected index of the character limit
+            // drop-down:
+            int oldCharLimit = cbCharLimit.SelectedIndex;
+            // Clear out the character limit drop-down item list and add back in the
+            // default "None" case:
+            cbCharLimit.Items.Clear();
+            cbCharLimit.Items.Add("None");
+            // Now add back in the other limit values, looping from one to the maximum
+            // length of the hash.  Note that by happy coincidence we now can use the
+            // selection index directly to get the character limit (with the exception of
+            // the "None" case, which we'll have to test for specifically).
+            for (int i = 1; i <= newHashLength; i++) cbCharLimit.Items.Add(i);
+            // Now to set our current selection.  If the old selection exceeds the new
+            // maximum, we might as well set the new selection to "None".  Otherwise,
+            // preserve the user's old preference.
+            if (oldCharLimit > newHashLength) cbCharLimit.SelectedIndex = 0;
+            else cbCharLimit.SelectedIndex = oldCharLimit;
         }
 
         #endregion
@@ -1428,18 +1372,22 @@ namespace com.gpfcomics.Cryptnos
                     {
                         // Character types:
                         cbCharTypes.SelectedIndex = siteParams.CharTypes;
-                        // The character limit is trickier; it should be a positive integer
-                        // or empty.  Since we're saving it as a number, we represent the empty
-                        // value with a -1.  If we got a -1, set the text box to the empty
-                        // string; otherwise, set it to the value of the key.
-                        if (siteParams.CharLimit < 0) txtCharLimit.Text = String.Empty;
-                        else txtCharLimit.Text = siteParams.CharLimit.ToString();
-                        // If the site is in the registry, it should be in the site drop-down,
-                        // so select it:
-                        cbSites.SelectedItem = siteParams.Site;
                         // The hash algorithm:
                         cbHashes.SelectedItem =
                             HashEngine.HashEnumStringToDisplayHash(siteParams.Hash);
+                        // If the site is in the registry, it should be in the site drop-down,
+                        // so select it:
+                        cbSites.SelectedItem = siteParams.Site;
+                        // The character limit is trickier.  It should either be a positive
+                        // integer (indicating a limit is imposed) or -1 (indicating no limit).
+                        // we used to get this from a text box, but now we use a drop-down list
+                        // with the first item (index zero) being "None".  This now means we can
+                        // use the index of the drop-down directly for the character limit,
+                        // except for the case where "None" is selected.  In that case, we need
+                        // to convert the -1 from the parameters object into a 0 for the
+                        // drop-down.
+                        if (siteParams.CharLimit < 0) cbCharLimit.SelectedIndex = 0;
+                        else cbCharLimit.SelectedIndex = siteParams.CharLimit;
                         // The iteration count:
                         txtIterations.Text = siteParams.Iterations.ToString();
                         // Close the individual site parameters and update the last site key
@@ -1512,11 +1460,12 @@ namespace com.gpfcomics.Cryptnos
                     else
                     {
                         // Using the GUI inputs, generate a SiteParameters object.  Note that for
-                        // the character limit we'll pass in a -1 if the text box is actually
-                        // empty, while the rest go in pretty much as is.
+                        // the character limit we'll pass in a -1 if the drop-down is actually
+                        // set to the first item ("None"), while the rest go in pretty much as
+                        // is.
                         SiteParameters siteParams = new SiteParameters(cbSites.Text,
-                            cbCharTypes.SelectedIndex, (String.IsNullOrEmpty(txtCharLimit.Text) ?
-                            -1 : Int32.Parse(txtCharLimit.Text)),
+                            cbCharTypes.SelectedIndex,
+                            cbCharLimit.SelectedIndex == 0 ? -1 : cbCharLimit.SelectedIndex,
                             HashEngine.DisplayHashToHashEnumString((string)cbHashes.SelectedItem),
                             iterations);
                         // Attempt to save the site parameters to the registry.  If that works,
@@ -1655,5 +1604,6 @@ namespace com.gpfcomics.Cryptnos
         }
 
         #endregion
+
     }
 }

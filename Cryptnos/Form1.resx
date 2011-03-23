@@ -132,6 +132,24 @@ unique).  Obviously, the stronger this
 passphrase is, the stronger your final
 password will become.</value>
   </data>
+  <data name="cbCharLimit.ToolTip" xml:space="preserve">
+    <value>This box allows you to restrict the length
+of your generated password.  By default,
+Cryptnos will generate a password as long
+as the hash algorithm will produce.  Many
+sites and applications, however, restrict
+the length of passwords to a set length.
+This field must either be "None" for no
+length restriction, or a whole number
+greater than one and less than the
+maximum length of the hash.  Note that
+this limit is applied after the character type
+limit is applied, so it is possible to end up
+with a password shorter than the value
+you specify.  Limits less than 8 will
+generate a warning as short passwords
+are extremely insecure.</value>
+  </data>
   <data name="txtIterations.ToolTip" xml:space="preserve">
     <value>This box contains the number of iterations
 of the hash algorithm to use while genera-
@@ -171,23 +189,6 @@ here is to use alphanumeric characters (letters
 and numbers), but it is strongly recommended
 to use all available characters if the site or
 application will allow it.</value>
-  </data>
-  <data name="txtCharLimit.ToolTip" xml:space="preserve">
-    <value>This box allows you to restrict the length
-of your generated password.  By default,
-if this box is empty, Cryptnos will generate
-a password as long as the hash algorithm
-will produce.  Many sites and applications,
-however, restrict the length of passwords
-to a set length.  This field must be a whole
-number greater than one (positive integer).
-Note that this limit is applied after the
-character type limit is applied, so it is possible
-to end up with a password shorter than the
-value you specify.  Limits less than 8 will
-generate a warning, short passwords are
-extremely insecure.
-</value>
   </data>
   <data name="groupBox1.ToolTip" xml:space="preserve">
     <value>This section contains optional settings

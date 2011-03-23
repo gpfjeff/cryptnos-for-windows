@@ -12,6 +12,9 @@
  * UPDATES FOR 1.2.0: Fixed a bug in the initial version check which blew up on certain systems
  * if the registry keys did not exist.
  * 
+ * UPDATES FOR 1.2.2: Added code to prevent multiple instances of Cryptnos from running at the
+ * same time.
+ * 
  * This program is Copyright 2011, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
@@ -30,6 +33,9 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 using System.Reflection;
 using Microsoft.Win32;
@@ -38,6 +44,17 @@ namespace com.gpfcomics.Cryptnos
 {
     static class Program
     {
+        /// <summary>
+        /// Set the foreground window using the specified window pointer.  This is primarily
+        /// used to redirect the user to the currently open Cryptnos window if they try to
+        /// run more than one instance of the program at the same time.
+        /// </summary>
+        /// <param name="hWnd">A pointer to another Cryptnos instance</param>
+        /// <returns></returns>
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool SetForegroundWindow(IntPtr hWnd);
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -106,9 +123,57 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         private static void StartIt()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            // The following single-instance test code was taken from the following URL:
+            // http://iridescence.no/post/CreatingaSingleInstanceApplicationinC.aspx
+            //
+            // Create a Boolean flag which we'll test to see if we've created a new window
+            // or not.  By default, assume that we've created an entirely new window.
+            bool createdNew = true;
+            // Now create a mutex which will control our state.  Note the mutex name; we'll
+            // use a static string "Cryptnos" but combine it with the machine name and the
+            // user name to make sure other users on the same machine run their own instances
+            // without interfering with us.
+            using (Mutex mutex = new Mutex(true, "Cryptnos" + Environment.MachineName +
+                Environment.UserName, out createdNew))
+            {
+                // Now let's test our new window flag.  If the mutex was newly created, we're
+                // safe to start the new window:
+                if (createdNew)
+                {
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+                    Application.Run(new Form1());
+                }
+                // Otherwise, the mutex exists and we should already have a window open.
+                // We'll try to redirect the user to that window rather than open a new one.
+                else
+                {
+                    // Declare another flag to see whether or not we found the other
+                    // instance.  Be default, assume we haven't:
+                    bool foundIt = false;
+                    // Get the current process, then try to find any currently running
+                    // processes by the same name:
+                    Process current = Process.GetCurrentProcess();
+                    foreach (Process process in Process.GetProcessesByName(current.ProcessName))
+                    {
+                        // If we found one and the process ID numbers do not match, try to
+                        // bring the other instance to the foreground:
+                        if (process.Id != current.Id)
+                        {
+                            foundIt = true;
+                            SetForegroundWindow(process.MainWindowHandle);
+                            break;
+                        }
+                    }
+                    // Did we find the other instance?  If not, warn the user:
+                    if (!foundIt)
+                        MessageBox.Show("Windows reports that another instance of Cryptnos " +
+                            "is currently running, but we can't find it. You may need to " +
+                            "manually stop the other Cryptnos process or reboot your " +
+                            "computer before you can run Cryptnos again.", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }

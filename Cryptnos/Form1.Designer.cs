@@ -34,6 +34,7 @@ namespace com.gpfcomics.Cryptnos
             this.label2 = new System.Windows.Forms.Label();
             this.txtPassphrase = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cbCharLimit = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.txtIterations = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -42,8 +43,6 @@ namespace com.gpfcomics.Cryptnos
             this.label6 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.cbCharTypes = new System.Windows.Forms.ComboBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.txtCharLimit = new System.Windows.Forms.TextBox();
             this.chkRemember = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.txtPassword = new System.Windows.Forms.TextBox();
@@ -96,6 +95,7 @@ namespace com.gpfcomics.Cryptnos
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cbCharLimit);
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.txtIterations);
             this.groupBox1.Controls.Add(this.label8);
@@ -104,8 +104,6 @@ namespace com.gpfcomics.Cryptnos
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.cbCharTypes);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.txtCharLimit);
             this.groupBox1.Location = new System.Drawing.Point(7, 139);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(278, 118);
@@ -113,6 +111,18 @@ namespace com.gpfcomics.Cryptnos
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Optional Rules:";
             this.toolTip1.SetToolTip(this.groupBox1, resources.GetString("groupBox1.ToolTip"));
+            // 
+            // cbCharLimit
+            // 
+            this.cbCharLimit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbCharLimit.FormattingEnabled = true;
+            this.cbCharLimit.Items.AddRange(new object[] {
+            "None"});
+            this.cbCharLimit.Location = new System.Drawing.Point(130, 89);
+            this.cbCharLimit.Name = "cbCharLimit";
+            this.cbCharLimit.Size = new System.Drawing.Size(121, 21);
+            this.cbCharLimit.TabIndex = 3;
+            this.toolTip1.SetToolTip(this.cbCharLimit, resources.GetString("cbCharLimit.ToolTip"));
             // 
             // label9
             // 
@@ -152,6 +162,7 @@ namespace com.gpfcomics.Cryptnos
             this.cbHashes.Size = new System.Drawing.Size(141, 21);
             this.cbHashes.TabIndex = 0;
             this.toolTip1.SetToolTip(this.cbHashes, resources.GetString("cbHashes.ToolTip"));
+            this.cbHashes.SelectedIndexChanged += new System.EventHandler(this.cbHashes_SelectedIndexChanged);
             // 
             // label7
             // 
@@ -167,9 +178,9 @@ namespace com.gpfcomics.Cryptnos
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(24, 92);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(85, 13);
+            this.label6.Size = new System.Drawing.Size(91, 13);
             this.label6.TabIndex = 8;
-            this.label6.Text = "Use only the first";
+            this.label6.Text = "Length restriction:";
             // 
             // label4
             // 
@@ -195,25 +206,6 @@ namespace com.gpfcomics.Cryptnos
             this.cbCharTypes.Size = new System.Drawing.Size(195, 21);
             this.cbCharTypes.TabIndex = 2;
             this.toolTip1.SetToolTip(this.cbCharTypes, resources.GetString("cbCharTypes.ToolTip"));
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(172, 92);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(57, 13);
-            this.label3.TabIndex = 9;
-            this.label3.Text = "characters";
-            // 
-            // txtCharLimit
-            // 
-            this.txtCharLimit.Location = new System.Drawing.Point(115, 89);
-            this.txtCharLimit.Name = "txtCharLimit";
-            this.txtCharLimit.Size = new System.Drawing.Size(51, 20);
-            this.txtCharLimit.TabIndex = 3;
-            this.toolTip1.SetToolTip(this.txtCharLimit, resources.GetString("txtCharLimit.ToolTip"));
-            this.txtCharLimit.TextChanged += new System.EventHandler(this.txtCharLimit_TextChanged);
-            this.txtCharLimit.Leave += new System.EventHandler(this.txtCharLimit_Leave);
             // 
             // chkRemember
             // 
@@ -462,8 +454,6 @@ namespace com.gpfcomics.Cryptnos
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox cbCharTypes;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox txtCharLimit;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.Button btnGenerate;
@@ -488,6 +478,7 @@ namespace com.gpfcomics.Cryptnos
         private System.Windows.Forms.CheckBox chkShowTooltips;
         private System.Windows.Forms.CheckBox chkCopyToClipboard;
         private System.Windows.Forms.Button btnAdvanced;
+        private System.Windows.Forms.ComboBox cbCharLimit;
     }
 }
 
