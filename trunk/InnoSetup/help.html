@@ -9,7 +9,7 @@ blockquote { background: #EEEEEE; }
 </head>
 <body><h1>Cryptnos Help</h1>
 <p>Official Cryptnos Site: <a href="http://www.cryptnos.com/" target="_blank">http://www.cryptnos.com/</a><br />
-Last Updated January 4, 2011</p>
+Last Updated March 23, 2011</p>
 
 <a name="toc"><h2>Table of Contents</h2></a>
 <ul>
@@ -132,7 +132,7 @@ Last Updated January 4, 2011</p>
 <p>The <strong>Optional Rules</strong> group contains additional controls that let you refine the passphrase you generate. As described in the <a href="#whycryptnos">Why Cryptnos?</a> section, sometimes the default settings will not generate a passphrase that you want or can use. Modifying these settings can let you use stronger hashes, limit the type of characters to use, or limit the number of characters to generate.</p>
 <p>The <strong>Hash algorithm</strong> drop-down allows you to select which <a href="#hashes">cryptographic hash</a> to use when generating your passphrase. The default is SHA-1. You may, however, prefer to use a stronger or weaker hash for various reasons. For example, stronger hashes such as SHA-512 produce very long strings that may be impractical as a passphrase. However, SHA-1 has weaknesses that SHA-512 does not, so the stronger hash may in theory produce a better passphrase. If the generated passphrase is too long, you can always refine the result with additional rules. That said, stronger hashes take longer to generate; if speed is important to you, weaker hashes like MD5 or SHA-1 will give you results faster. Which hash you use is entirely up to you, but we recommend that you use the strongest hash that is practical for you. Using different hashes for different sites may also be a good idea, as this makes it harder for an attacker to guess which hash has been used.</p>
 <p>The <strong>Perform this hash <em>x</em> times</strong> box instructs Cryptnos to perform the selected cryptographic hash a set number of times. This value must be a whole number greater than zero (i.e., positive integers), with a default value of one. In other words, if the value is one, Cryptnos will run the core parameters through the hash once and return the result (after other optional rules have been applied). If the value is two, it will hash the core parameters once, then pass the result of that hash back through the hash algorithm again before returning the result. The more iterations of the hash that are performed, the further away the result will be from the original parameters, making it harder for an attacker to guess the inputs. Once is usually enough (which is why it is the default), but multiple iterations can provide a slightly higher level of security. The trade off, however, is that multiple iterations take longer to generate the password, which could be a problem for slower computers.</p>
-<p>Starting with Cryptnos 1.1, you will now receive a warning if you set a number of hash iterations greater than 500. This is because versions of Cryptnos on other platforms (in specific, Google Android) are capped at this value for performance reasons. Thus, if you create a set of parameters that includes an excessively high number of hash iterations, it may not be compatible with other versions of Cryptnos outside of .NET. We don't want to prevent you from setting such a high value, and we certainly don't want to break the passwords of anyone who has already done so, but you should be made aware that this incompatibility exists. 500 iterations should be more than enough for most people (the WPA standard for WiFi encryption uses 400) and should not significantly impact the performance of Cryptnos for Windows nor compromise your security.</p>
+<p>Starting with Cryptnos 1.1, you will now receive a warning if you set a number of hash iterations greater than 500. This is because versions of Cryptnos on other platforms (usually smaller devices with slower processors like smartphones) are capped at this value for performance reasons. Thus, if you create a set of parameters that includes an excessively high number of hash iterations, it may not be compatible with other versions of Cryptnos outside of .NET. We don't want to prevent you from setting such a high value, and we certainly don't want to break the passwords of anyone who has already done so, but you should be made aware that this incompatibility exists. 500 iterations should be more than enough for most people (the WPA standard for WiFi encryption uses 400) and should not significantly impact the performance of Cryptnos for Windows nor compromise your security.</p>
 <p>The <strong>Character class ("Use...")</strong> drop-down lets you limit the generated passphrase to certain subsets of characters. Some sites may restrict you to certain character classes, such as only alphanumerics (i.e., letters and numbers). Cryptnos uses the Base64 encoding scheme to generate many pseudo-random-looking characters. Base64 output includes additional characters (the plus sign (+), the forward slash (/), and the equal sign (=)) that a site may reject in a passphrase. By tweaking this setting, you can tell Cryptnos to exclude certain characters from the generated passphrase and then remember your settings for future use. The options currently available are:</p>
 <p><ul>
 <li><strong>all generated characters</strong>, i.e. use the complete Base64-encoded output of the hash;</li>
@@ -142,7 +142,7 @@ Last Updated January 4, 2011</p>
 <li><strong>alphabetic characters only</strong> (upper and lower case letters, no numbers);</li>
 <li><strong>numbers only</strong> (no letters).</li>
 </ul></p>
-<p>The <strong>Use only the first <em>x</em> characters</strong> box allows you to limit the generated passphrase to a specified length. For example, if a given site sets a maximum password length of twelve characters, you can put "12" (sans quotes) into this box and your generated passphrase will be at most twelve characters long. The value in this box must be a whole number greater than one (i.e., positive integers); anything else will generate an error. If you do not wish to place a limit on the number of characters, leave this box empty. Note that it is theoretically possible to get <em>less</em> than the number of characters you specify here, depending on your other settings. For example, if the cryptographic hash produces less characters than your character limit, or if the character class restriction removes so many characters than the result is less than your limit, you can end up with fewer characters than what you specify. If that's the case, try tweaking the other settings (i.e. choose a longer hash or don't restrict the character classes as much) until the result is as long as you want.</p>
+<p>The <strong>Length restriction</strong> drop-down list allows you to limit the generated passphrase to a specified length. For example, if a given site sets a maximum password length of twelve characters, you can select "12" (sans quotes) in this list and your generated passphrase will be at most twelve characters long. If you do not wish to place a limit on the number of characters, select "None", the first item in the list. The maximum value in the list will always be the length of the full Base64-encoded hash. Note that it is theoretically possible to get <em>less</em> than the number of characters you specify here, depending on your other settings. For example, if the character class restriction removes so many characters than the result is less than your limit, you can end up with fewer characters than what you specify. If that's the case, try tweaking the other settings (i.e. choose a longer hash or don't restrict the character classes as much) until the result is as long as you want.</p>
 <p>These four settings are applied in the order shown on the form. When the <strong>Generate</strong> button is pressed, the values in the <strong>Site name</strong> and <strong>Passphrase</strong> boxes will be combined and hashed using the hash selected in the <strong>Hash algorithm</strong> box for the number of iterations specified by the iteration count box. Next, any character class restrictions are applied, potentially reducing the available characters. Finally, the character limit restriction is applied. After all of these restrictions are performed, the result is placed in the <strong>Password</strong> text box.</p>
 
 <a name="rememberingsettings"><h3>Remembering Settings</h3></a>
@@ -229,13 +229,13 @@ Last Updated January 4, 2011</p>
 <li><strong>Version 1.1.1:</strong>
 <ul>
 <li>Bug fix: Improved error handling and reporting for update checking module.</li>
-<li>Added “debug mode” flag for advanced troubleshooting.</li>
+<li>Added "debug mode" flag for advanced troubleshooting.</li>
 <li>Minor code clean-up and error reporting improvements.</li>
 </ul>
 </li>
 <li><strong>Version 1.2:</strong>
 <ul>
-<li>Bug fix: Fixed “Object reference not set to an instance of an object” errors encountered on some systems.</li>
+<li>Bug fix: Fixed "Object reference not set to an instance of an object" errors encountered on some systems.</li>
 <li>Added Advanced Settings dialog to allow user to control text encoding used for password generation.</li>
 </ul>
 </li>
@@ -244,6 +244,15 @@ Last Updated January 4, 2011</p>
 <li>Added debug mode and update check checkboxes to  Advanced Settings dialog; previously these were "undocumented" settings that could only be set by hacking the registry.</li>
 <li>Fixed typo on main window form (oops).</li>
 <li>Updated help file with changes relative to version 1.1.1 and above.</li>
+</ul>
+</li>
+<li><strong>Version 1.2.2:</strong>
+<ul>
+<li>Added code to prevent multiple instances of Cryptnos from running at the same time. Having more than once copy open at once may potentially corrupt the site list in the registry, causing data loss.</li>
+<li>Replaced length restriction (i.e. character limit) text box with a drop-down list. This will hopefully further limit what values the user can enter and reduce confusion with respect to the case where no restriction is imposed.</li>
+<li>Added additional validation code to hash iterations text box to explicitly deny non-numeric input.</li>
+<li>Added Help button in About dialog to launch the HTML help in the default browser.</li>
+<li>Added build number to version string displayed in the window title bar.</li>
 </ul>
 </li>
 </ul>

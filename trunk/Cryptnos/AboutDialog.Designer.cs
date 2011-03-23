@@ -37,6 +37,7 @@ namespace com.gpfcomics.Cryptnos
             this.txtLicense = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.btnHelp = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -75,10 +76,10 @@ namespace com.gpfcomics.Cryptnos
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnOK.Location = new System.Drawing.Point(109, 166);
+            this.btnOK.Location = new System.Drawing.Point(149, 166);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
-            this.btnOK.TabIndex = 3;
+            this.btnOK.TabIndex = 5;
             this.btnOK.Text = "OK";
             this.toolTip1.SetToolTip(this.btnOK, "Click this button to return to the\r\nwonder and joy that is Cryptnos.");
             this.btnOK.UseVisualStyleBackColor = true;
@@ -92,7 +93,7 @@ namespace com.gpfcomics.Cryptnos
             this.txtLicense.ReadOnly = true;
             this.txtLicense.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtLicense.Size = new System.Drawing.Size(265, 79);
-            this.txtLicense.TabIndex = 4;
+            this.txtLicense.TabIndex = 3;
             this.txtLicense.Text = resources.GetString("txtLicense.Text");
             this.toolTip1.SetToolTip(this.txtLicense, "The license under which Cryptnos has\r\nbeen released.  A full copy of this\r\nlicens" +
                     "e can be found in the Cryptnos\r\ninstallation folder.");
@@ -111,6 +112,18 @@ namespace com.gpfcomics.Cryptnos
             // 
             this.toolTip1.IsBalloon = true;
             // 
+            // btnHelp
+            // 
+            this.btnHelp.Location = new System.Drawing.Point(68, 166);
+            this.btnHelp.Name = "btnHelp";
+            this.btnHelp.Size = new System.Drawing.Size(75, 23);
+            this.btnHelp.TabIndex = 4;
+            this.btnHelp.Text = "Help...";
+            this.toolTip1.SetToolTip(this.btnHelp, "Click this button to launch\r\nthe Cryptnos HTML help\r\nfile in your default browser" +
+                    ".");
+            this.btnHelp.UseVisualStyleBackColor = true;
+            this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
+            // 
             // AboutDialog
             // 
             this.AcceptButton = this.btnOK;
@@ -118,6 +131,7 @@ namespace com.gpfcomics.Cryptnos
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnOK;
             this.ClientSize = new System.Drawing.Size(292, 199);
+            this.Controls.Add(this.btnHelp);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.txtLicense);
             this.Controls.Add(this.btnOK);
@@ -148,5 +162,6 @@ namespace com.gpfcomics.Cryptnos
         private System.Windows.Forms.TextBox txtLicense;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.Button btnHelp;
     }
 }
