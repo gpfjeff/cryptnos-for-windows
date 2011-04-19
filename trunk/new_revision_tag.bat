@@ -18,7 +18,7 @@ goto endofperl
 # Change this to be the path to your working copy.  Make sure to escape
 # backslashes ("\\") if working on Windows.  Also don't forget the final
 # slash on the end.  DO NOT COMMIT THESE CHANGES TO THE REPOSITORY!
-my $workingpath = ".";
+my $workingpath = "S:\\Visual Studio Projects\\Cryptnos\\";
 ##############################################################################
 
 my @templates = (
