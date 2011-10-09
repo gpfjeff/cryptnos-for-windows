@@ -56,6 +56,11 @@
  * is selected a little more clear.  Added stricter validation on the iterations text box to
  * explicitly deny non-numeric input.  Added build number to short version string for display.
  * 
+ * UPDATES FOR 1.3.0:  Added "Daily Use" mode with a compact form that does not show many of
+ * the UI elements unnecessary for typical daily use.  Checking and unchecking the "Enable
+ * Daily Use Mode" checkbox switches back and forth between these modes.  Added "keep on top"
+ * setting.  Added several new tooltip values.
+ * 
  * This program is Copyright 2011, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
@@ -218,6 +223,18 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         private bool veryFirstTime = false;
 
+        /// <summary>
+        /// This <see cref="Size"/> represents the size of the main form in its fully
+        /// expanded mode.
+        /// </summary>
+        private Size sizeFullForm = new Size(298, 449);
+
+        /// <summary>
+        /// This <see cref="Size"/> represents the size of the main form in its compact
+        /// "daily use" mode.
+        /// </summary>
+        private Size sizeDailyUse = new Size(298, 187);
+
         #endregion
 
         /// <summary>
@@ -312,6 +329,11 @@ namespace com.gpfcomics.Cryptnos
                                 DateTime.MinValue.ToString()));
                         }
                         catch { updateFeedLastCheck = DateTime.MinValue; }
+                        // Get the "daily mode" flag:
+                        chkDailyMode.Checked = (int)CryptnosSettings.GetValue("DailyMode", 0)
+                            == 1 ? true : false;
+                        this.TopMost = (int)CryptnosSettings.GetValue("KeepOnTop", 0)
+                            == 1 ? true : false;
                         // Get the disable update check flag.  This used to be an "undocumented"
                         // feature with no user interface option but I felt giving the user the
                         // choice is always better than not.  Note that the default is false,
@@ -340,6 +362,7 @@ namespace com.gpfcomics.Cryptnos
                 // If anything above blew up, set some sensible defaults:
                 catch
                 {
+                    chkDailyMode.Checked = false;
                     chkRemember.Checked = true;
                     chkLock.Checked = false;
                     cbCharTypes.SelectedIndex = 0;
@@ -356,6 +379,7 @@ namespace com.gpfcomics.Cryptnos
                     updateFeedLastCheck = DateTime.MinValue;
                     if (veryFirstTime) encoding = Encoding.UTF8;
                     else encoding = Encoding.Default;
+                    TopMost = false;
                 }
                 // Turn on or off tooltip help depending on the user's save preference:
                 toolTip1.Active = chkShowTooltips.Checked;
@@ -584,8 +608,9 @@ namespace com.gpfcomics.Cryptnos
                 }
                 // Otherwise, just put other site back in the box:
                 else cbSites.Text = currentSite;
-                // Re-enable the Lock checkbox:
+                // Re-enable the Lock and Daily Mode checkboxes:
                 chkLock.Enabled = true;
+                chkDailyMode.Enabled = true;
             }
             else
             {
@@ -597,6 +622,7 @@ namespace com.gpfcomics.Cryptnos
                 // anything, they shouldn't be able to lock it.
                 chkLock.Checked = false;
                 chkLock.Enabled = false;
+                chkDailyMode.Enabled = false;
             }
         }
 
@@ -609,7 +635,7 @@ namespace com.gpfcomics.Cryptnos
         {
             // Create and open the about dialog:
             AboutDialog ad = new AboutDialog(version, versionShort, copyright,
-                chkShowTooltips.Checked);
+                chkShowTooltips.Checked, TopMost);
             ad.ShowDialog();
         }
 
@@ -666,7 +692,7 @@ namespace com.gpfcomics.Cryptnos
                                 // Prompt the user for their passphrase (Cryptnos files are always
                                 // encrypted):
                                 PassphraseDialog pd =
-                                    new PassphraseDialog(PassphraseDialog.Mode.Import);
+                                    new PassphraseDialog(PassphraseDialog.Mode.Import, TopMost);
                                 if (pd.ShowDialog() == DialogResult.OK)
                                 {
                                     string passphrase = pd.Passphrase;
@@ -741,7 +767,7 @@ namespace com.gpfcomics.Cryptnos
                         object[] sitesToExport = new object[cbSites.Items.Count];
                         cbSites.Items.CopyTo(sitesToExport, 0);
                         ExportSitesForm esf = new ExportSitesForm(sitesToExport,
-                            chkShowTooltips.Checked);
+                            chkShowTooltips.Checked, TopMost, this);
                         // If they selected anything to export:
                         if (esf.ShowDialog() == DialogResult.OK && esf.SelectedSites != null
                             && esf.SelectedSites.Length > 0)
@@ -750,14 +776,14 @@ namespace com.gpfcomics.Cryptnos
                             // Prompt the user for a passphrase.  All Cryptnos export files are
                             // encrypted, so we need a passphrase to encrypt the data with.
                             PassphraseDialog pd =
-                                new PassphraseDialog(PassphraseDialog.Mode.Export_Initial);
+                                new PassphraseDialog(PassphraseDialog.Mode.Export_Initial, TopMost);
                             if (pd.ShowDialog() == DialogResult.OK)
                             {
                                 string passphrase = pd.Passphrase;
                                 pd.Dispose();
                                 // Now prompt them for their passphrase again to make sure they
                                 // don't misstype it:
-                                pd = new PassphraseDialog(PassphraseDialog.Mode.Export_Confirm);
+                                pd = new PassphraseDialog(PassphraseDialog.Mode.Export_Confirm, TopMost);
                                 if (pd.ShowDialog() == DialogResult.OK)
                                 {
                                     // If the passphrases match:
@@ -1138,10 +1164,12 @@ namespace com.gpfcomics.Cryptnos
                     MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
                     showAdvancedWarning = false;
-                    ads = new AdvancedSettingsDialog(encoding, debug, disableUpdateCheck); 
+                    ads = new AdvancedSettingsDialog(encoding, chkShowTooltips.Checked, debug,
+                        disableUpdateCheck, this.TopMost); 
                 }
             }
-            else ads = new AdvancedSettingsDialog(encoding, debug, disableUpdateCheck);
+            else ads = new AdvancedSettingsDialog(encoding, chkShowTooltips.Checked, debug,
+                disableUpdateCheck, this.TopMost);
             // Now if the user got to here and the dialog was created, go ahead and
             // show it.  If they click OK, get the new settings and take note of
             // them.  We'll go ahead and write the values into the registry too.
@@ -1152,6 +1180,7 @@ namespace com.gpfcomics.Cryptnos
                     encoding = ads.Encoding;
                     debug = ads.Debug;
                     disableUpdateCheck = ads.DisableUpdateCheck;
+                    this.TopMost = ads.KeepOnTop;
                     // If the user did not disable the update check and they requested that
                     // we force an update check the next time we launch, set the last update
                     // check date/time to the minimum value of DateTime, which will be well
@@ -1168,7 +1197,9 @@ namespace com.gpfcomics.Cryptnos
                         CryptnosSettings.SetValue("DebugMode", (debug ? 1 : 0),
                             RegistryValueKind.DWord);
                         CryptnosSettings.SetValue("LastUpdateCheck",
-                            updateFeedLastCheck.ToString(), RegistryValueKind.String); ;
+                            updateFeedLastCheck.ToString(), RegistryValueKind.String);
+                        CryptnosSettings.SetValue("KeepOnTop", (TopMost ? 1 : 0),
+                            RegistryValueKind.DWord);
                     }
                 }
             }
@@ -1204,6 +1235,43 @@ namespace com.gpfcomics.Cryptnos
             // preserve the user's old preference.
             if (oldCharLimit > newHashLength) cbCharLimit.SelectedIndex = 0;
             else cbCharLimit.SelectedIndex = oldCharLimit;
+        }
+
+        /// <summary>
+        /// What to do when the "Enable daily use mode" checkbox is changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chkDailyMode_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkDailyMode.Checked)
+            {
+                // Force us to lock all parameters so they can't be changed:
+                if (!chkLock.Checked) chkLock.Checked = true;
+                // Hide the elements we don't need:
+                gboxOptionalRules.Visible = false;
+                gboxRememberingSettings.Visible = false;
+                chkShowTooltips.Visible = false;
+                chkCopyToClipboard.Visible = false;
+                btnAbout.Visible = false;
+                btnAdvanced.Visible = false;
+                btnClose.Visible = false;
+                // Resize the form to its compact size:
+                this.Size = sizeDailyUse;
+            }
+            else
+            {
+                // Resize the form to its full size:
+                this.Size = sizeFullForm;
+                // Show the hidden form elements:
+                gboxOptionalRules.Visible = true;
+                gboxRememberingSettings.Visible = true;
+                chkShowTooltips.Visible = true;
+                chkCopyToClipboard.Visible = true;
+                btnAbout.Visible = true;
+                btnAdvanced.Visible = true;
+                btnClose.Visible = true;
+            }
         }
 
         #endregion
@@ -1310,6 +1378,10 @@ namespace com.gpfcomics.Cryptnos
                     // Store the rest of our settings.  Note that booleans are saved as DWORDs
                     // while the others are saved as strings.  The version information is used
                     // for the "downgrade" warning when the program starts.
+                    CryptnosSettings.SetValue("DailyMode", (chkDailyMode.Checked ? 1 : 0),
+                        RegistryValueKind.DWord);
+                    CryptnosSettings.SetValue("KeepOnTop", (TopMost ? 1 : 0),
+                        RegistryValueKind.DWord);
                     CryptnosSettings.SetValue("RememberParams", (chkRemember.Checked ? 1 : 0),
                         RegistryValueKind.DWord);
                     CryptnosSettings.SetValue("ToolTips", (chkShowTooltips.Checked ? 1 : 0),
@@ -1430,6 +1502,32 @@ namespace com.gpfcomics.Cryptnos
                 if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+        }
+
+        /// <summary>
+        /// Get the site parameters for a site.  This is intended to be used by
+        /// the QRCode export generator.
+        /// </summary>
+        /// <param name="siteName">The site name <see cref="String"/></param>
+        /// <returns>A <see cref="SiteParameters"/> object representing the site</returns>
+        public SiteParameters GetSiteParamsForQRCode(String siteName)
+        {
+            try
+            {
+                // Convert the site name to a registry key:
+                String key = SiteParameters.GenerateKeyFromSite(siteName);
+                // If the registry is open and the supplied key isn't empty:
+                if (CryptnosRegistryKeyOpen() && !String.IsNullOrEmpty(key))
+                {
+                    // Read the site's information from the registry.  If this happens to
+                    // return null, then the site's info hasn't been saved.
+                    return SiteParameters.ReadFromRegistry(siteParamsKey, key);
+                }
+                // If the registry isn't open or the key was useless, return null:
+                else return null;
+            }
+            // If anything blew up, return null:
+            catch { return null; }
         }
 
         /// <summary>

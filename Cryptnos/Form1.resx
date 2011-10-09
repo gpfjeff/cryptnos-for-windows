@@ -190,7 +190,7 @@ and numbers), but it is strongly recommended
 to use all available characters if the site or
 application will allow it.</value>
   </data>
-  <data name="groupBox1.ToolTip" xml:space="preserve">
+  <data name="gboxOptionalRules.ToolTip" xml:space="preserve">
     <value>This section contains optional settings
 or rules which allow you to modify the
 final password value.  Here you can
@@ -298,7 +298,7 @@ This button will become disabled if the Remember
 Parameters checkbox is unchecked, or if the Lock
 Parameters checkbox is checked.</value>
   </data>
-  <data name="groupBox2.ToolTip" xml:space="preserve">
+  <data name="gboxCoreParameters.ToolTip" xml:space="preserve">
     <value>This section contains the core required
 parameters for generating your pass-
 word.  These are required, and Cryptnos
@@ -319,7 +319,7 @@ checked for this box to be enabled.  Checking
 this box disables that checkbox and the Forget,
 Forget All, and Import buttons.</value>
   </data>
-  <data name="groupBox3.ToolTip" xml:space="preserve">
+  <data name="gboxRememberingSettings.ToolTip" xml:space="preserve">
     <value>This section allows you to specify if and how
 Cryptnos remembers your password para-
 meter information.  Remember that YOUR
@@ -356,6 +356,16 @@ scenes.  You really shouldn't mess
 with these unless you really know
 what you're doing, as it could
 "break" your existing passwords.</value>
+  </data>
+  <data name="chkDailyMode.ToolTip" xml:space="preserve">
+    <value>Check this box to enable "Daily Use" mode.
+In this mode, the Optional Rules, Remembering
+Settings, and other lower fields are hidden,
+leaving only the Core Parameters section
+visible.  This makes Cryptnos much smaller and
+protects your settings for accidental change.
+Clear this box to restor the Cryptnos window
+to its full size.</value>
   </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>43</value>

@@ -86,7 +86,8 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         /// <param name="mode">The mode the dialog should be called in.  The mode determines
         /// what prompt text is displayed to the user.</param>
-        public PassphraseDialog(Mode mode)
+        /// <param name="keepOnTop">Keep Cryptnos on top of other windows</param>
+        public PassphraseDialog(Mode mode, bool keepOnTop)
         {
             // Do the usual initialization:
             InitializeComponent();
@@ -104,6 +105,7 @@ namespace com.gpfcomics.Cryptnos
                     lblPrompt.Text = "Please enter your passphrase to unlock your parameters:";
                     break;
             }
+            TopMost = keepOnTop;
         }
 
         /// <summary>
@@ -114,7 +116,9 @@ namespace com.gpfcomics.Cryptnos
         /// <param name="export">A boolean flag indicating the mode the dialog should be
         /// displayed in.  If true, put it in initial Export mode; if false, import
         /// mode.</param>
-        public PassphraseDialog(bool export) : this(export ? Mode.Export_Initial : Mode.Import)
+        /// <param name="keepOnTop">Keep Cryptnos on top of other windows</param>
+        public PassphraseDialog(bool export, bool keepOnTop)
+            : this(export ? Mode.Export_Initial : Mode.Import, keepOnTop)
         {
         }
 

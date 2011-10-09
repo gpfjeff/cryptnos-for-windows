@@ -1,15 +1,15 @@
 [Setup]
 InternalCompressLevel=ultra
 OutputDir=.\bin
-OutputBaseFilename=Cryptnos_1.2.3_Setup
-VersionInfoVersion=1.2.3.$WCREV$
+OutputBaseFilename=Cryptnos_1.3.0_Setup
+VersionInfoVersion=1.3.0.$WCREV$
 VersionInfoCompany=GPF Comics
 VersionInfoDescription=This program will install Cryptnos on your computer.  Cryptnos is a cryptographic passphrase generator using the Microsoft .NET 2.0 Framework.
-VersionInfoTextVersion=Cryptnos Setup 1.2.3
+VersionInfoTextVersion=Cryptnos Setup 1.3.0
 VersionInfoCopyright=Copyright $WCDATE=%Y$, Jeffrey T. Darlington.
 AppCopyright=Copyright $WCDATE=%Y$, Jeffrey T. Darlington.
 AppName=Cryptnos
-AppVerName=Cryptnos 1.2.3
+AppVerName=Cryptnos 1.3.0
 LicenseFile=.\gpl.rtf
 PrivilegesRequired=poweruser
 MinVersion=4.1.1998,5.0.2195sp3
@@ -23,8 +23,8 @@ AppPublisher=GPF Comics
 AppPublisherURL=http://www.gpf-comics.com/
 AppSupportURL=http://www.cryptnos.com/
 AppUpdatesURL=http://www.cryptnos.com/
-AppVersion=Cryptnos 1.2.3
-UninstallDisplayName=Cryptnos 1.2.3
+AppVersion=Cryptnos 1.3.0
+UninstallDisplayName=Cryptnos 1.3.0
 SetupIconFile=..\Cryptnos\Lock.ico
 [Files]
 Source: ..\Cryptnos\bin\Release\Cryptnos.exe; DestDir: {app}
@@ -34,6 +34,7 @@ Source: ..\GPFUpdateChecker.dll; DestDir: {app}
 Source: ..\gpf_update_checker1.xsd; DestDir: {app}; Flags: ignoreversion
 Source: help.html; DestDir: {app}; Flags: ignoreversion
 Source: gpl.html; DestDir: {app}; Flags: ignoreversion
+Source: ..\zxing.dll; DestDir: {app}; 
 [Icons]
 Name: {group}\Cryptnos; Filename: {app}\Cryptnos.exe; WorkingDir: {userdocs}; IconFilename: {app}\Cryptnos.exe; IconIndex: 0; Comment: Cryptnos allows you to generate strong passphrases using cryptographic hashes
 Name: {group}\Online Help; Filename: {app}\help.html; WorkingDir: {app}; Comment: Display help information for Cryptnos in your default Web browser
@@ -116,4 +117,4 @@ end;
 // doing a release build, make sure to change the random string below to some-
 // thing new to force SubWCRev to add the new info.
 //
-// Revision Tag: 302e34353631343632343032
+// Revision Tag: 302e38353332343039363637

@@ -33,7 +33,7 @@ namespace com.gpfcomics.Cryptnos
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.txtPassphrase = new System.Windows.Forms.TextBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.gboxOptionalRules = new System.Windows.Forms.GroupBox();
             this.cbCharLimit = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.txtIterations = new System.Windows.Forms.TextBox();
@@ -54,16 +54,17 @@ namespace com.gpfcomics.Cryptnos
             this.btnForgetAll = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
             this.btnForget = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.gboxCoreParameters = new System.Windows.Forms.GroupBox();
+            this.gboxRememberingSettings = new System.Windows.Forms.GroupBox();
             this.chkLock = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.chkShowTooltips = new System.Windows.Forms.CheckBox();
             this.chkCopyToClipboard = new System.Windows.Forms.CheckBox();
             this.btnAdvanced = new System.Windows.Forms.Button();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.chkDailyMode = new System.Windows.Forms.CheckBox();
+            this.gboxOptionalRules.SuspendLayout();
+            this.gboxCoreParameters.SuspendLayout();
+            this.gboxRememberingSettings.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -93,24 +94,24 @@ namespace com.gpfcomics.Cryptnos
             this.toolTip1.SetToolTip(this.txtPassphrase, resources.GetString("txtPassphrase.ToolTip"));
             this.txtPassphrase.UseSystemPasswordChar = true;
             // 
-            // groupBox1
+            // gboxOptionalRules
             // 
-            this.groupBox1.Controls.Add(this.cbCharLimit);
-            this.groupBox1.Controls.Add(this.label9);
-            this.groupBox1.Controls.Add(this.txtIterations);
-            this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.cbHashes);
-            this.groupBox1.Controls.Add(this.label7);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.cbCharTypes);
-            this.groupBox1.Location = new System.Drawing.Point(7, 139);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(278, 118);
-            this.groupBox1.TabIndex = 1;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Optional Rules:";
-            this.toolTip1.SetToolTip(this.groupBox1, resources.GetString("groupBox1.ToolTip"));
+            this.gboxOptionalRules.Controls.Add(this.cbCharLimit);
+            this.gboxOptionalRules.Controls.Add(this.label9);
+            this.gboxOptionalRules.Controls.Add(this.txtIterations);
+            this.gboxOptionalRules.Controls.Add(this.label8);
+            this.gboxOptionalRules.Controls.Add(this.cbHashes);
+            this.gboxOptionalRules.Controls.Add(this.label7);
+            this.gboxOptionalRules.Controls.Add(this.label6);
+            this.gboxOptionalRules.Controls.Add(this.label4);
+            this.gboxOptionalRules.Controls.Add(this.cbCharTypes);
+            this.gboxOptionalRules.Location = new System.Drawing.Point(7, 162);
+            this.gboxOptionalRules.Name = "gboxOptionalRules";
+            this.gboxOptionalRules.Size = new System.Drawing.Size(278, 118);
+            this.gboxOptionalRules.TabIndex = 1;
+            this.gboxOptionalRules.TabStop = false;
+            this.gboxOptionalRules.Text = "Optional Rules:";
+            this.toolTip1.SetToolTip(this.gboxOptionalRules, resources.GetString("gboxOptionalRules.ToolTip"));
             // 
             // cbCharLimit
             // 
@@ -253,7 +254,7 @@ namespace com.gpfcomics.Cryptnos
             // btnClose
             // 
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(228, 370);
+            this.btnClose.Location = new System.Drawing.Point(228, 393);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(57, 23);
             this.btnClose.TabIndex = 4;
@@ -275,7 +276,7 @@ namespace com.gpfcomics.Cryptnos
             // 
             // btnAbout
             // 
-            this.btnAbout.Location = new System.Drawing.Point(7, 370);
+            this.btnAbout.Location = new System.Drawing.Point(7, 393);
             this.btnAbout.Name = "btnAbout";
             this.btnAbout.Size = new System.Drawing.Size(58, 23);
             this.btnAbout.TabIndex = 2;
@@ -329,38 +330,38 @@ namespace com.gpfcomics.Cryptnos
             this.btnForget.UseVisualStyleBackColor = true;
             this.btnForget.Click += new System.EventHandler(this.btnForget_Click);
             // 
-            // groupBox2
+            // gboxCoreParameters
             // 
-            this.groupBox2.Controls.Add(this.cbSites);
-            this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Controls.Add(this.txtPassphrase);
-            this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Controls.Add(this.btnGenerate);
-            this.groupBox2.Controls.Add(this.txtPassword);
-            this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Location = new System.Drawing.Point(7, 7);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(278, 126);
-            this.groupBox2.TabIndex = 0;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Core Parameters:";
-            this.toolTip1.SetToolTip(this.groupBox2, resources.GetString("groupBox2.ToolTip"));
+            this.gboxCoreParameters.Controls.Add(this.cbSites);
+            this.gboxCoreParameters.Controls.Add(this.label1);
+            this.gboxCoreParameters.Controls.Add(this.txtPassphrase);
+            this.gboxCoreParameters.Controls.Add(this.label2);
+            this.gboxCoreParameters.Controls.Add(this.btnGenerate);
+            this.gboxCoreParameters.Controls.Add(this.txtPassword);
+            this.gboxCoreParameters.Controls.Add(this.label5);
+            this.gboxCoreParameters.Location = new System.Drawing.Point(7, 7);
+            this.gboxCoreParameters.Name = "gboxCoreParameters";
+            this.gboxCoreParameters.Size = new System.Drawing.Size(278, 126);
+            this.gboxCoreParameters.TabIndex = 0;
+            this.gboxCoreParameters.TabStop = false;
+            this.gboxCoreParameters.Text = "Core Parameters:";
+            this.toolTip1.SetToolTip(this.gboxCoreParameters, resources.GetString("gboxCoreParameters.ToolTip"));
             // 
-            // groupBox3
+            // gboxRememberingSettings
             // 
-            this.groupBox3.Controls.Add(this.chkLock);
-            this.groupBox3.Controls.Add(this.chkRemember);
-            this.groupBox3.Controls.Add(this.btnForget);
-            this.groupBox3.Controls.Add(this.btnForgetAll);
-            this.groupBox3.Controls.Add(this.btnExport);
-            this.groupBox3.Controls.Add(this.btnImport);
-            this.groupBox3.Location = new System.Drawing.Point(7, 263);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(278, 77);
-            this.groupBox3.TabIndex = 2;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Remembering Settings:";
-            this.toolTip1.SetToolTip(this.groupBox3, resources.GetString("groupBox3.ToolTip"));
+            this.gboxRememberingSettings.Controls.Add(this.chkLock);
+            this.gboxRememberingSettings.Controls.Add(this.chkRemember);
+            this.gboxRememberingSettings.Controls.Add(this.btnForget);
+            this.gboxRememberingSettings.Controls.Add(this.btnForgetAll);
+            this.gboxRememberingSettings.Controls.Add(this.btnExport);
+            this.gboxRememberingSettings.Controls.Add(this.btnImport);
+            this.gboxRememberingSettings.Location = new System.Drawing.Point(7, 286);
+            this.gboxRememberingSettings.Name = "gboxRememberingSettings";
+            this.gboxRememberingSettings.Size = new System.Drawing.Size(278, 77);
+            this.gboxRememberingSettings.TabIndex = 2;
+            this.gboxRememberingSettings.TabStop = false;
+            this.gboxRememberingSettings.Text = "Remembering Settings:";
+            this.toolTip1.SetToolTip(this.gboxRememberingSettings, resources.GetString("gboxRememberingSettings.ToolTip"));
             // 
             // chkLock
             // 
@@ -383,7 +384,7 @@ namespace com.gpfcomics.Cryptnos
             this.chkShowTooltips.AutoSize = true;
             this.chkShowTooltips.Checked = true;
             this.chkShowTooltips.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkShowTooltips.Location = new System.Drawing.Point(7, 347);
+            this.chkShowTooltips.Location = new System.Drawing.Point(7, 370);
             this.chkShowTooltips.Name = "chkShowTooltips";
             this.chkShowTooltips.Size = new System.Drawing.Size(112, 17);
             this.chkShowTooltips.TabIndex = 0;
@@ -395,7 +396,7 @@ namespace com.gpfcomics.Cryptnos
             // chkCopyToClipboard
             // 
             this.chkCopyToClipboard.AutoSize = true;
-            this.chkCopyToClipboard.Location = new System.Drawing.Point(129, 347);
+            this.chkCopyToClipboard.Location = new System.Drawing.Point(129, 370);
             this.chkCopyToClipboard.Name = "chkCopyToClipboard";
             this.chkCopyToClipboard.Size = new System.Drawing.Size(156, 17);
             this.chkCopyToClipboard.TabIndex = 1;
@@ -405,7 +406,7 @@ namespace com.gpfcomics.Cryptnos
             // 
             // btnAdvanced
             // 
-            this.btnAdvanced.Location = new System.Drawing.Point(107, 370);
+            this.btnAdvanced.Location = new System.Drawing.Point(107, 393);
             this.btnAdvanced.Name = "btnAdvanced";
             this.btnAdvanced.Size = new System.Drawing.Size(75, 23);
             this.btnAdvanced.TabIndex = 3;
@@ -414,33 +415,46 @@ namespace com.gpfcomics.Cryptnos
             this.btnAdvanced.UseVisualStyleBackColor = true;
             this.btnAdvanced.Click += new System.EventHandler(this.btnAdvanced_Click);
             // 
+            // chkDailyMode
+            // 
+            this.chkDailyMode.AutoSize = true;
+            this.chkDailyMode.Location = new System.Drawing.Point(75, 139);
+            this.chkDailyMode.Name = "chkDailyMode";
+            this.chkDailyMode.Size = new System.Drawing.Size(142, 17);
+            this.chkDailyMode.TabIndex = 5;
+            this.chkDailyMode.Text = "Enable \"daily use\" mode";
+            this.toolTip1.SetToolTip(this.chkDailyMode, resources.GetString("chkDailyMode.ToolTip"));
+            this.chkDailyMode.UseVisualStyleBackColor = true;
+            this.chkDailyMode.CheckedChanged += new System.EventHandler(this.chkDailyMode_CheckedChanged);
+            // 
             // Form1
             // 
             this.AcceptButton = this.btnGenerate;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(292, 405);
+            this.ClientSize = new System.Drawing.Size(292, 424);
+            this.Controls.Add(this.chkDailyMode);
             this.Controls.Add(this.btnAdvanced);
             this.Controls.Add(this.chkCopyToClipboard);
             this.Controls.Add(this.chkShowTooltips);
-            this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.gboxRememberingSettings);
+            this.Controls.Add(this.gboxCoreParameters);
             this.Controls.Add(this.btnAbout);
             this.Controls.Add(this.btnClose);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.gboxOptionalRules);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Cryptnos";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            this.gboxOptionalRules.ResumeLayout(false);
+            this.gboxOptionalRules.PerformLayout();
+            this.gboxCoreParameters.ResumeLayout(false);
+            this.gboxCoreParameters.PerformLayout();
+            this.gboxRememberingSettings.ResumeLayout(false);
+            this.gboxRememberingSettings.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -451,7 +465,7 @@ namespace com.gpfcomics.Cryptnos
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtPassphrase;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox gboxOptionalRules;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox cbCharTypes;
         private System.Windows.Forms.Label label5;
@@ -468,8 +482,8 @@ namespace com.gpfcomics.Cryptnos
         private System.Windows.Forms.Button btnForgetAll;
         private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.Button btnForget;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox gboxCoreParameters;
+        private System.Windows.Forms.GroupBox gboxRememberingSettings;
         private System.Windows.Forms.CheckBox chkLock;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox txtIterations;
@@ -479,6 +493,7 @@ namespace com.gpfcomics.Cryptnos
         private System.Windows.Forms.CheckBox chkCopyToClipboard;
         private System.Windows.Forms.Button btnAdvanced;
         private System.Windows.Forms.ComboBox cbCharLimit;
+        private System.Windows.Forms.CheckBox chkDailyMode;
     }
 }
 

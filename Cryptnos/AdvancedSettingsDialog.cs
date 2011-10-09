@@ -75,6 +75,11 @@ namespace com.gpfcomics.Cryptnos
         private bool forceUpdateCheck = false;
 
         /// <summary>
+        /// Whether or not Cryptnos should stay on top of other windows
+        /// </summary>
+        private bool keepOnTop = false;
+
+        /// <summary>
         /// Flag to determine whether or not we should show the disable update check warning.
         /// This should be initially true and should be shown at least once when the disable
         /// update check box is checked.
@@ -114,12 +119,24 @@ namespace com.gpfcomics.Cryptnos
         }
 
         /// <summary>
+        /// Whether or not Cryptnos should stay on top of other windows
+        /// </summary>
+        public bool KeepOnTop
+        {
+            get { return keepOnTop; }
+        }
+
+        /// <summary>
         /// Default constructor
         /// </summary>
         /// <param name="encoding">The current text encoding setting</param>
+        /// <param name="showTooltips">A boolean value specifying whether or not to show
+        /// tooltip help.</param>
         /// <param name="debug">Whether or not debug mode is enabled</param>
         /// <param name="disableUpdateCheck">Whether or not to disable the update check</param>
-        public AdvancedSettingsDialog(Encoding encoding, bool debug, bool disableUpdateCheck)
+        /// <param name="keepOnTop">Whether or not to keep Cryptnos on top of other windows</param>
+        public AdvancedSettingsDialog(Encoding encoding, bool showTooltips, bool debug,
+            bool disableUpdateCheck, bool keepOnTop)
         {
             InitializeComponent();
             // Set up the encoding's drop-down box:
@@ -137,6 +154,10 @@ namespace com.gpfcomics.Cryptnos
             this.disableUpdateCheck = disableUpdateCheck;
             chkDebug.Checked = debug;
             chkDisableUpdateCheck.Checked = disableUpdateCheck;
+            // The "keep on top" setting:
+            this.keepOnTop = keepOnTop;
+            chkKeepOnTop.Checked = keepOnTop;
+            this.TopMost = keepOnTop;
             // If the update check is currently disabled, disable the force update check box
             // so it cannot be selected:
             if (disableUpdateCheck)
@@ -144,6 +165,7 @@ namespace com.gpfcomics.Cryptnos
                 chkForceUpdateCheck.Checked = false;
                 chkForceUpdateCheck.Enabled = false;
             }
+            toolTip1.Active = showTooltips;
         }
 
         /// <summary>
@@ -159,6 +181,7 @@ namespace com.gpfcomics.Cryptnos
             debug = chkDebug.Checked;
             disableUpdateCheck = chkDisableUpdateCheck.Checked;
             forceUpdateCheck = chkForceUpdateCheck.Checked;
+            keepOnTop = chkKeepOnTop.Checked;
             Hide();
         }
 

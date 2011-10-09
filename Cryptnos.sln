@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cryptnos", "Cryptnos\Cryptnos.csproj", "{A9298074-2BE6-4FA6-80C4-BF56F3D7D883}"
 EndProject
 Global

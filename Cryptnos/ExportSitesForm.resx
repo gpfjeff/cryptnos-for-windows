@@ -139,6 +139,24 @@ be prompted for your export password after
 this step.  You will need this password later
 when you import your parameters.</value>
   </data>
+  <data name="tabExportQRCode.ToolTip" xml:space="preserve">
+    <value>You can export a set of parameters as a QRCode
+and import them into Cryptnos for Android using
+the Barcode Scanner app.  Select a site name
+in the combo box, then launch Cryptnos on your
+Android phone.  Tap the Import menu, then
+select From QRCode.  Note that QRCodes are
+*NOT* encrypted, but your master password
+is not included so your generated passwords
+should remain safe.</value>
+  </data>
+  <data name="pictureBox1.ToolTip" xml:space="preserve">
+    <value>The generated QRCode will appear here.
+Launch Cryptnos for Android and tap Import,
+then From QRCode.  Note that you must have
+the Barcode Scanner app installed in order to
+import parameters via QRCode.</value>
+  </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>52</value>
   </metadata>

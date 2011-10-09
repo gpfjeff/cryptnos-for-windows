@@ -22,7 +22,11 @@
  * sites they want to export, they can click the Export button to proceed to the next step
  * (choosing an export passphrase).  If the user clicks Cancel, the process is aborted.
  * 
- * This program is Copyright 2010, Jeffrey T. Darlington.
+ * UPDATES FOR 1.3.0:  Added new tabbed layout.  Original export form is now on the tab
+ * "To File" and is relatively unchanged.  The new second tab is "To QRCode", which allows
+ * us to export parameters to a QRCode which can then be read by the Cryptnos Android client.
+ * 
+ * This program is Copyright 2011, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
  * 
@@ -45,6 +49,9 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using com.google.zxing;
+using com.google.zxing.common;
+using com.google.zxing.qrcode;
 
 namespace com.gpfcomics.Cryptnos
 {
@@ -69,6 +76,21 @@ namespace com.gpfcomics.Cryptnos
         private bool clickedOK = false;
 
         /// <summary>
+        /// A reference to the <see cref="Form1"/> object that called us
+        /// </summary>
+        private Form1 caller = null;
+
+        /// <summary>
+        /// A ZXing <see cref="QRCodeWriter"/> for generating QRCodes
+        /// </summary>
+        private QRCodeWriter qrCodeWriter = new QRCodeWriter();
+
+        /// <summary>
+        /// A ZXing <see cref="ByteMatrix"/> for converting QRCode data to an image
+        /// </summary>
+        private ByteMatrix byteMatrix = null;
+
+        /// <summary>
         /// A read-only property consisting of an array of objects (really strings) comprising
         /// the list of sites selected for export.  Note that if the user cancels the export
         /// process, this array may be null.
@@ -85,7 +107,8 @@ namespace com.gpfcomics.Cryptnos
         /// which should be taken from the Sites combo box on the main Cryptnos form.</param>
         /// <param name="showTooltips">A boolean value specifying whether or not to show
         /// tooltip help.</param>
-        public ExportSitesForm(object[] sites, bool showTooltips)
+        /// <param name="keepOnTop">Keep Cryptnos on top of other windows</param>
+        public ExportSitesForm(object[] sites, bool showTooltips, bool keepOnTop, Form1 caller)
         {
             // The normal initializaition:
             InitializeComponent();
@@ -104,8 +127,12 @@ namespace com.gpfcomics.Cryptnos
             rbExportAll.Checked = true;
             rbExportSome.Checked = false;
             lbSiteList.Enabled = false;
+
+            cmboExportSiteQR.Items.AddRange(sites);
             // Turn tooltips on or off depending on the value passed in from the main form:
             toolTip1.Active = showTooltips;
+            TopMost = keepOnTop;
+            this.caller = caller;
         }
 
         /// <summary>
@@ -249,6 +276,54 @@ namespace com.gpfcomics.Cryptnos
             // when at least one is selected:
             if (lbSiteList.SelectedItems.Count > 0) btnExport.Enabled = true;
             else btnExport.Enabled = false;
+        }
+
+        /// <summary>
+        /// What to do when the selection changes in the QRCode site list:
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cmboExportSiteQR_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Asbestos underpants:
+            try
+            {
+                // Get the current selection of the combo box and make sure it
+                // isn't empty:
+                String site = (string)cmboExportSiteQR.Text;
+                if (!String.IsNullOrEmpty(site))
+                {
+                    // Ask the main form to give us the site parameters for this site.
+                    // Since the main form has all the code to do this, we'll ask it
+                    // to do the dirty work.
+                    SiteParameters siteParams = caller.GetSiteParamsForQRCode(site);
+                    // Now we'll generate the text we'll embed into the QRCode.  We want
+                    // this to be as compact as we can get it, so our "headings" will be
+                    // single letters.  We'll start off with an identifying header so the
+                    // QRCode reader will know the format of our string.  We delimite the
+                    // string with pipes, which aren't allowed in any of our fields.  We
+                    // want this to match as closely to the values of the XML export file
+                    // for consistency.  That means the hash engine and the character
+                    // limit fields will need some tweaking.
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("CRYPTNOSv1|" +
+                        "S:" + siteParams.Site + "|" +
+                        "H:" + HashEngine.HashEnumStringToDisplayHash(siteParams.Hash) + "|" +
+                        "I:" + siteParams.Iterations.ToString() + "|" +
+                        "C:" + siteParams.CharTypes.ToString() + "|L:");
+                    if (siteParams.CharLimit < 0) sb.Append("0");
+                    else sb.Append(siteParams.CharLimit.ToString());
+                    // Now that we've built our string, use the QRCodeWriter from ZXing to
+                    // build the QRCode image and assign the bitmap to the picture box:
+                    byteMatrix = qrCodeWriter.encode(sb.ToString(),
+                        BarcodeFormat.QR_CODE, 200, 200);
+                    pictureBox1.Image = byteMatrix.ToBitmap();
+                }
+                // If the selection in the combo box wasn't useful, empty the picture box:
+                else pictureBox1.Image = null;
+            }
+            // Similarly, if anything blew up, empty the picture box:
+            catch { pictureBox1.Image = null; }
         }
 
     }
