@@ -1,9 +1,9 @@
                              Cryptnos for Windows
-                                Version 1.2.3
+                                Version 1.3.0
                               Source ReadMe File
 
                             Jeffrey T. Darlington
-                                April 19, 2011
+                               October 8, 2011
                            http://www.cryptnos.com/
 
 Cryptnos is a multi-platform, Open Source application for generating strong, pseudo-random passwords using cryptographic hashes.  It combines a unique "site token" such as a website domain name with a master password and runs this data through a cryptographic hash algorithm to produce a password that is unique, lengthy, seemingly random yet completely repeatable.  Unlike similar products, however, it is exceedingly flexible.  It is not a browser plugin, so it can be used with other applications outside the Web.  It provides unparalleled versatility by letting you specify the cryptographic hash to use, how many iterations of the hash to perform, what characters to include, and how long the final password should be.  Best of all, it is exceedingly secure.  Your master and generated passwords are *NEVER* stored, and the parameters to recreate your passwords are stored in an encrypted form.
@@ -13,7 +13,7 @@ Cryptnos is currently available for Microsoft Windows via the .NET Framework 2.0
 BUILDING CRYPTNOS FOR WINDOWS
 =============================
 
-This source distribution for Cryptnos for Windows is a Microsoft Visual Studio 2005 Windows Application project.  Although it was originally built in Visual Studio 2005, you should be able to open and compile it in Visual C# 2005 Express without any problem.  (In fact, I tend to use Visual C# 2005 Express for official builds.)  Note, however, that there are a few local modifications you may need to make to the files before building.
+This source distribution for Cryptnos for Windows is a Microsoft Visual Studio 2010 Windows Application project.  Although it was originally built in Visual Studio 2010, you should be able to open and compile it in Visual C# 2010 Express without any problem.  (In fact, I tend to use Visual C# 2010 Express for official builds.)  Note, however, that there are a few local modifications you may need to make to the files before building.
 
 If you checked out the source from the source repository, you will find two Windows batch files, "new_revision_tag.bat" and "SubWCRev_batch.bat".  These scripts are actually Perl scripts (written for ActiveState's Active Perl) encased in a batch wrapper and are used to add the SVN revision number and copyright date to the officially builds.  "new_revision_tag.bat" is intended to be run as a pre-commit hook script and updates a random "tag" in a comment inside the "template" files to force SVN to always update the templates before a commit.  "SubWCRev_batch.bat", its companion script, is run as a post-commit and post-update script which runs SubWCRev.exe, which parses the templates and adds the revision and copyright date information.  If you wish to take advantage of these scripts, replace the $workingpath variable value with the path to the root of your working copy.  If you're running this on Windows, make sure to escape your back-slashes; if you're running it on a *NIX setup, remove the Windows batch information, replace the "shebang" line with the correct path to your Perl executable, and tweak the path strings in the @templates array with the correct path separators (forward slashes instead of back-slashes).  You will also need to configure your local SVN setup to execute these scripts on the appropriate hooks.
 
