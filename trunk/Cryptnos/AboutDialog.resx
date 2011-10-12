@@ -121,7 +121,9 @@
     <value>17, 17</value>
   </metadata>
   <data name="txtLicense.Text" xml:space="preserve">
-    <value>This application contains code from the Legion of the Bouncy Castle Crypto API, which has been released under the following license:
+    <value>"QR code" is a registered trademark of Denso Wave Incorporated.
+
+This application contains code from the Legion of the Bouncy Castle Crypto API, which has been released under the following license:
 
 ------------------------------------
 Copyright (c) 2000 - 2011 The Legion Of The Bouncy Castle (http://www.bouncycastle.org)
@@ -150,8 +152,8 @@ You should have received a copy of the GNU General Public License along with thi
   <data name="pictureBox1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACIAAAAwCAYAAAB0WahSAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAFxwAA
-        BccBNsCUbQAADV1JREFUWEedmAdUVFcexh8zMBQpFhQrghTBGnCJRmMJru7GFHWP2dVVj5uNya5Z17Wc
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAFxgAA
+        BcYB5Id2iQAADV1JREFUWEedmAdUVFcexh8zMBQpFhQrghTBGnCJRmMJru7GFHWP2dVVj5uNya5Z17Wc
         bExbE2OyxgoEFQERFBR7ITYsKEWQNvSOdJChDcVYonz73ccMMQWE5Zzv/C+v3Pu7//beGwmA1BtZWlrO
         9/DwOO3k5FTg6OhYbmtrWzR48OB0KsLU1HSZJEmq3synv7bHEFxg0KJFi1KOHz/+IDU1Fbm5uUhMTER0
         dDQuX76MwMBALF++vI1Alf37998vru8NUI9AOOmQpUuX3uNfe1tbGzQaDYqLi5GcnIwbN27gypUriIiI

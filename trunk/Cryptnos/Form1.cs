@@ -59,7 +59,8 @@
  * UPDATES FOR 1.3.0:  Added "Daily Use" mode with a compact form that does not show many of
  * the UI elements unnecessary for typical daily use.  Checking and unchecking the "Enable
  * Daily Use Mode" checkbox switches back and forth between these modes.  Added "keep on top"
- * setting.  Added several new tooltip values.
+ * setting.  Added import dialog to allow user to pick and choose sites to import.  Added several
+ * new tooltip values.
  * 
  * This program is Copyright 2011, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
@@ -649,7 +650,9 @@ namespace com.gpfcomics.Cryptnos
             // Asbestos underpants:
             try
             {
-                // Don't let them change their settings if they've locked the parameters:
+                // This should never happen as the import button gets disabled when the Lock checkbox
+                // is checked, but as a sanity check, don't let them change their settings if they've
+                // locked the parameters:
                 if (chkRemember.Checked && chkLock.Checked)
                 {
                     MessageBox.Show("You currently have your site parameters locked. You " +
@@ -658,74 +661,83 @@ namespace com.gpfcomics.Cryptnos
                     btnForget.Enabled = false;
                     btnForgetAll.Enabled = false;
                 }
+                // Otherwise:
                 else
                 {
-                    // If the user imports settings from a file and that file contains a site that
-                    // already exists in the registry, the imported site will overwrite the existing
-                    // site.  Warn the user that this will happen and get their go-ahead before we
-                    // proceed.
-                    if (MessageBox.Show("Please note:  If the import file contains a site that already " +
-                        "exists in your site parameters, the site parameters in the registry will " +
-                        "be overwritten by the ones from the file.  Are you sure you wish to " +
-                        "proceed?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) ==
-                        DialogResult.Yes)
+                    // This only makes sense if we can open the registry:
+                    if (CryptnosRegistryKeyOpen())
                     {
-                        // This only makes sense if we can open the registry:
-                        if (CryptnosRegistryKeyOpen())
+                        // Prompt the user for an import file:
+                        OpenFileDialog ofd = new OpenFileDialog();
+                        ofd.InitialDirectory = lastImportExportPath;
+                        if (ofd.ShowDialog() == DialogResult.OK)
                         {
-                            // Prompt the user for an import file:
-                            OpenFileDialog ofd = new OpenFileDialog();
-                            ofd.InitialDirectory = lastImportExportPath;
-                            if (ofd.ShowDialog() == DialogResult.OK)
+                            // Take note of the file name, as well as update the last
+                            // import/export path for later use.  Note that if, for some
+                            // bizarre reason, the last import/export path fetch fails,
+                            // we don't sweat it.  That's not important right now.
+                            string filename = ofd.FileName;
+                            try
                             {
-                                // Take note of the file name, as well as update the last
-                                // import/export path for later use.  Note that if, for some
-                                // bizarre reason, the last import/export path fetch fails,
-                                // we don't sweat it.  That's not important right now.
-                                string filename = ofd.FileName;
-                                try
+                                lastImportExportPath =
+                                    (new FileInfo(filename)).DirectoryName;
+                            }
+                            catch { }
+                            // Prompt the user for their passphrase (Cryptnos files are always
+                            // encrypted):
+                            PassphraseDialog pd =
+                                new PassphraseDialog(PassphraseDialog.Mode.Import, TopMost);
+                            if (pd.ShowDialog() == DialogResult.OK)
+                            {
+                                string passphrase = pd.Passphrase;
+                                pd.Dispose();
+                                // Read the data from the import file.  For this, we hand
+                                // the heavy lifting to the ImportExportHandler.  Note that
+                                // this should transparently handle both the old and new
+                                // export formats, so we don't have to sweat that detail.
+                                List<SiteParameters> siteParamList =
+                                    ImportExportHandler.ImportFromFile(filename, passphrase);
+                                if (siteParamList != null && siteParamList.Count > 0)
                                 {
-                                    lastImportExportPath =
-                                        (new FileInfo(filename)).DirectoryName;
+                                    // Launch the import dialog so the user can pick and choose which
+                                    // sites to import:
+                                    ImportDialog id = new ImportDialog(this, siteParamList, debug, TopMost,
+                                        chkShowTooltips.Checked);
+                                    if (id.ShowDialog() == DialogResult.OK)
+                                    {
+                                        // Get the filtered list of parameters.  Note that this should
+                                        // always have something in it; if the list were empty, the dialog
+                                        // should switch to a Cancel result.
+                                        siteParamList = id.SiteParams;
+                                        // If the import didn't blow up, step through the list
+                                        // and save each set of parameters to the registry.  Note that
+                                        // if a given site already exists in the registry, this will
+                                        // overwrite it.
+                                        foreach (SiteParameters siteParam in siteParamList)
+                                            siteParam.SaveToRegistry(siteParamsKey);
+                                        // Now regenerate the sites drop-down list with the newly
+                                        // imported data and let the user know we were successful.
+                                        PopulateSitesDropdown();
+                                        MessageBox.Show("The parameters have been successfully " +
+                                            "imported from the file.", "Information",
+                                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        btnExport.Enabled = true;
+                                        btnForgetAll.Enabled = true;
+                                        btnForget.Enabled = true;
+                                    }
                                 }
-                                catch { }
-                                // Prompt the user for their passphrase (Cryptnos files are always
-                                // encrypted):
-                                PassphraseDialog pd =
-                                    new PassphraseDialog(PassphraseDialog.Mode.Import, TopMost);
-                                if (pd.ShowDialog() == DialogResult.OK)
-                                {
-                                    string passphrase = pd.Passphrase;
-                                    pd.Dispose();
-                                    // Read the data from the import file.  For this, we hand
-                                    // the heavy lifting to the ImportExportHandler.  Note that
-                                    // this should transparently handle both the old and new
-                                    // export formats, so we don't have to sweat that detail.
-                                    List<SiteParameters> siteParamList =
-                                        ImportExportHandler.ImportFromFile(filename, passphrase);
-                                    // If the import didn't blow up, step through the list
-                                    // and save each set of parameters to the registry.  Note that
-                                    // if a given site already exists in the registry, this will
-                                    // overwrite it.
-                                    foreach (SiteParameters siteParam in siteParamList)
-                                        siteParam.SaveToRegistry(siteParamsKey);
-                                    // Now regenerate the sites drop-down list with the newly
-                                    // imported data and let the user know we were successful.
-                                    PopulateSitesDropdown();
-                                    MessageBox.Show("The parameters have been successfully " +
-                                        "imported from the file.", "Information",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    btnExport.Enabled = true;
-                                    btnForgetAll.Enabled = true;
-                                    btnForget.Enabled = true;
-                                }
+                                // I don't think this will happen (an exception should be thrown if the file
+                                // is invalid), but if the site list is empty, complain:
+                                else MessageBox.Show("No valid Cryptnos parameters could be loaded " +
+                                    "from the file. Make sure the file is not corrupted", "Error",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                         }
-                        // The registry keys weren't open:
-                        else MessageBox.Show("I could not open the registry to get your site parameter " +
-                            "options, so I can't import anything!", "Error", MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
                     }
+                    // The registry keys weren't open:
+                    else MessageBox.Show("I could not open the registry to get your site parameter " +
+                        "options, so I can't import anything!", "Error", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                 }
             }
             // If we got an ImportHandlerException, it probably has some sort of very specific
@@ -1276,6 +1288,87 @@ namespace com.gpfcomics.Cryptnos
 
         #endregion
 
+        #region Interoperation Methods
+
+        /// <summary>
+        /// Get the site parameters for a site.  This is intended to be used by
+        /// the QRCode export generator.
+        /// </summary>
+        /// <param name="siteName">The site name <see cref="String"/></param>
+        /// <returns>A <see cref="SiteParameters"/> object representing the site</returns>
+        public SiteParameters GetSiteParamsForQRCode(String siteName)
+        {
+            try
+            {
+                // Convert the site name to a registry key:
+                String key = SiteParameters.GenerateKeyFromSite(siteName);
+                // If the registry is open and the supplied key isn't empty:
+                if (CryptnosRegistryKeyOpen() && !String.IsNullOrEmpty(key))
+                {
+                    // Read the site's information from the registry.  If this happens to
+                    // return null, then the site's info hasn't been saved.
+                    return SiteParameters.ReadFromRegistry(siteParamsKey, key);
+                }
+                // If the registry isn't open or the key was useless, return null:
+                else return null;
+            }
+            // If anything blew up, return null:
+            catch { return null; }
+        }
+
+        /// <summary>
+        /// Get the list of site names stored in the registry
+        /// </summary>
+        /// <returns>An array of <see cref="Stirng"/>s containing the list of site names</returns>
+        public string[] GetSiteList()
+        {
+            // Asbestos underpants:
+            try
+            {
+                // Only proceed if the registry is open:
+                if (CryptnosRegistryKeyOpen())
+                {
+                    // Site keys are stored in an encrypted state.  Thus, we can't use the
+                    // naked values in the registry.  So, step through the list of registry
+                    // key values and generate a SiteParameters object for each.  That will
+                    // decrypt the values, allowing us to access the site name from the
+                    // object.
+                    ArrayList sites = new ArrayList();
+                    foreach (string key in siteParamsKey.GetValueNames())
+                    {
+                        SiteParameters sp = SiteParameters.ReadFromRegistry(siteParamsKey,
+                            key);
+                        if (sp != null) sites.Add(sp.Site);
+                    }
+                    // Sort the list:
+                    sites.Sort();
+                    // I'm not sure if there's a better way to do this or not, be we need to
+                    // convert the ArrayList into simple string array.  We'll do this site by
+                    // site.  It would be nice if we could use ArrayList.ToArray() for this,
+                    // but I don't think it works the way I want it to.
+                    string[] siteArray = new string[sites.Count];
+                    int i = 0;
+                    foreach (string site in sites)
+                    {
+                        siteArray[i] = site;
+                        i++;
+                    }
+                    return siteArray;
+                }
+                // If the registry isn't open, there's nothing to return:
+                else return null;
+            }
+            // Silently ignore errors:
+            catch (Exception ex)
+            {
+                if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return null;
+            }
+        }
+
+        #endregion
+        
         #region Private Methods
 
         /// <summary>
@@ -1505,32 +1598,6 @@ namespace com.gpfcomics.Cryptnos
         }
 
         /// <summary>
-        /// Get the site parameters for a site.  This is intended to be used by
-        /// the QRCode export generator.
-        /// </summary>
-        /// <param name="siteName">The site name <see cref="String"/></param>
-        /// <returns>A <see cref="SiteParameters"/> object representing the site</returns>
-        public SiteParameters GetSiteParamsForQRCode(String siteName)
-        {
-            try
-            {
-                // Convert the site name to a registry key:
-                String key = SiteParameters.GenerateKeyFromSite(siteName);
-                // If the registry is open and the supplied key isn't empty:
-                if (CryptnosRegistryKeyOpen() && !String.IsNullOrEmpty(key))
-                {
-                    // Read the site's information from the registry.  If this happens to
-                    // return null, then the site's info hasn't been saved.
-                    return SiteParameters.ReadFromRegistry(siteParamsKey, key);
-                }
-                // If the registry isn't open or the key was useless, return null:
-                else return null;
-            }
-            // If anything blew up, return null:
-            catch { return null; }
-        }
-
-        /// <summary>
         /// Given a site name, save its parameter information to the registry
         /// </summary>
         /// <param name="site">The site to save</param>
@@ -1594,48 +1661,26 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         private void PopulateSitesDropdown()
         {
-            // Asbestos underpants:
-            try
+            // Clear out the current state of the list:
+            cbSites.Items.Clear();
+            // Get the list of sites from the registry:
+            string[] sites = GetSiteList();
+            // If there are any sites to work with, populate the sites drop-down:
+            if (sites != null)
+                foreach (string site in sites) cbSites.Items.Add(site);
+            // Enable or disable other GUI elements based on whether or not we got any
+            // sites:
+            if (cbSites.Items.Count > 0)
             {
-                // Only proceed if the registry is open:
-                if (CryptnosRegistryKeyOpen())
-                {
-                    // Clear out the current state of the list:
-                    cbSites.Items.Clear();
-                    // Site keys are stored in an encrypted state.  Thus, we can't use the
-                    // naked values in the registry.  So, step through the list of registry
-                    // key values and generate a SiteParameters object for each.  That will
-                    // decrypt the values, allowing us to access the site name from the
-                    // object.  Once we have the list, we'll sort it and populate the
-                    // sites drop-down with the values.
-                    ArrayList sites = new ArrayList();
-                    foreach (string key in siteParamsKey.GetValueNames())
-                    {
-                        SiteParameters sp = SiteParameters.ReadFromRegistry(siteParamsKey,
-                            key);
-                        if (sp != null) sites.Add(sp.Site);
-                    }
-                    sites.Sort();
-                    foreach (string site in sites) cbSites.Items.Add(site);
-                    if (cbSites.Items.Count > 0)
-                    {
-                        btnForget.Enabled = true;
-                        btnForgetAll.Enabled = true;
-                        btnExport.Enabled = true;
-                    }
-                    else
-                    {
-                        btnForget.Enabled = false;
-                        btnForgetAll.Enabled = false;
-                        btnExport.Enabled = false;
-                    }
-                }
+                btnForget.Enabled = true;
+                btnForgetAll.Enabled = true;
+                btnExport.Enabled = true;
             }
-            // Silently ignore errors:
-            catch (Exception ex)
+            else
             {
-                if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                btnForget.Enabled = false;
+                btnForgetAll.Enabled = false;
+                btnExport.Enabled = false;
             }
         }
 
