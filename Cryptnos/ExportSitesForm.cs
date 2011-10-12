@@ -23,8 +23,8 @@
  * (choosing an export passphrase).  If the user clicks Cancel, the process is aborted.
  * 
  * UPDATES FOR 1.3.0:  Added new tabbed layout.  Original export form is now on the tab
- * "To File" and is relatively unchanged.  The new second tab is "To QRCode", which allows
- * us to export parameters to a QRCode which can then be read by the Cryptnos Android client.
+ * "To File" and is relatively unchanged.  The new second tab is "To QR Code", which allows
+ * us to export parameters to a QR Code which can then be read by the Cryptnos Android client.
  * 
  * This program is Copyright 2011, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
@@ -81,12 +81,12 @@ namespace com.gpfcomics.Cryptnos
         private Form1 caller = null;
 
         /// <summary>
-        /// A ZXing <see cref="QRCodeWriter"/> for generating QRCodes
+        /// A ZXing <see cref="QRCodeWriter"/> for generating QR Codes
         /// </summary>
         private QRCodeWriter qrCodeWriter = new QRCodeWriter();
 
         /// <summary>
-        /// A ZXing <see cref="ByteMatrix"/> for converting QRCode data to an image
+        /// A ZXing <see cref="ByteMatrix"/> for converting QR Code data to an image
         /// </summary>
         private ByteMatrix byteMatrix = null;
 
@@ -127,7 +127,7 @@ namespace com.gpfcomics.Cryptnos
             rbExportAll.Checked = true;
             rbExportSome.Checked = false;
             lbSiteList.Enabled = false;
-
+            // Populate the site drop-down on the QR code tab:
             cmboExportSiteQR.Items.AddRange(sites);
             // Turn tooltips on or off depending on the value passed in from the main form:
             toolTip1.Active = showTooltips;
@@ -279,7 +279,7 @@ namespace com.gpfcomics.Cryptnos
         }
 
         /// <summary>
-        /// What to do when the selection changes in the QRCode site list:
+        /// What to do when the selection changes in the QR Code site list:
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -297,10 +297,10 @@ namespace com.gpfcomics.Cryptnos
                     // Since the main form has all the code to do this, we'll ask it
                     // to do the dirty work.
                     SiteParameters siteParams = caller.GetSiteParamsForQRCode(site);
-                    // Now we'll generate the text we'll embed into the QRCode.  We want
+                    // Now we'll generate the text we'll embed into the QR Code.  We want
                     // this to be as compact as we can get it, so our "headings" will be
                     // single letters.  We'll start off with an identifying header so the
-                    // QRCode reader will know the format of our string.  We delimite the
+                    // QR Code reader will know the format of our string.  We delimite the
                     // string with pipes, which aren't allowed in any of our fields.  We
                     // want this to match as closely to the values of the XML export file
                     // for consistency.  That means the hash engine and the character
@@ -314,7 +314,7 @@ namespace com.gpfcomics.Cryptnos
                     if (siteParams.CharLimit < 0) sb.Append("0");
                     else sb.Append(siteParams.CharLimit.ToString());
                     // Now that we've built our string, use the QRCodeWriter from ZXing to
-                    // build the QRCode image and assign the bitmap to the picture box:
+                    // build the QR Code image and assign the bitmap to the picture box:
                     byteMatrix = qrCodeWriter.encode(sb.ToString(),
                         BarcodeFormat.QR_CODE, 200, 200);
                     pictureBox1.Image = byteMatrix.ToBitmap();

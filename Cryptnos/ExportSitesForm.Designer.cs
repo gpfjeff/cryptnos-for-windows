@@ -37,17 +37,17 @@ namespace com.gpfcomics.Cryptnos
             this.btnExport = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabExportFile = new System.Windows.Forms.TabPage();
             this.tabExportQRCode = new System.Windows.Forms.TabPage();
             this.btnExportClose = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.cmboExportSiteQR = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.tabControl1.SuspendLayout();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabExportFile.SuspendLayout();
             this.tabExportQRCode.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.tabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
             // rbExportAll
@@ -126,16 +126,6 @@ namespace com.gpfcomics.Cryptnos
             // 
             this.toolTip1.IsBalloon = true;
             // 
-            // tabControl1
-            // 
-            this.tabControl1.Controls.Add(this.tabExportFile);
-            this.tabControl1.Controls.Add(this.tabExportQRCode);
-            this.tabControl1.Location = new System.Drawing.Point(11, 12);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(269, 336);
-            this.tabControl1.TabIndex = 6;
-            // 
             // tabExportFile
             // 
             this.tabExportFile.Controls.Add(this.rbExportAll);
@@ -166,7 +156,7 @@ namespace com.gpfcomics.Cryptnos
             this.tabExportQRCode.Padding = new System.Windows.Forms.Padding(3);
             this.tabExportQRCode.Size = new System.Drawing.Size(261, 310);
             this.tabExportQRCode.TabIndex = 1;
-            this.tabExportQRCode.Text = "To QRCode";
+            this.tabExportQRCode.Text = "To QR Code";
             this.toolTip1.SetToolTip(this.tabExportQRCode, resources.GetString("tabExportQRCode.ToolTip"));
             this.tabExportQRCode.UseVisualStyleBackColor = true;
             // 
@@ -205,9 +195,19 @@ namespace com.gpfcomics.Cryptnos
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 14);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(229, 26);
+            this.label2.Size = new System.Drawing.Size(232, 26);
             this.label2.TabIndex = 0;
-            this.label2.Text = "Select a site to export.  Note that QRCodes are\r\nNOT encrypted!";
+            this.label2.Text = "Select a site to export.  Note that QR Codes are\r\nNOT encrypted!";
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabExportFile);
+            this.tabControl1.Controls.Add(this.tabExportQRCode);
+            this.tabControl1.Location = new System.Drawing.Point(11, 12);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(269, 336);
+            this.tabControl1.TabIndex = 6;
             // 
             // ExportSitesForm
             // 
@@ -224,12 +224,12 @@ namespace com.gpfcomics.Cryptnos
             this.ShowInTaskbar = false;
             this.Text = "Export";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ExportSitesForm_FormClosing);
-            this.tabControl1.ResumeLayout(false);
             this.tabExportFile.ResumeLayout(false);
             this.tabExportFile.PerformLayout();
             this.tabExportQRCode.ResumeLayout(false);
             this.tabExportQRCode.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.tabControl1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
