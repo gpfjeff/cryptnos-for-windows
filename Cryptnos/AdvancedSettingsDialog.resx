@@ -165,7 +165,29 @@ be using.</value>
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <data name="chkShowMasterPassphrase.ToolTip" xml:space="preserve">
+    <value>If this checkbox is enabled, the text in the
+master passphrase box will not longer be
+obscured from view.  This can be convenient
+if your master passphrase is very long and
+complex, and typing it blind is difficult.  Note
+that enabling this option will expose your
+master passphrase to potential "over the
+shoulder" attacks.  This option is disabled
+by default.</value>
+  </data>
+  <data name="chkClearPasswordOnFocusLoss.ToolTip" xml:space="preserve">
+    <value>When this option is enabled, the text of the
+master passphrase and generated password
+boxes will be cleared out whenever the main
+Cryptnos form loses focus (i.e. becomes hidden
+or you switch to another application).  This adds
+an additional layer of security by limiting the
+opportunities for malware to read these values.
+For backward compatibility, this option is
+disabled by default.</value>
+  </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>59</value>
+    <value>40</value>
   </metadata>
 </root>

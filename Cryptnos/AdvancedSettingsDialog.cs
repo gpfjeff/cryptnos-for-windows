@@ -22,7 +22,10 @@
  * Also added an option to force an update check at next launch (disabled if update checks are
  * disabled).
  * 
- * This program is Copyright 2011, Jeffrey T. Darlington.
+ * UPDATES FOR 1.3.1:  Added Show Master Passphrase and Clear Passwords on Focus Loss
+ * checkboxes.
+ * 
+ * This program is Copyright 2012, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
  * 
@@ -80,6 +83,17 @@ namespace com.gpfcomics.Cryptnos
         private bool keepOnTop = false;
 
         /// <summary>
+        /// Whether or not Cryptnos should show or obscure the master passphrase
+        /// </summary>
+        private bool showMasterPassword = false;
+
+        /// <summary>
+        /// Whether or not Cryptnos should clear the master passphrase and generated
+        /// password when the main form loses focus
+        /// </summary>
+        private bool clearPasswordsOnFocusLoss = false;
+
+        /// <summary>
         /// Flag to determine whether or not we should show the disable update check warning.
         /// This should be initially true and should be shown at least once when the disable
         /// update check box is checked.
@@ -127,6 +141,23 @@ namespace com.gpfcomics.Cryptnos
         }
 
         /// <summary>
+        /// Whether or not Cryptnos should show or obscure the master passphrase
+        /// </summary>
+        public bool ShowMasterPassword
+        {
+            get { return showMasterPassword; }
+        }
+
+        /// <summary>
+        /// Whether or not Cryptnos should clear the master passphrase and generated
+        /// password when the main form loses focus
+        /// </summary>
+        public bool ClearPasswordsOnFocusLoss
+        {
+            get { return clearPasswordsOnFocusLoss; }
+        }
+
+        /// <summary>
         /// Default constructor
         /// </summary>
         /// <param name="encoding">The current text encoding setting</param>
@@ -135,8 +166,12 @@ namespace com.gpfcomics.Cryptnos
         /// <param name="debug">Whether or not debug mode is enabled</param>
         /// <param name="disableUpdateCheck">Whether or not to disable the update check</param>
         /// <param name="keepOnTop">Whether or not to keep Cryptnos on top of other windows</param>
+        /// <param name="showMasterPassword">Whether or not Cryptnos should show or obscure the master passphrase</param>
+        /// <param name="clearPasswordsOnFocusLoss">Whether or not Cryptnos should clear the master passphrase and generated
+        /// password when the main form loses focus</param>
         public AdvancedSettingsDialog(Encoding encoding, bool showTooltips, bool debug,
-            bool disableUpdateCheck, bool keepOnTop)
+            bool disableUpdateCheck, bool keepOnTop, bool showMasterPassword,
+            bool clearPasswordsOnFocusLoss)
         {
             InitializeComponent();
             // Set up the encoding's drop-down box:
@@ -152,8 +187,12 @@ namespace com.gpfcomics.Cryptnos
             // boxes:
             this.debug = debug;
             this.disableUpdateCheck = disableUpdateCheck;
+            this.showMasterPassword = showMasterPassword;
+            this.clearPasswordsOnFocusLoss = clearPasswordsOnFocusLoss;
             chkDebug.Checked = debug;
             chkDisableUpdateCheck.Checked = disableUpdateCheck;
+            chkShowMasterPassphrase.Checked = showMasterPassword;
+            chkClearPasswordOnFocusLoss.Checked = clearPasswordsOnFocusLoss;
             // The "keep on top" setting:
             this.keepOnTop = keepOnTop;
             chkKeepOnTop.Checked = keepOnTop;
@@ -182,6 +221,8 @@ namespace com.gpfcomics.Cryptnos
             disableUpdateCheck = chkDisableUpdateCheck.Checked;
             forceUpdateCheck = chkForceUpdateCheck.Checked;
             keepOnTop = chkKeepOnTop.Checked;
+            showMasterPassword = chkShowMasterPassphrase.Checked;
+            clearPasswordsOnFocusLoss = chkClearPasswordOnFocusLoss.Checked;
             Hide();
         }
 

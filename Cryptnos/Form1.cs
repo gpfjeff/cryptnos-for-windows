@@ -62,7 +62,10 @@
  * setting.  Added import dialog to allow user to pick and choose sites to import.  Added several
  * new tooltip values.
  * 
- * This program is Copyright 2011, Jeffrey T. Darlington.
+ * UPDATES FOR 1.3.1:  Added Show Master Passphrase and Clear Passwords on Focus Loss
+ * functionality.
+ * 
+ * This program is Copyright 2012, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
  * 
@@ -219,6 +222,17 @@ namespace com.gpfcomics.Cryptnos
         private bool disableUpdateCheck = false;
 
         /// <summary>
+        /// Whether or not Cryptnos should show or obscure the master passphrase
+        /// </summary>
+        private bool showMasterPassword = false;
+
+        /// <summary>
+        /// Whether or not Cryptnos should clear the master passphrase and generated
+        /// password when the main form loses focus
+        /// </summary>
+        private bool clearPasswordsOnFocusLoss = false;
+
+        /// <summary>
         /// This flag gets set to true if this is the very first time Cryptnos has been
         /// run for this user.
         /// </summary>
@@ -343,6 +357,15 @@ namespace com.gpfcomics.Cryptnos
                             0) == 1 ? true : false;
                         // Turn debug mode on or off:
                         debug = (int)CryptnosSettings.GetValue("DebugMode",
+                            0) == 1 ? true : false;
+                        // Get the user's preference on whether or not the master passphrase should
+                        // be visible or not.  It should be obscured by default.
+                        showMasterPassword = (int)CryptnosSettings.GetValue("ShowMasterPassword",
+                            0) == 1 ? true : false;
+                        txtPassphrase.UseSystemPasswordChar = !showMasterPassword;
+                        // Get the user's preference of whether or not the master passphrase and
+                        // generated password should be cleared when Cryptnos loses focus:
+                        clearPasswordsOnFocusLoss = (int)CryptnosSettings.GetValue("ClearPasswordsOnFocusLoss",
                             0) == 1 ? true : false;
                         // Get the encoding.  Note the funky way we'll try to set the default.
                         // If this is the very first time the user has tried to run Cryptnos
@@ -583,6 +606,22 @@ namespace com.gpfcomics.Cryptnos
         {
             // This method contains the common clean-up code, so call it:
             ExitApplication();
+        }
+
+        /// <summary>
+        /// What to do when the form loses focus
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Form1_Deactivate(object sender, EventArgs e)
+        {
+            // If the user prefers to clear the password boxes when the form loses focus,
+            // do so now:
+            if (clearPasswordsOnFocusLoss)
+            {
+                txtPassphrase.Text = "";
+                txtPassword.Text = "";
+            }
         }
 
         /// <summary>
@@ -1177,11 +1216,11 @@ namespace com.gpfcomics.Cryptnos
                 {
                     showAdvancedWarning = false;
                     ads = new AdvancedSettingsDialog(encoding, chkShowTooltips.Checked, debug,
-                        disableUpdateCheck, this.TopMost); 
+                        disableUpdateCheck, this.TopMost, showMasterPassword, clearPasswordsOnFocusLoss); 
                 }
             }
             else ads = new AdvancedSettingsDialog(encoding, chkShowTooltips.Checked, debug,
-                disableUpdateCheck, this.TopMost);
+                disableUpdateCheck, this.TopMost, showMasterPassword, clearPasswordsOnFocusLoss);
             // Now if the user got to here and the dialog was created, go ahead and
             // show it.  If they click OK, get the new settings and take note of
             // them.  We'll go ahead and write the values into the registry too.
@@ -1193,6 +1232,8 @@ namespace com.gpfcomics.Cryptnos
                     debug = ads.Debug;
                     disableUpdateCheck = ads.DisableUpdateCheck;
                     this.TopMost = ads.KeepOnTop;
+                    showMasterPassword = ads.ShowMasterPassword;
+                    clearPasswordsOnFocusLoss = ads.ClearPasswordsOnFocusLoss;
                     // If the user did not disable the update check and they requested that
                     // we force an update check the next time we launch, set the last update
                     // check date/time to the minimum value of DateTime, which will be well
@@ -1200,6 +1241,9 @@ namespace com.gpfcomics.Cryptnos
                     // next time we launch.
                     if (!disableUpdateCheck && ads.ForceUpdateCheck)
                         updateFeedLastCheck = DateTime.MinValue;
+                    // Tweak the master password box based on the new Show Master Passphrase
+                    // preference:
+                    txtPassphrase.UseSystemPasswordChar = !showMasterPassword;
                     if (CryptnosRegistryKeyOpen())
                     {
                         CryptnosSettings.SetValue("Encoding", encoding.WebName,
@@ -1210,7 +1254,9 @@ namespace com.gpfcomics.Cryptnos
                             RegistryValueKind.DWord);
                         CryptnosSettings.SetValue("LastUpdateCheck",
                             updateFeedLastCheck.ToString(), RegistryValueKind.String);
-                        CryptnosSettings.SetValue("KeepOnTop", (TopMost ? 1 : 0),
+                        CryptnosSettings.SetValue("ShowMasterPassword", (showMasterPassword ? 1 : 0),
+                            RegistryValueKind.DWord);
+                        CryptnosSettings.SetValue("ClearPasswordsOnFocusLoss", (clearPasswordsOnFocusLoss ? 1 : 0),
                             RegistryValueKind.DWord);
                     }
                 }
@@ -1486,6 +1532,10 @@ namespace com.gpfcomics.Cryptnos
                     CryptnosSettings.SetValue("LastUpdateCheck", updateFeedLastCheck.ToString(),
                         RegistryValueKind.String);
                     CryptnosSettings.SetValue("DisableUpdateCheck", (disableUpdateCheck ? 1: 0),
+                        RegistryValueKind.DWord);
+                    CryptnosSettings.SetValue("ShowMasterPassword", (showMasterPassword ? 1 : 0),
+                        RegistryValueKind.DWord);
+                    CryptnosSettings.SetValue("ClearPasswordsOnFocusLoss", (clearPasswordsOnFocusLoss ? 1 : 0),
                         RegistryValueKind.DWord);
                     CryptnosSettings.SetValue("DebugMode", (debug ? 1 : 0),
                         RegistryValueKind.DWord);
