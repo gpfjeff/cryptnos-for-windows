@@ -282,7 +282,7 @@ namespace com.gpfcomics.Cryptnos
             this.btnAbout.TabIndex = 2;
             this.btnAbout.Text = "About...";
             this.toolTip1.SetToolTip(this.btnAbout, "Click this button to see the copyright and\r\nlicensing information about Cryptnos," +
-                    " as\r\nwell as a hyperlink to find Cryptnos\r\nonline.");
+        " as\r\nwell as a hyperlink to find Cryptnos\r\nonline.");
             this.btnAbout.UseVisualStyleBackColor = true;
             this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
             // 
@@ -448,6 +448,7 @@ namespace com.gpfcomics.Cryptnos
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Cryptnos";
+            this.Deactivate += new System.EventHandler(this.Form1_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.gboxOptionalRules.ResumeLayout(false);
             this.gboxOptionalRules.PerformLayout();

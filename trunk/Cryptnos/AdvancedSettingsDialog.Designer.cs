@@ -41,6 +41,8 @@ namespace com.gpfcomics.Cryptnos
             this.chkForceUpdateCheck = new System.Windows.Forms.CheckBox();
             this.chkKeepOnTop = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.chkShowMasterPassphrase = new System.Windows.Forms.CheckBox();
+            this.chkClearPasswordOnFocusLoss = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // lblWarning
@@ -79,31 +81,31 @@ namespace com.gpfcomics.Cryptnos
             this.lblDefaultEncoding.TabIndex = 3;
             this.lblDefaultEncoding.Text = "System default encoding: ";
             this.toolTip1.SetToolTip(this.lblDefaultEncoding, "This label displays the default text encoding\r\nfor your system.  This is what you" +
-                    "r computer\r\nuses to convert text to binary data if you\r\ndon\'t specify anything e" +
-                    "lse.");
+        "r computer\r\nuses to convert text to binary data if you\r\ndon\'t specify anything e" +
+        "lse.");
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(70, 265);
+            this.btnOK.Location = new System.Drawing.Point(68, 313);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 4;
             this.btnOK.Text = "OK";
             this.toolTip1.SetToolTip(this.btnOK, "Click this button to save your current\r\nsettings and return to the main\r\nCryptnos" +
-                    " window.");
+        " window.");
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(151, 265);
+            this.btnCancel.Location = new System.Drawing.Point(149, 313);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 5;
             this.btnCancel.Text = "Cancel";
             this.toolTip1.SetToolTip(this.btnCancel, "Click this button to abandon any changes\r\nto your settings and return to the main" +
-                    "\r\nCryptnos window.");
+        "\r\nCryptnos window.");
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
@@ -116,8 +118,8 @@ namespace com.gpfcomics.Cryptnos
             this.chkDebug.TabIndex = 6;
             this.chkDebug.Text = "Enable debug mode (more detailed error messages)";
             this.toolTip1.SetToolTip(this.chkDebug, "Enable this checkbox to get more detailed\r\nerror messages when something goes\r\nwr" +
-                    "ong.  This may be more helpful when\r\ndiscussing problems with the Cryptnos\r\ndeve" +
-                    "lopment team.");
+        "ong.  This may be more helpful when\r\ndiscussing problems with the Cryptnos\r\ndeve" +
+        "lopment team.");
             this.chkDebug.UseVisualStyleBackColor = true;
             // 
             // chkDisableUpdateCheck
@@ -129,8 +131,8 @@ namespace com.gpfcomics.Cryptnos
             this.chkDisableUpdateCheck.TabIndex = 7;
             this.chkDisableUpdateCheck.Text = "Disable update check (not recommended)";
             this.toolTip1.SetToolTip(this.chkDisableUpdateCheck, "Enable this checkbox to prevent Cryptnos\r\nfrom accessing the Cryptnos website to\r" +
-                    "\ncheck for updates.  We do not recommend\r\nactivating this option unless absolute" +
-                    "ly\r\nnecessary.");
+        "\ncheck for updates.  We do not recommend\r\nactivating this option unless absolute" +
+        "ly\r\nnecessary.");
             this.chkDisableUpdateCheck.UseVisualStyleBackColor = true;
             this.chkDisableUpdateCheck.CheckedChanged += new System.EventHandler(this.chkDisableUpdateCheck_CheckedChanged);
             // 
@@ -160,13 +162,37 @@ namespace com.gpfcomics.Cryptnos
             // 
             this.toolTip1.IsBalloon = true;
             // 
+            // chkShowMasterPassphrase
+            // 
+            this.chkShowMasterPassphrase.AutoSize = true;
+            this.chkShowMasterPassphrase.Location = new System.Drawing.Point(15, 266);
+            this.chkShowMasterPassphrase.Name = "chkShowMasterPassphrase";
+            this.chkShowMasterPassphrase.Size = new System.Drawing.Size(144, 17);
+            this.chkShowMasterPassphrase.TabIndex = 10;
+            this.chkShowMasterPassphrase.Text = "Show master passphrase";
+            this.toolTip1.SetToolTip(this.chkShowMasterPassphrase, resources.GetString("chkShowMasterPassphrase.ToolTip"));
+            this.chkShowMasterPassphrase.UseVisualStyleBackColor = true;
+            // 
+            // chkClearPasswordOnFocusLoss
+            // 
+            this.chkClearPasswordOnFocusLoss.AutoSize = true;
+            this.chkClearPasswordOnFocusLoss.Location = new System.Drawing.Point(15, 290);
+            this.chkClearPasswordOnFocusLoss.Name = "chkClearPasswordOnFocusLoss";
+            this.chkClearPasswordOnFocusLoss.Size = new System.Drawing.Size(191, 17);
+            this.chkClearPasswordOnFocusLoss.TabIndex = 11;
+            this.chkClearPasswordOnFocusLoss.Text = "Clear passwords when losing focus";
+            this.toolTip1.SetToolTip(this.chkClearPasswordOnFocusLoss, resources.GetString("chkClearPasswordOnFocusLoss.ToolTip"));
+            this.chkClearPasswordOnFocusLoss.UseVisualStyleBackColor = true;
+            // 
             // AdvancedSettingsDialog
             // 
             this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(292, 299);
+            this.ClientSize = new System.Drawing.Size(292, 343);
+            this.Controls.Add(this.chkClearPasswordOnFocusLoss);
+            this.Controls.Add(this.chkShowMasterPassphrase);
             this.Controls.Add(this.chkKeepOnTop);
             this.Controls.Add(this.chkForceUpdateCheck);
             this.Controls.Add(this.chkDisableUpdateCheck);
@@ -202,5 +228,7 @@ namespace com.gpfcomics.Cryptnos
         private System.Windows.Forms.CheckBox chkForceUpdateCheck;
         private System.Windows.Forms.CheckBox chkKeepOnTop;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.CheckBox chkShowMasterPassphrase;
+        private System.Windows.Forms.CheckBox chkClearPasswordOnFocusLoss;
     }
 }

@@ -132,6 +132,18 @@ unique).  Obviously, the stronger this
 passphrase is, the stronger your final
 password will become.</value>
   </data>
+  <data name="gboxOptionalRules.ToolTip" xml:space="preserve">
+    <value>This section contains optional settings
+or rules which allow you to modify the
+final password value.  Here you can
+specify a password length, what
+characters will be used, and which hash
+algorithm to use to generate your new
+password.  While the default values are
+usually OK, changing these can help
+adjust the value to better fit certain
+edge use cases.</value>
+  </data>
   <data name="cbCharLimit.ToolTip" xml:space="preserve">
     <value>This box allows you to restrict the length
 of your generated password.  By default,
@@ -189,18 +201,6 @@ here is to use alphanumeric characters (letters
 and numbers), but it is strongly recommended
 to use all available characters if the site or
 application will allow it.</value>
-  </data>
-  <data name="gboxOptionalRules.ToolTip" xml:space="preserve">
-    <value>This section contains optional settings
-or rules which allow you to modify the
-final password value.  Here you can
-specify a password length, what
-characters will be used, and which hash
-algorithm to use to generate your new
-password.  While the default values are
-usually OK, changing these can help
-adjust the value to better fit certain
-edge use cases.</value>
   </data>
   <data name="chkRemember.ToolTip" xml:space="preserve">
     <value>If this checkbox is checked, Cryptnos will
@@ -308,17 +308,6 @@ will also be displayed here.  You can
 fine tune your parameters further using
 the options in the sections below.</value>
   </data>
-  <data name="chkLock.ToolTip" xml:space="preserve">
-    <value>If this checkbox is checked, Cryptnos will lock
-your parameter information to prevent it from
-being modified or overwritten.  In order to edit
-or "forget" parameter information, this box
-must be unchecked.  Obviously, this implies
-that the Remember Parameters box must be
-checked for this box to be enabled.  Checking
-this box disables that checkbox and the Forget,
-Forget All, and Import buttons.</value>
-  </data>
   <data name="gboxRememberingSettings.ToolTip" xml:space="preserve">
     <value>This section allows you to specify if and how
 Cryptnos remembers your password para-
@@ -329,6 +318,17 @@ remembered, and that information is ALWAYS
 encrypted.  You can also make Cryptnos
 "forget" one or more of your parameters if
 you decide to discontinue their use.</value>
+  </data>
+  <data name="chkLock.ToolTip" xml:space="preserve">
+    <value>If this checkbox is checked, Cryptnos will lock
+your parameter information to prevent it from
+being modified or overwritten.  In order to edit
+or "forget" parameter information, this box
+must be unchecked.  Obviously, this implies
+that the Remember Parameters box must be
+checked for this box to be enabled.  Checking
+this box disables that checkbox and the Forget,
+Forget All, and Import buttons.</value>
   </data>
   <data name="chkShowTooltips.ToolTip" xml:space="preserve">
     <value>Clear this checkbox if you find these help
