@@ -1,9 +1,9 @@
                              Cryptnos for Windows
-                                Version 1.3.0
+                                Version 1.3.1
                               Source ReadMe File
 
                             Jeffrey T. Darlington
-                               October 8, 2011
+                                April 10, 2012
                            http://www.cryptnos.com/
 
 Cryptnos is a multi-platform, Open Source application for generating strong, pseudo-random passwords using cryptographic hashes.  It combines a unique "site token" such as a website domain name with a master password and runs this data through a cryptographic hash algorithm to produce a password that is unique, lengthy, seemingly random yet completely repeatable.  Unlike similar products, however, it is exceedingly flexible.  It is not a browser plugin, so it can be used with other applications outside the Web.  It provides unparalleled versatility by letting you specify the cryptographic hash to use, how many iterations of the hash to perform, what characters to include, and how long the final password should be.  Best of all, it is exceedingly secure.  Your master and generated passwords are *NEVER* stored, and the parameters to recreate your passwords are stored in an encrypted form.
