@@ -9,7 +9,7 @@ blockquote { background: #EEEEEE; }
 </head>
 <body><h1>Cryptnos Help</h1>
 <p>Official Cryptnos Site: <a href="http://www.cryptnos.com/" target="_blank">http://www.cryptnos.com/</a><br />
-Last Updated October 12, 2011</p>
+Last Updated April 10, 2012</p>
 
 <a name="toc"><h2>Table of Contents</h2></a>
 <ul>
@@ -211,6 +211,7 @@ Last Updated October 12, 2011</p>
 <p>The <strong>Disable update check</strong> checkbox turns off the built-in update check on start-up. If this box is checked, Cryptnos will never contact the official Cryptnos website and look for updated versions. While there are legitimate reasons to disable this check, it is not recommended. Since Cryptnos is a security application, keeping up with the latest updates is important for keeping your passwords and the services they protect secure. You should only disable this check if you have very specific reasons, and you should manually check for updates periodically in lieu of relying on this process.</p>
 <p>The <strong>Force update check on next launch</strong> checkbox will force Cryptnos to look for a new version the next time it starts. Normally, Cryptnos checks roughly once per week for new versions; it keeps a record of the last time it checked and checks again if that date is older than one week. Checking this box resets this date to sometime in the distant past, ensuring that Cryptnos will check again after you've closed it and restarted it. Obviously, this option has no effect if you disable the update check, so checking the <strong>Disable update check</strong> checkbox will clear and disable this checkbox. Clearing the <strong>Disable update check</strong> checkbox will re-enable this checkbox.</p>
 <p>The <strong>Keep Cryptnos on top of other windows</strong> checkbox will try to force Cryptnos to float above all other windows, regardless of whether or not Cryptnos currently has focus. This is handy if you prefer to manually type your passwords into an authentication form rather than copy and paste them, exposing your passwords to clipboard-based attacks. Note that Cryptnos can only make a "best effort" to stay on top of the window stack; if another application attempts to perform the same action, it may supersede Cryptnos and overlap it. Clearing this checkbox will restore the default behavior and Cryptnos will behave like most applications, going behind other windows when it loses focus.</p>
+<p>The <strong>Clear passwords when losing focus</strong> checkbox empties out the contents of the master passphrase and generated password boxes whenever the main Cryptnos window loses focus. By default, Cryptnos does not perform this action, which replicates the behavior from versions prior to when this option was introduced. When this option is activated and Cryptnos gets hidden by another applicaiton window or another application gains the user's focus, the password boxes will be cleared to prevent eavesdroppers seeing the passwords over the user's shoulder or from other applications attempting to scan Cryptnos' allocated memory. Note that this option does not affect the <strong>Copy password to clipboard</strong> setting; if that option is set, the generated password will remain in the system clipboard until overwritten by some other data.</p>
 
 <p>[ <a href="#toc">Return to Table of Contents</a> ]</p>
 
@@ -293,9 +294,15 @@ Last Updated October 12, 2011</p>
 <li>Added "Keep Cryptnos on top of other windows" option in Advanced Settings.</li>
 </ul>
 </li>
+<li><strong>Version 1.3.1:</strong>
+<ul>
+<li>Added option to clear master and generated passwords when the main Cryptnos window loses focus.</li>
+<li>Updated ZXing library to the latest revision.</li>
+</ul>
+</li>
 </ul>
 
 <p>[ <a href="#toc">Return to Table of Contents</a> ]</p>
 
-<p>This document is &#169; Copyright 2011, Jeffrey T. Darlington. It and the software it describes are released under the <a href="gpl.html">GNU General Public License, Version 2</a>.</p>
+<p>This document is &#169; Copyright 2012, Jeffrey T. Darlington. It and the software it describes are released under the <a href="gpl.html">GNU General Public License, Version 2</a>.</p>
 </body></html>
