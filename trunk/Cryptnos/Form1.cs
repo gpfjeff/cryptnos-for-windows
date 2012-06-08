@@ -65,6 +65,9 @@
  * UPDATES FOR 1.3.1:  Added Show Master Passphrase and Clear Passwords on Focus Loss
  * functionality.
  * 
+ * UPDATES FOR 1.3.2:  Implemented Issue 6, alphabetic sorting of sites when a new site is
+ * added.
+ * 
  * This program is Copyright 2012, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
@@ -1692,9 +1695,16 @@ namespace com.gpfcomics.Cryptnos
                                 SiteParameters.GenerateKeyFromSite(cbSites.Text),
                                 RegistryValueKind.String);
                             // If the site doesn't exist in the drop-down list, add it now.  That way
-                            // it can be quickly selected again.
+                            // it can be quickly selected again.  To do that, we'll have to repopulate
+                            // the entire list to make sure the it gets sorted alphabetically.  Then
+                            // we'll set the selected value back to the new item's site token.
                             if (cbSites.Items.IndexOf(cbSites.Text) == -1)
-                                cbSites.Items.Add(cbSites.Text);
+                            {
+                                PopulateSitesDropdown();
+                                cbSites.SelectedValue = cbSites.Text;
+                            }
+                            // Since there are sites in the list now, enable the Forget and Export
+                            // buttons:
                             btnForgetAll.Enabled = true;
                             btnExport.Enabled = true;
                             btnForget.Enabled = true;

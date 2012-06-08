@@ -1,15 +1,15 @@
 [Setup]
 InternalCompressLevel=ultra
 OutputDir=.\bin
-OutputBaseFilename=Cryptnos_1.3.1_Setup
-VersionInfoVersion=1.3.1.$WCREV$
+OutputBaseFilename=Cryptnos_1.3.2_Setup
+VersionInfoVersion=1.3.2.$WCREV$
 VersionInfoCompany=GPF Comics
 VersionInfoDescription=This program will install Cryptnos on your computer.  Cryptnos is a cryptographic passphrase generator using the Microsoft .NET 2.0 Framework.
-VersionInfoTextVersion=Cryptnos Setup 1.3.1
+VersionInfoTextVersion=Cryptnos Setup 1.3.2
 VersionInfoCopyright=Copyright $WCDATE=%Y$, Jeffrey T. Darlington.
 AppCopyright=Copyright $WCDATE=%Y$, Jeffrey T. Darlington.
 AppName=Cryptnos
-AppVerName=Cryptnos 1.3.1
+AppVerName=Cryptnos 1.3.2
 LicenseFile=.\gpl.rtf
 PrivilegesRequired=poweruser
 MinVersion=4.1.1998,5.0.2195sp3
@@ -23,8 +23,8 @@ AppPublisher=GPF Comics
 AppPublisherURL=http://www.gpf-comics.com/
 AppSupportURL=http://www.cryptnos.com/
 AppUpdatesURL=http://www.cryptnos.com/
-AppVersion=Cryptnos 1.3.1
-UninstallDisplayName=Cryptnos 1.3.1
+AppVersion=Cryptnos 1.3.2
+UninstallDisplayName=Cryptnos 1.3.2
 SetupIconFile=..\Cryptnos\Lock.ico
 [Files]
 Source: ..\Cryptnos\bin\Release\Cryptnos.exe; DestDir: {app}
@@ -117,4 +117,4 @@ end;
 // doing a release build, make sure to change the random string below to some-
 // thing new to force SubWCRev to add the new info.
 //
-// Revision Tag: 302e38323431323731393732
+// Revision Tag: 302e39393635323039393630
