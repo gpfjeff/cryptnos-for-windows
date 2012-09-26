@@ -68,6 +68,10 @@
  * UPDATES FOR 1.3.2:  Implemented Issue 6, alphabetic sorting of sites when a new site is
  * added.
  * 
+ * UPDATES FOR 1.3.3:  Updated for GPFUpdateChecker 1.1.  Added additional error checking and
+ * message boxes for problems during start-up.  Permanently defaulted the text encoding to UTF-8
+ * rather than the system default if the user hasn't overridden it.
+ * 
  * This program is Copyright 2012, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
@@ -236,12 +240,6 @@ namespace com.gpfcomics.Cryptnos
         private bool clearPasswordsOnFocusLoss = false;
 
         /// <summary>
-        /// This flag gets set to true if this is the very first time Cryptnos has been
-        /// run for this user.
-        /// </summary>
-        private bool veryFirstTime = false;
-
-        /// <summary>
         /// This <see cref="Size"/> represents the size of the main form in its fully
         /// expanded mode.
         /// </summary>
@@ -370,43 +368,45 @@ namespace com.gpfcomics.Cryptnos
                         // generated password should be cleared when Cryptnos loses focus:
                         clearPasswordsOnFocusLoss = (int)CryptnosSettings.GetValue("ClearPasswordsOnFocusLoss",
                             0) == 1 ? true : false;
-                        // Get the encoding.  Note the funky way we'll try to set the default.
-                        // If this is the very first time the user has tried to run Cryptnos
-                        // (determined within CryptnosRegistryKeyOpen()), we'll try to default
-                        // the user to UTF-8.  However, if they've run the app before, we'll
-                        // use the system default, which is the old behavior.  Then we'll pass
-                        // this "default" as the default to the registry check.  Thus, if the
-                        // user has already set an encoding preference, that takes precedence.
-                        // If there's no user preference, use the "default" we set depending
-                        // on whether or not the user has run Cryptnos before.  This same
-                        // process goes for the catch block below.
-                        Encoding defaultEncoding = Encoding.Default;
-                        if (veryFirstTime) defaultEncoding = Encoding.UTF8;
+                        // Get the encoding.  Originally, Cryptnos defaulted to the system default
+                        // (Encoding.Default).  However, this proved to be a problem with cross-
+                        // platform passwords.  To fix the problem, we put in an elaborate check to
+                        // see if this was the very first time Cryptnos ever loaded; if it was, we
+                        // used the preferred cross-platform default (UTF-8), but if it wasn't we
+                        // used the system default.  This has turned out to be rather pointless, so
+                        // we'll hard-code UTF-8 as the default from here on out.  That's the best
+                        // choice for cross-platform work.  If the user wants to change that, they
+                        // can do so in the settings.
                         encoding = Encoding.GetEncoding((string)CryptnosSettings.GetValue("Encoding",
-                            defaultEncoding.WebName));
+                            Encoding.UTF8.WebName));
+                    }
+                    // If we were unable to open the registry, warn the user that something went wrong.
+                    // They can technically still use the program, but they won't be able to load or
+                    // save any parameters.
+                    else
+                    {
+                        MessageBox.Show("Cryptnos was unable to open the necessary registry keys to load and " +
+                            "save your settings for this session.  You should be able to use Cryptnos if you " +
+                            "remember all of your password parameters, but you won't be able to use any saved " +
+                            "parameters and you won't be able to save any changes during this session.  You " +
+                            "may need to check to see that you have the necessary permissions to modify " +
+                            "your personal registry settings with this login.", "Warning",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        SetDefaultSettings();
                     }
                 }
                 // If anything above blew up, set some sensible defaults:
-                catch
+                catch (Exception ex1)
                 {
-                    chkDailyMode.Checked = false;
-                    chkRemember.Checked = true;
-                    chkLock.Checked = false;
-                    cbCharTypes.SelectedIndex = 0;
-                    cbSites.Text = String.Empty;
-                    txtPassphrase.Text = String.Empty;
-                    txtIterations.Text = "1";
-                    cbHashes.SelectedItem = HashEngine.HashEnumToDisplayHash(Hashes.SHA1);
-                    cbCharLimit.SelectedIndex = 0;
-                    btnForget.Enabled = false;
-                    btnForgetAll.Enabled = false;
-                    btnExport.Enabled = false;
-                    chkShowTooltips.Checked = true;
-                    chkCopyToClipboard.Checked = false;
-                    updateFeedLastCheck = DateTime.MinValue;
-                    if (veryFirstTime) encoding = Encoding.UTF8;
-                    else encoding = Encoding.Default;
-                    TopMost = false;
+                    if (debug) MessageBox.Show(ex1.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("An error occurred while attempting to load your Cryptnos settings from the " +
+                        "registry. You should be able to use Cryptnos if you " +
+                        "remember all of your password parameters, but you won't be able to use any saved " +
+                        "parameters and you won't be able to save any changes during this session. You " +
+                        "may need to check to see that you have the necessary permissions to modify " +
+                        "your personal registry settings with this login.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    SetDefaultSettings();
                 }
                 // Turn on or off tooltip help depending on the user's save preference:
                 toolTip1.Active = chkShowTooltips.Checked;
@@ -435,17 +435,29 @@ namespace com.gpfcomics.Cryptnos
                 // the user unless an update is actually found.
                 if (!disableUpdateCheck)
                 {
-                    updateChecker = new UpdateChecker.UpdateChecker(updateFeedUri, updateFeedAppName,
-                        Assembly.GetExecutingAssembly().GetName().Version, this, updateFeedLastCheck);
-                    updateChecker.CheckForNewVersion();
+                    try
+                    {
+                        updateChecker = new UpdateChecker.UpdateChecker(updateFeedUri, updateFeedAppName,
+                            Assembly.GetExecutingAssembly().GetName().Version, this, updateFeedLastCheck, debug);
+                        updateChecker.CheckForNewVersion();
+                    }
+                    catch (Exception updateEx)
+                    {
+                        if (debug) MessageBox.Show(updateEx.ToString(), "Update Check Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        else MessageBox.Show("An error occurred while trying to perform the " +
+                            "update check.  Please try another check later.", "Update Check Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
+            // If anything blew up, tell the user to restart Cryptnos:
             catch (Exception ex)
             {
                 if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
-                else MessageBox.Show("I encountered an error while trying to launch " +
-                    "Cryptnos. Please close the application and try to restart it.", "Error",
+                else MessageBox.Show("Cryptnos encountered an error while trying to launch. " +
+                    "Please close the application and try to restart it.", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -1450,11 +1462,6 @@ namespace com.gpfcomics.Cryptnos
                     if (CryptnosSettings == null)
                     {
                         CryptnosSettings = GPF.CreateSubKey(CryptnosRegKeyName);
-                        // If the Cryptnos registry has never been created, this is likely
-                        // the very first time the user has ever run Cryptnos.  In that
-                        // case, we want to take note of that so we can set some defaults
-                        // later.
-                        veryFirstTime = true;
                     }
                     // Now that we've opened the Cryptnos master key, open the Sites
                     // subkey:
@@ -1744,6 +1751,31 @@ namespace com.gpfcomics.Cryptnos
             }
         }
 
+        /// <summary>
+        /// Set the UI to some sensible defaults.  This will be called if an error occurs during
+        /// start-up.
+        /// </summary>
+        private void SetDefaultSettings()
+        {
+            chkDailyMode.Checked = false;
+            chkRemember.Checked = true;
+            chkLock.Checked = false;
+            cbCharTypes.SelectedIndex = 0;
+            cbSites.Text = String.Empty;
+            txtPassphrase.Text = String.Empty;
+            txtIterations.Text = "1";
+            cbHashes.SelectedItem = HashEngine.HashEnumToDisplayHash(Hashes.SHA1);
+            cbCharLimit.SelectedIndex = 0;
+            btnForget.Enabled = false;
+            btnForgetAll.Enabled = false;
+            btnExport.Enabled = false;
+            chkShowTooltips.Checked = true;
+            chkCopyToClipboard.Checked = false;
+            updateFeedLastCheck = DateTime.MinValue;
+            encoding = Encoding.UTF8;
+            TopMost = false;
+        }
+
         #endregion
 
         #region IUpdateCheckListener Members
@@ -1804,6 +1836,7 @@ namespace com.gpfcomics.Cryptnos
             // We don't have a lot to do to close up shop.  Fortunately, we already have
             // a method to do all that stuff, so call it:
             ExitApplication();
+            Dispose();
         }
 
         #endregion
