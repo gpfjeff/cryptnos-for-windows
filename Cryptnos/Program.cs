@@ -9,13 +9,15 @@
  * 
  * The Cryptnos launching application.  See the Cryptnos form code for more details.
  * 
- * UPDATES FOR 1.2.0: Fixed a bug in the initial version check which blew up on certain systems
+ * UPDATES FOR 1.2.0:  Fixed a bug in the initial version check which blew up on certain systems
  * if the registry keys did not exist.
  * 
- * UPDATES FOR 1.2.2: Added code to prevent multiple instances of Cryptnos from running at the
+ * UPDATES FOR 1.2.2:  Added code to prevent multiple instances of Cryptnos from running at the
  * same time.
  * 
- * This program is Copyright 2011, Jeffrey T. Darlington.
+ * UPDATES FOR 1.3.3:  Fixed mutex bug; see Issue #8 in the Google Code issue tracker.
+ * 
+ * This program is Copyright 2012, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
  * 
@@ -56,6 +58,18 @@ namespace com.gpfcomics.Cryptnos
         static extern bool SetForegroundWindow(IntPtr hWnd);
 
         /// <summary>
+        /// This <see cref="Mutex"/> will help us ensure that only one instance of Cryptnos
+        /// can run at any given time.
+        /// </summary>
+        static Mutex oneCopyMutex = null;
+
+        /// <summary>
+        /// This <see cref="Guid"/> will be used in the generation of our <see cref="Mutex"/>
+        /// to ensure that only one instance of Cryptnos can run at any given time.
+        /// </summary>
+        static Guid mutexGuid = new Guid("492554CF-63EC-44BE-90AD-600CF6F9420A");
+
+        /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
@@ -80,7 +94,7 @@ namespace com.gpfcomics.Cryptnos
                     // settings of the newer version.
                     if (Assembly.GetExecutingAssembly().GetName().Version.CompareTo(regVersion)
                         < 0 && MessageBox.Show("It seems that you have previously run a newer " +
-                        "version  of Cryptnos (" + regVersion.ToString() + ") than the version " +
+                        "version of Cryptnos (" + regVersion.ToString() + ") than the version " +
                         "you are now running (" +
                         Assembly.GetExecutingAssembly().GetName().Version.ToString() +
                         ").  Please note that newer versions may introduce incompatibilities " +
@@ -112,7 +126,7 @@ namespace com.gpfcomics.Cryptnos
             // The main form has redundant checks here to handle similiar situations, but
             // the check here just didn't have it.  See Issue #1 in the Google Code issue
             // tracker for more details.
-            catch (Exception) { StartIt(); }
+            catch { StartIt(); }
 
         }
 
@@ -123,57 +137,72 @@ namespace com.gpfcomics.Cryptnos
         /// </summary>
         private static void StartIt()
         {
-            // The following single-instance test code was taken from the following URL:
+            // The following single-instance test code was adapted from the following URLs:
             // http://iridescence.no/post/CreatingaSingleInstanceApplicationinC.aspx
+            // http://kristofverbiest.blogspot.com/2008/11/creating-single-instance-application.html
             //
             // Create a Boolean flag which we'll test to see if we've created a new window
             // or not.  By default, assume that we've created an entirely new window.
             bool createdNew = true;
-            // Now create a mutex which will control our state.  Note the mutex name; we'll
-            // use a static string "Cryptnos" but combine it with the machine name and the
-            // user name to make sure other users on the same machine run their own instances
-            // without interfering with us.
-            using (Mutex mutex = new Mutex(true, "Cryptnos" + Environment.MachineName +
-                Environment.UserName, out createdNew))
+            // Asbestos underpants:
+            try
             {
-                // Now let's test our new window flag.  If the mutex was newly created, we're
-                // safe to start the new window:
-                if (createdNew)
+                // Create a mutex which will control our state.  Take particular note of the mutex name.
+                // First, it starts with "Local\"; if it did not, it would create a global mutex which
+                // would require administrative privileges, something not every user may necessarily have.
+                // I believe this has been causing issues for certain users with tight security policies.
+                // In this case "Local\" applies to local for the user.  Next, we include the application
+                // name, both to make it unique to us and easier to identify.  Lastly, we add in a GUID
+                // to avoid potential collisions with other apps.
+                using (oneCopyMutex = new Mutex(true, "Local\\Cryptnos{" + mutexGuid.ToString() + "}", out createdNew))
                 {
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
-                    Application.Run(new Form1());
-                }
-                // Otherwise, the mutex exists and we should already have a window open.
-                // We'll try to redirect the user to that window rather than open a new one.
-                else
-                {
-                    // Declare another flag to see whether or not we found the other
-                    // instance.  Be default, assume we haven't:
-                    bool foundIt = false;
-                    // Get the current process, then try to find any currently running
-                    // processes by the same name:
-                    Process current = Process.GetCurrentProcess();
-                    foreach (Process process in Process.GetProcessesByName(current.ProcessName))
+                    // Now let's test our new window flag.  If the mutex was newly created, we're
+                    // safe to start the new window:
+                    if (createdNew)
                     {
-                        // If we found one and the process ID numbers do not match, try to
-                        // bring the other instance to the foreground:
-                        if (process.Id != current.Id)
-                        {
-                            foundIt = true;
-                            SetForegroundWindow(process.MainWindowHandle);
-                            break;
-                        }
+                        Application.EnableVisualStyles();
+                        Application.SetCompatibleTextRenderingDefault(false);
+                        Application.Run(new Form1());
                     }
-                    // Did we find the other instance?  If not, warn the user:
-                    if (!foundIt)
-                        MessageBox.Show("Windows reports that another instance of Cryptnos " +
-                            "is currently running, but we can't find it. You may need to " +
-                            "manually stop the other Cryptnos process or reboot your " +
-                            "computer before you can run Cryptnos again.", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                    // Otherwise, the mutex exists and we should already have a window open.
+                    // We'll try to redirect the user to that window rather than open a new one.
+                    else
+                    {
+                        // Declare another flag to see whether or not we found the other
+                        // instance.  Be default, assume we haven't:
+                        bool foundIt = false;
+                        // Get the current process, then try to find any currently running
+                        // processes by the same name:
+                        Process current = Process.GetCurrentProcess();
+                        foreach (Process process in Process.GetProcessesByName(current.ProcessName))
+                        {
+                            // If we found one and the process ID numbers do not match, try to
+                            // bring the other instance to the foreground:
+                            if (process.Id != current.Id)
+                            {
+                                foundIt = true;
+                                SetForegroundWindow(process.MainWindowHandle);
+                                break;
+                            }
+                        }
+                        // Did we find the other instance?  If not, warn the user:
+                        if (!foundIt)
+                            MessageBox.Show("Windows reports that another instance of Cryptnos " +
+                                "is currently running, but we can't find it. You may need to " +
+                                "manually stop the other Cryptnos process or reboot your " +
+                                "computer before you can run Cryptnos again.", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    } // else
+
+                    // Release the mutex so other copies can run now:
+                    oneCopyMutex.ReleaseMutex();
+                } // using
             }
-        }
+            // I'm not sure what to do here for the catch block; if something blows up, we don't
+            // want the application, but that's covered because it shouldn't get called.  For
+            // now, we'll leave this blank.  If something crops up that we need to clean up,
+            // this is the place to do it.
+            catch { }
+        }  // StartIt()
     }
 }
