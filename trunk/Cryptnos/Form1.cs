@@ -70,7 +70,8 @@
  * 
  * UPDATES FOR 1.3.3:  Updated for GPFUpdateChecker 1.1.  Added additional error checking and
  * message boxes for problems during start-up.  Permanently defaulted the text encoding to UTF-8
- * rather than the system default if the user hasn't overridden it.
+ * rather than the system default if the user hasn't overridden it.  Changed font for the
+ * generated password box to make it easier to differentiate similar characters.
  * 
  * This program is Copyright 2012, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
@@ -182,7 +183,7 @@ namespace com.gpfcomics.Cryptnos
         /// <summary>
         /// The encoding to use for password generation.
         /// </summary>
-        private Encoding encoding = Encoding.Default;
+        private Encoding encoding = Encoding.UTF8;
 
         /// <summary>
         /// This flag helps us show the Advanced settings warning button only once per session.
@@ -1345,6 +1346,30 @@ namespace com.gpfcomics.Cryptnos
                 btnAdvanced.Visible = true;
                 btnClose.Visible = true;
             }
+        }
+
+        /// <summary>
+        /// What to do when the user clicks in the generated Password box
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtPassword_MouseClick(object sender, MouseEventArgs e)
+        {
+            // If the user clicks inside the Password box, they're probably wanting to
+            // copy the value to the clipboard.  Select all the password text:
+            txtPassphrase.SelectAll();
+        }
+
+        /// <summary>
+        /// What to do when the user double-clicks in the generated Password box
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtPassword_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            // If the user clicks inside the Password box, they're probably wanting to
+            // copy the value to the clipboard.  Select all the password text:
+            txtPassphrase.SelectAll();
         }
 
         #endregion

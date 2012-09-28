@@ -25,6 +25,9 @@
  * UPDATES FOR 1.3.1:  Added Show Master Passphrase and Clear Passwords on Focus Loss
  * checkboxes.
  * 
+ * UPDATES FOR 1.3.3:  Maked UTF-8 the default encoding except for when displaying the system
+ * default.
+ * 
  * This program is Copyright 2012, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
@@ -60,7 +63,7 @@ namespace com.gpfcomics.Cryptnos
         /// <summary>
         /// The currently selected text encoding
         /// </summary>
-        private Encoding encoding = Encoding.Default;
+        private Encoding encoding = Encoding.UTF8;
 
         /// <summary>
         /// Whether or not debug mode is enabled
