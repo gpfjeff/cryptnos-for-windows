@@ -38,7 +38,10 @@
  * registry.  In this case, the SiteParmemeters methods does the actual encryption/decryption,
  * so Cryptnos only need to call the appropriate methods.
  * 
- * This program is Copyright 2009, Jeffrey T. Darlington.
+ * UPDATES FOR 1.3.3:  Added comments on why Encoding.Default is used in certain places rather
+ * than switching those to Encoding.UTF8 as we've done other places.
+ * 
+ * This program is Copyright 2012, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
  * 
@@ -407,7 +410,10 @@ namespace com.gpfcomics.Cryptnos
         {
             // Generate an encryption key to encrypt with.  This is based on the
             // machine name and username of the user, which probably aren't the best
-            // choices, but should be unique for each user/machine.
+            // choices, but should be unique for each user/machine.  Note that we're
+            // using the system default encoding here, rather than UTF-8; this is a bit
+            // of legacy code, and we can't really change this without breaking existing
+            // parameters.  Since this is an internal thing, so it shouldn't be a problem.
             SHA256Managed hasher = new SHA256Managed();
             byte[] cryptKey = Encoding.Default.GetBytes(Environment.MachineName +
                 Environment.UserName + key);
@@ -424,7 +430,10 @@ namespace com.gpfcomics.Cryptnos
         {
             // Use SHA-512 to generate a pseudo-random IV.  We'll use the user's username and
             // the machine name as the key data; this isn't really super secure, but it should
-            // at least be unique per user/machine.
+            // at least be unique per user/machine.  Note that we're using the system default
+            // encoding here, rather than UTF-8; this is a bit of legacy code, and we can't
+            // really change this without breaking existing parameters.  Since this is an
+            // internal thing, so it shouldn't be a problem.
             SHA512Managed hasher = new SHA512Managed();
             byte[] iv = Encoding.Default.GetBytes(key + Environment.UserName +
                 Environment.MachineName);

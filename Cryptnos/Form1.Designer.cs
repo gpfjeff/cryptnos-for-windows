@@ -233,12 +233,15 @@ namespace com.gpfcomics.Cryptnos
             // 
             // txtPassword
             // 
+            this.txtPassword.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtPassword.Location = new System.Drawing.Point(61, 100);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.ReadOnly = true;
             this.txtPassword.Size = new System.Drawing.Size(212, 20);
             this.txtPassword.TabIndex = 3;
             this.toolTip1.SetToolTip(this.txtPassword, resources.GetString("txtPassword.ToolTip"));
+            this.txtPassword.MouseClick += new System.Windows.Forms.MouseEventHandler(this.txtPassword_MouseClick);
+            this.txtPassword.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.txtPassword_MouseDoubleClick);
             // 
             // btnGenerate
             // 

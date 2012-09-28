@@ -35,7 +35,9 @@
  * "hash menu strings", which is basically the Hashes enumeration name converted to a string.
  * Those values are used internally for writing to the registry, so they need to be preserved.
  * 
- * This program is Copyright 2010, Jeffrey T. Darlington.
+ * UPDATES FOR 1.3.3:  Switched the default encoding to UTF-8 if any encoding is not specified.
+ * 
+ * This program is Copyright 2012, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
  * Web:     http://www.gpf-comics.com/
  * 
@@ -132,7 +134,8 @@ namespace com.gpfcomics.Cryptnos
 
         /// <summary>
         /// Computes the cryptographic hash of an input string over a specified number of
-        /// iterations and returns a Base64-encoded result
+        /// iterations and returns a Base64-encoded result.  This version defaults to using the
+        /// UTF-8 encoding.
         /// </summary>
         /// <param name="hash">The cryptographic hash algorithm to use, specified by one of
         /// the <see cref="Hashes"/> enumeration values.</param>
@@ -145,7 +148,7 @@ namespace com.gpfcomics.Cryptnos
         /// hash is computed</exception>
         public static string HashString(Hashes hash, string text, int count)
         {
-            return HashString(hash, Encoding.Default, text, count);
+            return HashString(hash, Encoding.UTF8, text, count);
         }
 
         /// <summary>
