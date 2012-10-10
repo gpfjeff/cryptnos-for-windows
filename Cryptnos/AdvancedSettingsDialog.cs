@@ -25,8 +25,9 @@
  * UPDATES FOR 1.3.1:  Added Show Master Passphrase and Clear Passwords on Focus Loss
  * checkboxes.
  * 
- * UPDATES FOR 1.3.3:  Maked UTF-8 the default encoding except for when displaying the system
- * default.
+ * UPDATES FOR 1.3.3:  Made UTF-8 the default encoding except for when displaying the system
+ * default.  Removed the "force update check on next launch" checkbox and replaced it with a
+ * new Check for Updates button that lets the user interactively initiate the check.
  * 
  * This program is Copyright 2012, Jeffrey T. Darlington.
  * E-mail:  jeff@gpf-comics.com
@@ -50,7 +51,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.Reflection;
 using System.Windows.Forms;
+using com.gpfcomics.UpdateChecker;
 
 namespace com.gpfcomics.Cryptnos
 {
@@ -58,8 +61,20 @@ namespace com.gpfcomics.Cryptnos
     /// This dialog allows the user to tweak advanced settings within Cryptnos, such as
     /// which text encoding to use during password generation.
     /// </summary>
-    public partial class AdvancedSettingsDialog : Form
+    public partial class AdvancedSettingsDialog : Form, IUpdateCheckListener
     {
+        /// <summary>
+        /// This delegate is used to reset the Check for Updates button to its default state
+        /// in a thread-safe way.  See ResetUpdateCheckButton() for details.
+        /// </summary>
+        /// <param name="text">The text to set for the button</param>
+        private delegate void SetTextCallback(string text);
+
+        /// <summary>
+        /// Our parent, the main Cryptnos form
+        /// </summary>
+        private MainForm parent = null;
+
         /// <summary>
         /// The currently selected text encoding
         /// </summary>
@@ -74,11 +89,6 @@ namespace com.gpfcomics.Cryptnos
         /// Whether or not to disable the update check
         /// </summary>
         private bool disableUpdateCheck = false;
-
-        /// <summary>
-        /// Whether or not to force an update check on the next launch
-        /// </summary>
-        private bool forceUpdateCheck = false;
 
         /// <summary>
         /// Whether or not Cryptnos should stay on top of other windows
@@ -104,6 +114,35 @@ namespace com.gpfcomics.Cryptnos
         private bool showDisableUpdateCheckWarning = true;
 
         /// <summary>
+        /// A <see cref="Uri"/> for the official Cryptnos updates feed.  The
+        /// <see cref="UpdateChecker"/> will use this feed to look for updated versions of
+        /// Cryptnos.
+        /// </summary>
+        private Uri updateFeedUri = new Uri(Properties.Resources.UpdateFeedUri);
+
+        /// <summary>
+        /// The unique app string for <see cref="UpdateChecker"/> lookups
+        /// </summary>
+        private string updateFeedAppName = Properties.Resources.UpdateFeedAppName;
+
+        /// <summary>
+        /// The number of days between update checks, which we will passs to the
+        /// <see cref="UpdateChecker"/>.
+        /// </summary>
+        private int updateInterval = Int32.Parse(Properties.Resources.UpdateIntervalInDays);
+
+        /// <summary>
+        /// The actual <see cref="UpdateChecker"/> object, which will check for Cryptnos
+        /// updates
+        /// </summary>
+        private UpdateChecker.UpdateChecker updateChecker = null;
+
+        /// <summary>
+        /// This string contains the default button text for the Check for Updates button
+        /// </summary>
+        private string btnCheckForUpdatesText = "Check for Updates...";
+
+        /// <summary>
         /// The currently selected text encoding
         /// </summary>
         public Encoding Encoding
@@ -125,14 +164,6 @@ namespace com.gpfcomics.Cryptnos
         public bool DisableUpdateCheck
         {
             get { return disableUpdateCheck; }
-        }
-
-        /// <summary>
-        /// Whether or not to force an update check on the next launch
-        /// </summary>
-        public bool ForceUpdateCheck
-        {
-            get { return forceUpdateCheck; }
         }
 
         /// <summary>
@@ -163,6 +194,7 @@ namespace com.gpfcomics.Cryptnos
         /// <summary>
         /// Default constructor
         /// </summary>
+        /// <param name="parent">Our parent Cryptnos form</param>
         /// <param name="encoding">The current text encoding setting</param>
         /// <param name="showTooltips">A boolean value specifying whether or not to show
         /// tooltip help.</param>
@@ -172,11 +204,13 @@ namespace com.gpfcomics.Cryptnos
         /// <param name="showMasterPassword">Whether or not Cryptnos should show or obscure the master passphrase</param>
         /// <param name="clearPasswordsOnFocusLoss">Whether or not Cryptnos should clear the master passphrase and generated
         /// password when the main form loses focus</param>
-        public AdvancedSettingsDialog(Encoding encoding, bool showTooltips, bool debug,
+        public AdvancedSettingsDialog(MainForm parent, Encoding encoding, bool showTooltips, bool debug,
             bool disableUpdateCheck, bool keepOnTop, bool showMasterPassword,
             bool clearPasswordsOnFocusLoss)
         {
             InitializeComponent();
+            // Keep track of our parent form:
+            this.parent = parent;
             // Set up the encoding's drop-down box:
             foreach (EncodingInfo encodingInfo in Encoding.GetEncodings())
                 cmbTextEncodings.Items.Add(encodingInfo.GetEncoding());
@@ -200,13 +234,6 @@ namespace com.gpfcomics.Cryptnos
             this.keepOnTop = keepOnTop;
             chkKeepOnTop.Checked = keepOnTop;
             this.TopMost = keepOnTop;
-            // If the update check is currently disabled, disable the force update check box
-            // so it cannot be selected:
-            if (disableUpdateCheck)
-            {
-                chkForceUpdateCheck.Checked = false;
-                chkForceUpdateCheck.Enabled = false;
-            }
             toolTip1.Active = showTooltips;
         }
 
@@ -222,7 +249,6 @@ namespace com.gpfcomics.Cryptnos
             encoding = (Encoding)cmbTextEncodings.SelectedItem;
             debug = chkDebug.Checked;
             disableUpdateCheck = chkDisableUpdateCheck.Checked;
-            forceUpdateCheck = chkForceUpdateCheck.Checked;
             keepOnTop = chkKeepOnTop.Checked;
             showMasterPassword = chkShowMasterPassphrase.Checked;
             clearPasswordsOnFocusLoss = chkClearPasswordOnFocusLoss.Checked;
@@ -241,6 +267,18 @@ namespace com.gpfcomics.Cryptnos
         }
 
         /// <summary>
+        /// What to do when the Debug checkbox is toggled
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chkDebug_CheckedChanged(object sender, EventArgs e)
+        {
+            // Immediately turn on or off debug messages.  Note that this won't take affect
+            // for the entire app until the user clicks the OK button.
+            debug = chkDebug.Checked;
+        }
+
+        /// <summary>
         /// Extra things to do when the Disable Update Check checkbox is toggled
         /// </summary>
         /// <param name="sender"></param>
@@ -251,10 +289,6 @@ namespace com.gpfcomics.Cryptnos
             // ticked or not.  We'll cover the checked case first:
             if (chkDisableUpdateCheck.Checked)
             {
-                // First, uncheck and disable the force update check box.  This isn't a valid
-                // option if the update check is completely disabled.
-                chkForceUpdateCheck.Checked = false;
-                chkForceUpdateCheck.Enabled = false;
                 // Since we know the box has been checked and the user has chosen to disable
                 // the update check, show a warning the first time this change is made in the
                 // session.  We don't want to show this when the box is unchecked; only when
@@ -272,9 +306,133 @@ namespace com.gpfcomics.Cryptnos
                     showDisableUpdateCheckWarning = false;
                 }
             }
-            // If the box is unchecked, all we have to do for now is re-enable the force
-            // update check box, which is now a valid option:
-            else chkForceUpdateCheck.Enabled = true;
         }
+
+        /// <summary>
+        /// What to do when the Check for Updates button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnCheckForUpdates_Click(object sender, EventArgs e)
+        {
+            // Asbestos underpants:
+            try
+            {
+                // Create a new instance of the update checker.  Note that we create a new one
+                // each time to make sure that things like the debug flag gets changed if the
+                // checkbox is toggled.  Also note that we'll hard code the last update check date
+                // to sometime in the past (we'll subtract twice the update interval just to make
+                // sure); this will force the update check to occur regardless of when the auto-
+                // mattic check last occurred..
+                updateChecker = new UpdateChecker.UpdateChecker(updateFeedUri, updateFeedAppName,
+                    Assembly.GetExecutingAssembly().GetName().Version, this,
+                    DateTime.Now.AddDays(-(updateInterval * 2)), updateInterval,
+                    debug);
+                // Set the text of the button to a "Please wait..." message, then disable it so
+                // the user can't click it again:
+                btnCheckForUpdates.Text = "Please wait...";
+                btnCheckForUpdates.Enabled = false;
+                // Now initiate the update check:
+                updateChecker.CheckForNewVersion();
+            }
+            // If anything blew up, display an error message, then re-enable the Check for Updates
+            // button:
+            catch (Exception ex)
+            {
+                if (debug) MessageBox.Show(ex.ToString(), "Update Check Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else MessageBox.Show("An error occurred while trying to perform the " +
+                    "update check.  Please try another check later.", "Update Check Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                btnCheckForUpdates.Text = btnCheckForUpdatesText;
+                btnCheckForUpdates.Enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// Reset the Check for Updates button to its default state in a thread-safe
+        /// way.  Use this method to reset the button when called from any of the
+        /// <see cref="IUpdateCheckListener"/> methods.
+        /// </summary>
+        /// <param name="text">The text to display on the button</param>
+        private void ResetUpdateCheckButton(string text)
+        {
+            // Since changing the button's state is a thread-unsafe operation, we need
+            // to use a callback to set it if we're invoking it from the update checker
+            // thread.  See:
+            // http://msdn.microsoft.com/query/dev10.query?appId=Dev10IDEF1&l=EN-US&k=k%28EHINVALIDOPERATION.WINFORMS.ILLEGALCROSSTHREADCALL%29&rd=true
+            if (btnCheckForUpdates.InvokeRequired)
+            {
+                SetTextCallback d = new SetTextCallback(ResetUpdateCheckButton);
+                this.Invoke(d, new object[] { text });
+            }
+            else
+            {
+                btnCheckForUpdates.Text = text;
+                btnCheckForUpdates.Enabled = true;
+            }
+        }
+
+        #region IUpdateCheckListener Methods
+
+        public void OnFoundNewerVersion()
+        {
+            // This is pretty simple.  If the update check found a new version, tell it to
+            // go ahead and download it.  Note that the update checker will handle any user
+            // notifications, which includes a prompt on whether or not they'd like to
+            // upgrade.  The null check is probably redudant--this method should never be
+            // called if the update checker is null--but it's a belt-and-suspenders thing.
+            try { if (updateChecker != null) updateChecker.GetNewerVersion(); }
+            // If anything blows up, make sure to re-enable the button to let the user
+            // try again:
+            catch (Exception ex)
+            {
+                if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                ResetUpdateCheckButton(btnCheckForUpdatesText);
+            }
+        }
+
+        public void OnNoUpdateFound()
+        {
+            // In the main app, if no update was found we silently go on about our business.  In
+            // this instance, however, we want to explicitly notify the user.  Show the message,
+            // then re-enable the button.
+            MessageBox.Show("No new updates were found. You appear to have the latest version.",
+                "Update Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            ResetUpdateCheckButton(btnCheckForUpdatesText);
+        }
+
+        public void OnRecordLastUpdateCheck(DateTime lastCheck)
+        {
+            // For this one, we'll pass the buck up to the parent to let it store the last update
+            // check into the registry:
+            parent.OnRecordLastUpdateCheck(lastCheck);
+        }
+
+        public void OnRequestGracefulClose()
+        {
+            // There's not much we ought to do here.  Hide this form and tell the parent to close.
+            // Note that as this stands now, if the user made any changes to the settings, those
+            // settings will *NOT* be saved.
+            Hide();
+            parent.OnRequestGracefulClose();
+        }
+
+        public void OnUpdateCheckError()
+        {
+            // The update checker will do most of its own error handling here.  For our purposes,
+            // we just need to re-enable the button so the user can check again.
+            ResetUpdateCheckButton(btnCheckForUpdatesText);
+        }
+
+        public void OnDownloadCanceled()
+        {
+            // If the user cancels the download, just reset the button:
+            ResetUpdateCheckButton(btnCheckForUpdatesText);
+        }
+
+        #endregion
+
     }
 }

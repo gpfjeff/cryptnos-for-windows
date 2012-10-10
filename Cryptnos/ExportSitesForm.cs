@@ -76,9 +76,9 @@ namespace com.gpfcomics.Cryptnos
         private bool clickedOK = false;
 
         /// <summary>
-        /// A reference to the <see cref="Form1"/> object that called us
+        /// A reference to the <see cref="MainForm"/> object that called us
         /// </summary>
-        private Form1 caller = null;
+        private MainForm caller = null;
 
         /// <summary>
         /// A ZXing <see cref="QRCodeWriter"/> for generating QR Codes
@@ -108,7 +108,7 @@ namespace com.gpfcomics.Cryptnos
         /// <param name="showTooltips">A boolean value specifying whether or not to show
         /// tooltip help.</param>
         /// <param name="keepOnTop">Keep Cryptnos on top of other windows</param>
-        public ExportSitesForm(object[] sites, bool showTooltips, bool keepOnTop, Form1 caller)
+        public ExportSitesForm(object[] sites, bool showTooltips, bool keepOnTop, MainForm caller)
         {
             // The normal initializaition:
             InitializeComponent();

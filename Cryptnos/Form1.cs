@@ -111,7 +111,7 @@ namespace com.gpfcomics.Cryptnos
     /// <summary>
     /// The main Cryptnos application form
     /// </summary>
-    public partial class Form1 : Form, IUpdateCheckListener
+    public partial class MainForm : Form, IUpdateCheckListener
     {
         #region Private Variables
 
@@ -195,13 +195,12 @@ namespace com.gpfcomics.Cryptnos
         /// <see cref="UpdateChecker"/> will use this feed to look for updated versions of
         /// Cryptnos.
         /// </summary>
-        private Uri updateFeedUri =
-            new Uri("http://www.cryptnos.com/files/cryptnos_updates_feed.xml");
+        private Uri updateFeedUri = new Uri(Properties.Resources.UpdateFeedUri);
 
         /// <summary>
         /// The unique app string for <see cref="UpdateChecker"/> lookups
         /// </summary>
-        private string updateFeedAppName = "Cryptnos for Windows";
+        private string updateFeedAppName = Properties.Resources.UpdateFeedAppName;
 
         /// <summary>
         /// The last update check timestamp for <see cref="UpdateChecker"/> lookups.  Note
@@ -209,6 +208,12 @@ namespace com.gpfcomics.Cryptnos
         /// update on the first check, but that will be overwritten during initialization.
         /// </summary>
         private DateTime updateFeedLastCheck = DateTime.MinValue;
+
+        /// <summary>
+        /// The number of days between update checks, which we will passs to the
+        /// <see cref="UpdateChecker"/>.
+        /// </summary>
+        private int updateInterval = Int32.Parse(Properties.Resources.UpdateIntervalInDays);
 
         /// <summary>
         /// The actual <see cref="UpdateChecker"/> object, which will check for Cryptnos
@@ -257,7 +262,7 @@ namespace com.gpfcomics.Cryptnos
         /// <summary>
         /// Constructor
         /// </summary>
-        public Form1()
+        public MainForm()
         {
             try
             {
@@ -439,7 +444,8 @@ namespace com.gpfcomics.Cryptnos
                     try
                     {
                         updateChecker = new UpdateChecker.UpdateChecker(updateFeedUri, updateFeedAppName,
-                            Assembly.GetExecutingAssembly().GetName().Version, this, updateFeedLastCheck, debug);
+                            Assembly.GetExecutingAssembly().GetName().Version, this, updateFeedLastCheck,
+                            updateInterval, debug);
                         updateChecker.CheckForNewVersion();
                     }
                     catch (Exception updateEx)
@@ -1231,11 +1237,11 @@ namespace com.gpfcomics.Cryptnos
                     MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
                     showAdvancedWarning = false;
-                    ads = new AdvancedSettingsDialog(encoding, chkShowTooltips.Checked, debug,
+                    ads = new AdvancedSettingsDialog(this, encoding, chkShowTooltips.Checked, debug,
                         disableUpdateCheck, this.TopMost, showMasterPassword, clearPasswordsOnFocusLoss); 
                 }
             }
-            else ads = new AdvancedSettingsDialog(encoding, chkShowTooltips.Checked, debug,
+            else ads = new AdvancedSettingsDialog(this, encoding, chkShowTooltips.Checked, debug,
                 disableUpdateCheck, this.TopMost, showMasterPassword, clearPasswordsOnFocusLoss);
             // Now if the user got to here and the dialog was created, go ahead and
             // show it.  If they click OK, get the new settings and take note of
@@ -1250,13 +1256,6 @@ namespace com.gpfcomics.Cryptnos
                     this.TopMost = ads.KeepOnTop;
                     showMasterPassword = ads.ShowMasterPassword;
                     clearPasswordsOnFocusLoss = ads.ClearPasswordsOnFocusLoss;
-                    // If the user did not disable the update check and they requested that
-                    // we force an update check the next time we launch, set the last update
-                    // check date/time to the minimum value of DateTime, which will be well
-                    // outside the expiration window and which will force an update check the
-                    // next time we launch.
-                    if (!disableUpdateCheck && ads.ForceUpdateCheck)
-                        updateFeedLastCheck = DateTime.MinValue;
                     // Tweak the master password box based on the new Show Master Passphrase
                     // preference:
                     txtPassphrase.UseSystemPasswordChar = !showMasterPassword;
@@ -1863,6 +1862,15 @@ namespace com.gpfcomics.Cryptnos
             ExitApplication();
             Dispose();
         }
+
+        // We don't really care to do anything in the case when no update is found or when an
+        // update check ends in an error.  The update checker does well enough on its own in
+        // both cases.  Thus, we'll provide empty implementations for both of these call-backs
+        // and let the update check handle these items itself.
+
+        public void OnNoUpdateFound() { }
+        public void OnUpdateCheckError() { }
+        public void OnDownloadCanceled() { }
 
         #endregion
 

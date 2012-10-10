@@ -162,7 +162,7 @@ namespace com.gpfcomics.Cryptnos
                     {
                         Application.EnableVisualStyles();
                         Application.SetCompatibleTextRenderingDefault(false);
-                        Application.Run(new Form1());
+                        Application.Run(new MainForm());
                     }
                     // Otherwise, the mutex exists and we should already have a window open.
                     // We'll try to redirect the user to that window rather than open a new one.
