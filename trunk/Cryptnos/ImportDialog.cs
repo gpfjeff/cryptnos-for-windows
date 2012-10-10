@@ -76,7 +76,7 @@ namespace com.gpfcomics.Cryptnos
         /// <summary>
         /// A reference to the main Cryptnos window
         /// </summary>
-        private Form1 caller = null;
+        private MainForm caller = null;
 
         /// <summary>
         /// This read-only <see cref="List"/> of <see cref="SiteParameters"/> contains the user's
@@ -98,7 +98,7 @@ namespace com.gpfcomics.Cryptnos
         /// <param name="debug">Whether or not we are in debug mode</param>
         /// <param name="keepOnTop">Whether or not this window should remain on top of other windows</param>
         /// <param name="showToolTips">Whether or not to show tool tip help</param>
-        public ImportDialog(Form1 caller, List<SiteParameters> importedSites, bool debug, bool keepOnTop,
+        public ImportDialog(MainForm caller, List<SiteParameters> importedSites, bool debug, bool keepOnTop,
             bool showToolTips)
         {
             // Initialize the window and grab local copies of all our inputs:

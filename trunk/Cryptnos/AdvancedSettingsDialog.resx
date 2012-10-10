@@ -145,15 +145,6 @@ for generated passwords to match.
 We strongly recommend using UTF-8 for the
 greatest level of compatibility.</value>
   </data>
-  <data name="chkForceUpdateCheck.ToolTip" xml:space="preserve">
-    <value>Normally, Cryptnos checks for updates once
-per week.  If you check this box, Cryptnos
-will check for updates the next time it is
-launched, regardless of when the last
-check was performed.  Use this if you wish
-to check for updates sooner than the next
-check by date.</value>
-  </data>
   <data name="chkKeepOnTop.ToolTip" xml:space="preserve">
     <value>Enabling this box will keep Cryptnos on top
 of most other windows, even if it loses
@@ -162,9 +153,6 @@ having Cryptnos instantly accessible,
 regardless of whatever else you might
 be using.</value>
   </data>
-  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
   <data name="chkShowMasterPassphrase.ToolTip" xml:space="preserve">
     <value>If this checkbox is enabled, the text in the
 master passphrase box will not longer be
