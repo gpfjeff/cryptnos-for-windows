@@ -12,7 +12,7 @@ AppName=Cryptnos
 AppVerName=Cryptnos 1.3.3
 LicenseFile=.\gpl.rtf
 PrivilegesRequired=poweruser
-MinVersion=4.1.1998,5.0.2195sp3
+MinVersion=0,5.0.2195sp3
 DefaultDirName={pf}\Cryptnos
 DefaultGroupName=Cryptnos
 AppID=GPFComicsCryptnos
@@ -117,4 +117,4 @@ end;
 // doing a release build, make sure to change the random string below to some-
 // thing new to force SubWCRev to add the new info.
 //
-// Revision Tag: 302e31313735353337313039
+// Revision Tag: 302e30353834343131363231
