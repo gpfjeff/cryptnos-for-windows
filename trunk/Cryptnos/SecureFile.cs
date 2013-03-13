@@ -12,6 +12,12 @@
  * is intended to be extremely easy to use, making it virtually trivial for anyone to create data
  * files that are strongly encrypted.
  * 
+ * SecureFile is actually a hold-over from another project I worked on, but was used in Cryptnos
+ * for the encryption of the original platform-specific export file format.  Newer versions of
+ * Cryptnos use "proper" AES-256 encryption scheme rather than this custom class, so this code
+ * only remains within Cryptnos to support reading the old original export format.  Its use for
+ * virtually any other purpose should probably be discouraged.
+ * 
  * The static Write() methods always take a minimum of three arguments:  a string containing the
  * file name (and path) to work with, some sort of data to write to that file, and a string containing
  * the passphrase to encrypt the data with.  An optional initialization vector (IV) can be specified,
@@ -63,8 +69,8 @@
  * Please practice safe and secure computing practices regardless of your operating system choice.
  * 
  * This program is Copyright 2009, Jeffrey T. Darlington.
- * E-mail:  jeff@gpf-comics.com
- * Web:     http://www.gpf-comics.com/
+ * E-mail:  jeff@cryptnos.com
+ * Web:     http://www.cryptnos.com/
  * 
  * This program is free software; you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by the Free Software Foundation; either version 2

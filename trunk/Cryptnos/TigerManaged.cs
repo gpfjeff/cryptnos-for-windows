@@ -23,8 +23,8 @@
  * Some of the original comments are retained, with additional comments by me.
  * 
  * This program is Copyright 2007, Jeffrey T. Darlington.
- * E-mail:  jeff@gpf-comics.com
- * Web:     http://www.gpf-comics.com/
+ * E-mail:  jeff@cryptnos.com
+ * Web:     http://www.cryptnos.com/
  * 
  * This program is free software; you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by the Free Software Foundation; either version 2

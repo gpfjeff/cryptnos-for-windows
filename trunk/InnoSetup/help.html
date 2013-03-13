@@ -9,7 +9,7 @@ blockquote { background: #EEEEEE; }
 </head>
 <body><h1>Cryptnos Help</h1>
 <p>Official Cryptnos Site: <a href="http://www.cryptnos.com/" target="_blank">http://www.cryptnos.com/</a><br />
-Last Updated June 8, 2012</p>
+Last Updated March 13, 2013</p>
 
 <a name="toc"><h2>Table of Contents</h2></a>
 <ul>
@@ -38,6 +38,7 @@ Last Updated June 8, 2012</p>
 		<li><a href="#cmdbuttons">Additional Controls</a></li>
 		<li><a href="#dailymode">Daily Use Mode vs. Full Mode</a></li>
 		<li><a href="#advancedsettings">Advanced Settings</a></li>
+		<li><a href="#hotkeys">Cryptnos Hot Keys</a></li>
 	</ul>
 	<li><a href="#updates">Finding Cryptnos Updates</a></li>
 	<li><a href="#security">Security Considerations</a></li>
@@ -54,7 +55,7 @@ Last Updated June 8, 2012</p>
 
 <a name="whycryptnos"><h3>Why Cryptnos?</h3></a>
 
-<p>Shortly after I created the <a href="http://www.gpf-comics.com/dl/winhasher/">WinHasher</a> application for generating cryptographic hashes of files on Windows, I came up with many ideas on how to tweak it. In addition to generating hashes for a file that could be used, say, to verify a download from the Internet, I also added a simple interface for comparing two or more files to see if their contents were identical. Almost as an afterthought, I added the ability to hash arbitrary text; the user could select a hashing algorithm and a character encoding then enter whatever text they wanted into a field, and WinHasher would generate the accompanying hash.</p>
+<p>Shortly after I created the <a href="https://code.google.com/p/winhasher/">WinHasher</a> application for generating cryptographic hashes of files on Windows, I came up with many ideas on how to tweak it. In addition to generating hashes for a file that could be used, say, to verify a download from the Internet, I also added a simple interface for comparing two or more files to see if their contents were identical. Almost as an afterthought, I added the ability to hash arbitrary text; the user could select a hashing algorithm and a character encoding then enter whatever text they wanted into a field, and WinHasher would generate the accompanying hash.</p>
 <p>The idea behind the hash text feature of WinHasher was mostly to generate secure, pseudo-random passwords for Internet websites. By combining a unique "token" to identify the site (say, "gmail.com") with a "secret" token that only I would know and then passing both through a cryptographic hash, a strong random-looking password could be generated that would be unique for the given site, difficult to reverse engineer, and easy to regenerate given the same inputs. While there are already existing utilities for this purpose, including ones that plug directly into various Internet browsers, I wanted to design this myself, in part for the intellectual and programming challenge and in part in the spirit of "trust no one", eliminating reliance on external utilities that could disappear who knows when. By building my own utility, I knew it would exist as long as I deemed necessary. This password-generating "side-effect" of WinHasher quickly became the feature of the program that I used the most. That said, it was not ideally designed for that purpose.</p>
 <p>In order to prevent the generated passwords from being too predictable, I had to make sure to include a "secret" portion of the plain text to "salt" the result with unknown data. Without such a salt, it would always be theoretically possible that someone could use a "rainbow table" style attack and compare the generated hash to other outputs to discover the plain text. That said, the full input into WinHasher's Hash Text function&mdash;the unique site "token" to identify the site plus the "secret"&mdash;had to be entered in visible plain text, allowing random passers-by to read the full input over the user's shoulder. In addition, I quickly found that many sites place restrictions on the contents of user passwords, including length and character class restrictions. If a site only permitted alphanumerics in a password and limited its length to twelve characters, the raw output of a SHA-1 hash in Base64 couldn't be used; it had to be further edited to remove unwanted characters. I ended up resorting to saving such generated and tweaked passwords in a text file, externally encrypted with GnuPG, to keep track of them. While the passwords themselves were strong and difficult to brute-force, the encrypted text file quickly became a bottleneck and a security risk in and of itself.</p>
 <p>What I needed was something that performed all these tasks for me automatically:</p>
@@ -116,13 +117,14 @@ Last Updated June 8, 2012</p>
 
 <a name="nonwin"><h3>Cryptnos on Non-Windows Platforms</h3></a>
 
-<p>One of the beauties about using the .NET Framework to develop Cryptnos is that it's technically not restricted to Microsoft Windows. Anyone can (in theory) develop their own .NET framework based on Microsoft's specifications to run on any platform, and thus run any .NET application built for that framework. <a href="http://www.mono-project.com/">Mono</a> is one such project which runs .NET client and server applications on Linux, Solaris, Mac OS X, Windows, and Unix. However, at the time of this writing, Mono mostly supports .NET 1.1 and only partially supports .NET 2.0. <a href="http://www.mono-project.com/Moma">MoMA</a> reports that Cryptnos should work with Mono 2.2 (or higher, I assume). However, I do not plan to officially offer support for non-Windows use of Cryptnos.</p>
-<p>The one place where Cryptnos is dependent on Windows functionality is that it stores its parameter information to the Windows registry. I have no idea what sort of support Mono has for this functionality. However, most of this can be skipped by unchecking the <strong>Remember parameters</strong> checkbox; the trade-off, of course, is that you will need to remember all your site parameters yourself..</p>
+<p>One of the beauties about using the .NET Framework to develop Cryptnos is that it's technically not restricted to Microsoft Windows. Anyone can (in theory) develop their own .NET framework based on Microsoft's specifications to run on any platform, and thus run any .NET application built for that framework. <a href="http://www.mono-project.com/">Mono</a> is one such project which runs .NET client and server applications on Linux, Solaris, Mac OS X, Windows, and Unix. <a href="http://www.mono-project.com/Moma">MoMA</a> reports that Cryptnos should work with Mono 2.2 (or higher, I assume). However, my limited testing with Mono under Linux have not been promising, generating a stream of errors. At this time, we do not officially support Cryptnos on non-Windows platforms, but adding Mono support is on our to-do list.</p>
+<p>There are a few places where Cryptnos is dependent on Windows functionality. For example, Cryptnos currently stores its parameter information to the Windows registry. Mono does not seem to complain about this, but we do hope to eventually move the settings and parameters into some other format like a SQLite database. Cryptnos also has one hook into unmanaged Windows code to prevent multiple copies from being run at one time; since this uses DLL files that are core to Windows itself, porting this functionality to another platform will likely prove difficult.</p>
 
 <a name="portable"><h3>Portable Cryptnos</h3></a>
 
 <p>Cryptnos is not designed to be used as a "portable" app, or one that can be placed on removable media (such as a USB memory stick) and transferred cleanly from machine to machine. This is due in large part to the severe security implications of moving your passwords from one machine to another. Cryptnos should only ever be run on a system that you own and trust, one that you can reasonably guarantee to be free of viruses, malware, or surreptitious logging. To use a password generator on a system you do not trust is not only counter-intuitive, but extremely dangerous. Therefore the use of Cryptnos as a portable app is <em>strongly</em> discouraged, and we no longer provide instructions on how to do so. We apologize for any inconvenience this may cause.</p>
 <p>If you would like to move your parameter data from one trusted machine to another, you can always use the <strong>Export</strong> and <strong>Import</strong> features. Cryptnos export files are always encrypted, so they should be safe to move from place to place. See the <a href="#rememberingsettings">Remembering Settings</a> section below for import and export information.</p>
+<p>If you absolutely need to generate your Cryptnos-based passwords on a machine that do not trust to install the full application on, you can always try <a href="http://www.cryptnos.com/online/">Cryptnos Online</a>. This HTML and JavaScript based page has less features than the full application, but should be able to generate many if not most of your passwords without requiring installation.</p>
 
 <p>[ <a href="#toc">Return to Table of Contents</a> ]</p>
 
@@ -209,9 +211,25 @@ Last Updated June 8, 2012</p>
 <p>Note that the selection of text or character encoding here does <em><strong>NOT</strong></em> affect import/export files. Cryptnos export files since version 1.1 have always used UTF-8 internally and thus should be compatible regardless of platform. Export files prior to version 1.1 are platform-specific and are technically no longer supported. (Cryptnos will continue to read them, but they can no longer be generated.)</p>
 <p>The <strong>Enable debug mode</strong> checkbox puts Cryptnos in debug mode, meaning that it will display much more verbose and technical messages if an error occurs. This isn't very useful for most users, but you may be asked by a Cryptnos developer to enable this setting if they need your help debugging an issue.</p>
 <p>The <strong>Disable update check</strong> checkbox turns off the built-in update check on start-up. If this box is checked, Cryptnos will never contact the official Cryptnos website and look for updated versions. While there are legitimate reasons to disable this check, it is not recommended. Since Cryptnos is a security application, keeping up with the latest updates is important for keeping your passwords and the services they protect secure. You should only disable this check if you have very specific reasons, and you should manually check for updates periodically in lieu of relying on this process.</p>
-<p>The <strong>Force update check on next launch</strong> checkbox will force Cryptnos to look for a new version the next time it starts. Normally, Cryptnos checks roughly once per week for new versions; it keeps a record of the last time it checked and checks again if that date is older than one week. Checking this box resets this date to sometime in the distant past, ensuring that Cryptnos will check again after you've closed it and restarted it. Obviously, this option has no effect if you disable the update check, so checking the <strong>Disable update check</strong> checkbox will clear and disable this checkbox. Clearing the <strong>Disable update check</strong> checkbox will re-enable this checkbox.</p>
 <p>The <strong>Keep Cryptnos on top of other windows</strong> checkbox will try to force Cryptnos to float above all other windows, regardless of whether or not Cryptnos currently has focus. This is handy if you prefer to manually type your passwords into an authentication form rather than copy and paste them, exposing your passwords to clipboard-based attacks. Note that Cryptnos can only make a "best effort" to stay on top of the window stack; if another application attempts to perform the same action, it may supersede Cryptnos and overlap it. Clearing this checkbox will restore the default behavior and Cryptnos will behave like most applications, going behind other windows when it loses focus.</p>
-<p>The <strong>Clear passwords when losing focus</strong> checkbox empties out the contents of the master passphrase and generated password boxes whenever the main Cryptnos window loses focus. By default, Cryptnos does not perform this action, which replicates the behavior from versions prior to when this option was introduced. When this option is activated and Cryptnos gets hidden by another applicaiton window or another application gains the user's focus, the password boxes will be cleared to prevent eavesdroppers seeing the passwords over the user's shoulder or from other applications attempting to scan Cryptnos' allocated memory. Note that this option does not affect the <strong>Copy password to clipboard</strong> setting; if that option is set, the generated password will remain in the system clipboard until overwritten by some other data.</p>
+<p>The <strong>Show master passphrase</strong> checkbox disables the usual password masking that occurs and makes your master passphrase readable. This can be handy if you use a lengthy master passphrase that is prone to easy accidental typos, especially since Cryptnos has  no concept of whether or not the master passphrase is "right" or "wrong". (It will blindly use it to generate a password from the site name, master password, and cryptographic hash, allowing you to use the same site name and hash with different master passphrases to generate "related" passwords.) However, this setting comes with considerable risk and is not recommended. With this setting turned on, any passer-by will be able to view your master passphrase on your screen. We highly recommend that you leave this setting turned off unless absolutely necessary, and that you disable it as soon as possible once it is no longer needed.</p>
+<p>The <strong>Clear passwords when losing focus</strong> checkbox empties out the contents of the master passphrase and generated password boxes whenever the main Cryptnos window loses focus. By default, Cryptnos does not perform this action, which replicates the behavior from versions prior to when this option was introduced. When this option is activated and Cryptnos gets hidden by another application window or another application gains the user's focus, the password boxes will be cleared to prevent eavesdroppers seeing the passwords over the user's shoulder or from other applications attempting to scan Cryptnos' allocated memory. Note that this option does not affect the <strong>Copy password to clipboard</strong> setting; if that option is set, the generated password will remain in the system clipboard until overwritten by some other data. Also note that if you enable the <strong>Keep Cryptnos on top of other windows</strong> setting, you should probably disable this one as the password boxes will still be cleared when Cryptnos loses focus, even if it remains on top of other windows.</p>
+<p>The <strong>Check for Updates</strong> button launches the check for new versions of Cryptnos that occurs when the application first starts, only this time interactively. Normally, Cryptnos checks roughly once per week for new versions; it keeps a record of the last time it checked and checks again if that date is older than one week. If no updated version is found, Cryptnos silently continues without notifying the user; if a new version is found, the user is prompted to download the update. Clicking this button will force Cryptnos to perform this version check immediately, displaying a dialog box to notify you whether or not a new version was found. This allows you to force an update check before the next scheduled update check occurs.</p>
+
+<p>[ <a href="#toc">Return to Table of Contents</a> ]</p>
+
+<a name="hotkeys"><h3>Cryptnos Hot Keys</h3></a>
+
+<p>Beginning with version 1.3.3, Cryptnos now includes a series of "hot keys" that toggle certain settings or perform certain actions through keyboard interactions. With the exception of the F1 key, all hot key combinations apply only to the main Cryptnos window (i.e. none of the supporting dialog boxes).</p>
+<ul>
+<li>Pressing <strong>F1</strong> in any of the Cryptnos windows and dialogs will launch your default Web browser and display this HTML help file.</li>
+<li><strong>Control + C</strong>, which is they <em>de facto</em> Windows standard for copying something to the system clipboard, will copy the currently generated password to the clipboard. It doesn't matter which control on the window is currently active or selected.</li>
+<li><strong>Control + D</strong> toggles <a href="#dailymode">"daily use" mode</a>.</li>
+<li><strong>Control + L</strong> toggles the <a href="#rememberingsettings">Lock Parameters</a> checkbox. Since unlocking the site parameters is only really useful if you plan to edit them (including adding new ones), this automatically disables <a href="#dailymode">"daily use" mode</a> as well. Turning parameter locking back on does not re-enable "daily use" mode.</li>
+<li><strong>Control + R</strong> toggles the <a href="#rememberingsettings">Remember Parameters</a> checkbox, including all the caveats this brings. Note that this hot key only takes affect if <a href="#rememberingsettings">Lock Parameters</a> is disabled; if that checkbox is turned on, this key combination has no effect.</li>
+<li><strong>Control + S</strong> launches the <a href="#advancedsettings">Advanced Settings dialog</a>.</li>
+<li><strong>Control + T</strong> toggles the <a href="#advancedsettings">"Keep Cryptnos on top of other windows"</a> setting, forcing Cryptnos to stay on top of other windows even if it loses focus. It also temporarily disables the <a href="#advancedsettings">"Clear passwords when losing focus"</a> setting under the assumption that the user wishes to manually type in a generated password rather than copy and paste it. If you use this hot key to turn off this setting, the previous "Clear passwords when losing focus" setting is restored.</li>
+</ul>
 
 <p>[ <a href="#toc">Return to Table of Contents</a> ]</p>
 
@@ -219,7 +237,7 @@ Last Updated June 8, 2012</p>
 
 <p>Beginning with version 1.1, Cryptnos now includes a small bit of code that checks for updates to the application. When it comes to security products, making sure you have the latest version is very important as updates may contain security patches and bug fixes that may affect the security of your data. Once per week, Cryptnos will contact the official Cryptnos website to see if a newer version is available. This check will occur in the background so it should not interrupt your current work flow. If a new version is found, you will be asked if you would like to download and install the new version. If no new update is found or if an error occurs during the check (i.e., you are not connected to the Internet, the update feed is invalid, etc.), the update check process will silently close. Thus, you never have to worry about being interrupted unless a new update is actually found.</p>
 <p>The update checker will only download a specially formatted XML file, validate it, and if an update has been found, optionally download the installer executable. No personally identifiable information will be shared with the Cryptnos server during this update check process. The only information we will be able to see will be your IP address, which is required for all Internet communication. No other information will be sent to the Cryptnos server, including the current version of Cryptnos you have installed. Your privacy is very important to us, and we do not want the extra burden of logging information we do not want or need.</p>
-<p>The update check can be disabled if absolutely necessary through the <a href="#advancedsettings">Advanced Settings</a> dialog.</p>
+<p>The update check can be disabled if absolutely necessary through the <a href="#advancedsettings">Advanced Settings</a> dialog. There you will also find a button where you can force an update check to occur immediately.</p>
 
 <p>[ <a href="#toc">Return to Table of Contents</a> ]</p>
 
@@ -265,7 +283,7 @@ Last Updated June 8, 2012</p>
 </li>
 <li><strong>Version 1.2:</strong>
 <ul>
-<li>Bug fix: Fixed "Object reference not set to an instance of an object" errors encountered on some systems.</li>
+<li>Bug fix: Fixed <a href="https://code.google.com/p/cryptnos-for-windows/issues/detail?id=1&can=1">"Object reference not set to an instance of an object" errors</a> encountered on some systems.</li>
 <li>Added Advanced Settings dialog to allow user to control text encoding used for password generation.</li>
 </ul>
 </li>
@@ -302,12 +320,23 @@ Last Updated June 8, 2012</p>
 </li>
 <li><strong>Version 1.3.2:</strong>
 <ul>
-<li>Implemented Issue #6, alphabetic sorting of site token list upon adding a new site.</li>
+<li>Implemented <a href="https://code.google.com/p/cryptnos-for-windows/issues/detail?id=6&can=1">Issue #6</a>, alphabetic sorting of site token list upon adding a new site.</li>
+</ul>
+</li>
+<li><strong>Version 1.3.3:</strong>
+<ul>
+<li>Fixed <a href="https://code.google.com/p/cryptnos-for-windows/issues/detail?id=8&can=1">Issue #8</a>, where Cryptnos supposedly lost all settings on systems with tighter security policies. This appeared to be an issue with the mutex that was supposed to force only one copy of the program to be running at a time.</li>
+<li>Implemented <a href="https://code.google.com/p/cryptnos-for-windows/issues/detail?id=10&can=1">Issue #10</a>, adding several hot key combinations, including the requested "keep on top" hot key.</li>
+<li>Changed generated password box text to a monospace font to make similar-looking characters easier to distinguish.</li>
+<li>Enhanced update checking code and added more error checking during start-up.</li>
+<li>Default text encoding is now always UTF-8 unless overridden by the user.</li>
+<li>Replaced "force update check on next launch" checkbox on the Settings dialog with an interactive "Check for Updates" button.</li>
+<li>Cryptnos now remembers its windows location and attempts to restore it when the app restarts.</li>
 </ul>
 </li>
 </ul>
 
 <p>[ <a href="#toc">Return to Table of Contents</a> ]</p>
 
-<p>This document is &#169; Copyright 2012, Jeffrey T. Darlington. It and the software it describes are released under the <a href="gpl.html">GNU General Public License, Version 2</a>.</p>
+<p>This document is &#169; Copyright 2013, Jeffrey T. Darlington. It and the software it describes are released under the <a href="gpl.html">GNU General Public License, Version 2</a>.</p>
 </body></html>
