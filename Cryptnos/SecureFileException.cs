@@ -12,8 +12,8 @@
  * thrown, make sure to catch these exceptions and use the Message property.
  * 
  * This program is Copyright 2009, Jeffrey T. Darlington.
- * E-mail:  jeff@gpf-comics.com
- * Web:     http://www.gpf-comics.com/
+ * E-mail:  jeff@cryptnos.com
+ * Web:     http://www.cryptnos.com/
  * 
  * This program is free software; you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by the Free Software Foundation; either version 2

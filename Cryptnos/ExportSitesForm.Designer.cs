@@ -61,7 +61,7 @@ namespace com.gpfcomics.Cryptnos
             this.rbExportAll.TabStop = true;
             this.rbExportAll.Text = "Export all saved site parameters";
             this.toolTip1.SetToolTip(this.rbExportAll, "Select this radio button to export all of your\r\nsite parameters in one file.  Thi" +
-                    "nk of this as\r\na shortcut to selecting all of the sites in the\r\nlist below.");
+        "nk of this as\r\na shortcut to selecting all of the sites in the\r\nlist below.");
             this.rbExportAll.UseVisualStyleBackColor = true;
             this.rbExportAll.CheckedChanged += new System.EventHandler(this.rbExportAll_CheckedChanged);
             // 
@@ -83,7 +83,7 @@ namespace com.gpfcomics.Cryptnos
             this.rbExportSome.TabIndex = 1;
             this.rbExportSome.Text = "Export only the following sites:";
             this.toolTip1.SetToolTip(this.rbExportSome, "Select this radio button if you would like to\r\nexport only certain site parameter" +
-                    "s, but not\r\nall of them.  The site list below will become\r\nenabled.");
+        "s, but not\r\nall of them.  The site list below will become\r\nenabled.");
             this.rbExportSome.UseVisualStyleBackColor = true;
             this.rbExportSome.CheckedChanged += new System.EventHandler(this.rbExportSome_CheckedChanged);
             // 
@@ -118,7 +118,7 @@ namespace com.gpfcomics.Cryptnos
             this.btnCancel.TabIndex = 4;
             this.btnCancel.Text = "Cancel";
             this.toolTip1.SetToolTip(this.btnCancel, "Click this button to cancel the export\r\nprocess.  You will be returned to the\r\nma" +
-                    "in Cryptnos window.");
+        "in Cryptnos window.");
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
@@ -141,8 +141,8 @@ namespace com.gpfcomics.Cryptnos
             this.tabExportFile.TabIndex = 0;
             this.tabExportFile.Text = "To File";
             this.toolTip1.SetToolTip(this.tabExportFile, "This tab will allow you to export any or all of\r\nyour site parameters to an encry" +
-                    "pted file.\r\nThis file can then be imported into another\r\ncopy of Cryptnos on a d" +
-                    "ifferent device.\r\n");
+        "pted file.\r\nThis file can then be imported into another\r\ncopy of Cryptnos on a d" +
+        "ifferent device.\r\n");
             this.tabExportFile.UseVisualStyleBackColor = true;
             // 
             // tabExportQRCode
@@ -188,6 +188,8 @@ namespace com.gpfcomics.Cryptnos
             this.cmboExportSiteQR.Name = "cmboExportSiteQR";
             this.cmboExportSiteQR.Size = new System.Drawing.Size(246, 21);
             this.cmboExportSiteQR.TabIndex = 1;
+            this.toolTip1.SetToolTip(this.cmboExportSiteQR, "To export a site via QRCode, select the\r\nsite name from this drop-down list.  The" +
+        "\r\nQRCode will be generated below.");
             this.cmboExportSiteQR.SelectedIndexChanged += new System.EventHandler(this.cmboExportSiteQR_SelectedIndexChanged);
             // 
             // label2

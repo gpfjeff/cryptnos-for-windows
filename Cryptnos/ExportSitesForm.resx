@@ -120,6 +120,9 @@
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
   <data name="lbSiteList.ToolTip" xml:space="preserve">
     <value>Select which site parameters to export by
 clicking on them.  You can select multiple
@@ -140,8 +143,8 @@ when you import your parameters.</value>
     <value>The generated QRCode will appear here.
 Launch Cryptnos for Android and tap Import,
 then From QRCode.  Note that you must have
-the Barcode Scanner app installed in order to
-import parameters via QRCode.</value>
+a supported QRCode reader app installed in
+order to import parameters via QRCode.</value>
   </data>
   <data name="tabExportQRCode.ToolTip" xml:space="preserve">
     <value>You can export a set of parameters as a QRCode

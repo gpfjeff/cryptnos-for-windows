@@ -71,11 +71,13 @@
  * UPDATES FOR 1.3.3:  Updated for GPFUpdateChecker 1.1.  Added additional error checking and
  * message boxes for problems during start-up.  Permanently defaulted the text encoding to UTF-8
  * rather than the system default if the user hasn't overridden it.  Changed font for the
- * generated password box to make it easier to differentiate similar characters.
+ * generated password box to make it easier to differentiate similar characters.  Added various
+ * hot key combinations to toggle certain settings (Issue 10).  Pressing F1 now launches the HTML
+ * help.
  * 
- * This program is Copyright 2012, Jeffrey T. Darlington.
- * E-mail:  jeff@gpf-comics.com
- * Web:     http://www.gpf-comics.com/
+ * This program is Copyright 2013, Jeffrey T. Darlington.
+ * E-mail:  jeff@cryptnos.com
+ * Web:     http://www.cryptnos.com/
  * 
  * This program is free software; you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by the Free Software Foundation; either version 2
@@ -113,6 +115,7 @@ namespace com.gpfcomics.Cryptnos
     /// </summary>
     public partial class MainForm : Form, IUpdateCheckListener
     {
+
         #region Private Variables
 
         /// <summary>
@@ -385,6 +388,26 @@ namespace com.gpfcomics.Cryptnos
                         // can do so in the settings.
                         encoding = Encoding.GetEncoding((string)CryptnosSettings.GetValue("Encoding",
                             Encoding.UTF8.WebName));
+                        // Attempt to restore the window location.  Since Cryptnos has a fixed size
+                        // window most of the time, we don't have to worry about size so much.  But
+                        // we do want to make sure the window doesn't disappear off the screen.  So
+                        // default to putting the window in the upper left quarter of the primary
+                        // screen.  If the window's bottom or right edges appear off screen, adjust
+                        // the top left corner to make the entire window appear on screen.  Also note
+                        // that we must set Form.StartPosition to Manual; otherwise, Windows will
+                        // put the window wherever it wants, ignoring our settings.
+                        StartPosition = FormStartPosition.Manual;
+                        int winTop = (int)CryptnosSettings.GetValue("WindowTop",
+                            Screen.PrimaryScreen.Bounds.Height / 4);
+                        int winLeft = (int)CryptnosSettings.GetValue("WindowLeft",
+                            Screen.PrimaryScreen.Bounds.Width / 4);
+                        if (winTop < 0) winTop = 0;
+                        if (winLeft < 0) winLeft = 0;
+                        if (winTop + Height > Screen.PrimaryScreen.Bounds.Height)
+                            winTop = Screen.PrimaryScreen.Bounds.Height - Height;
+                        if (winLeft + Width > Screen.PrimaryScreen.Bounds.Width)
+                            winLeft = Screen.PrimaryScreen.Bounds.Width - Width;
+                        Location = new Point(winLeft, winTop);
                     }
                     // If we were unable to open the registry, warn the user that something went wrong.
                     // They can technically still use the program, but they won't be able to load or
@@ -676,15 +699,41 @@ namespace com.gpfcomics.Cryptnos
             }
             else
             {
-                // For now, if we're not remembering anything anymore, just clear out the
-                // drop-down list but don't change anything else.  We'll add more here if
-                // we deem it relevant.
-                cbSites.Items.Clear();
-                // Uncheck and disable the Lock checkbox.  If they're not remembering
-                // anything, they shouldn't be able to lock it.
-                chkLock.Checked = false;
-                chkLock.Enabled = false;
-                chkDailyMode.Enabled = false;
+                // If the user already has anything saved, warn them that this is about to
+                // potentially clear all their saved parameters:
+                if (cbSites.Items.Count > 0)
+                {
+                    // Get the user's permission first:
+                    if (MessageBox.Show("Are you sure you wish to turn off remembering parameters? This will " +
+                        "remove all your saved parameters!", "Stop Remembering Parameters",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        // For now, if we're not remembering anything anymore, just clear out the
+                        // drop-down list but don't change anything else.  We'll add more here if
+                        // we deem it relevant.
+                        cbSites.Items.Clear();
+                        // Uncheck and disable the Lock checkbox.  If they're not remembering
+                        // anything, they shouldn't be able to lock it.
+                        chkLock.Checked = false;
+                        chkLock.Enabled = false;
+                        chkDailyMode.Enabled = false;
+                    }
+                    // If they decide not to clear everything, turn the Remember checkbox back on:
+                    else
+                    {
+                        chkRemember.Checked = true;
+                    }
+                }
+                // If there are no parameters in the list yet, we don't need to confirm anything.
+                // Just go ahead and turn the setting off.  Note that this does the same thing as
+                // above where we ask for the user's confirmation.
+                else
+                {
+                    cbSites.Items.Clear();
+                    chkLock.Checked = false;
+                    chkLock.Enabled = false;
+                    chkDailyMode.Enabled = false;
+                }
             }
         }
 
@@ -1371,6 +1420,154 @@ namespace com.gpfcomics.Cryptnos
             txtPassphrase.SelectAll();
         }
 
+        /// <summary>
+        /// Process "hot keys" combinations for the entire form
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        protected override bool ProcessCmdKey(ref Message message, Keys keys)
+        {
+            // See if we recognize any key combinations:
+            switch (keys)
+            {
+                // Ctrl + C:  Copy the generated password to the clipboard:
+                case Keys.Control | Keys.C:
+                    // There's really only one thing we care about copying to the clipboard, and
+                    // that's the generated password.  So we'll register this as a hotkey for the
+                    // entire form.  Try to copy the value of the password box to the system clipboard:
+                    try { if (chkCopyToClipboard.Checked) Clipboard.SetText(txtPassword.Text); }
+                    // For some reason, copying stuff to the clipboard doesn't always work.
+                    // This may be a known problem with Windows itself, but there's no consensus
+                    // on the issue.  Anyway, we don't want the entire process to bomb on this
+                    // trivial little issue, so we'll catch it separately, inform the user that
+                    // we couldn't copy it, and ask them to do it themselves.
+                    catch
+                    {
+                        MessageBox.Show("I was unable to copy the generated password to " +
+                            "the clipboard. This is usually a transient problem within " +
+                            "Windows itself that does not occur regularly. Please copy your " +
+                            "password manually this time.", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    return true;
+
+                // Ctrl + D:  Toggle "Daily Mode":
+                case Keys.Control | Keys.D:
+                    // This one is easy.  Toggle the checkbox, then store the new setting value
+                    // in the registry:
+                    chkDailyMode.Checked = !chkDailyMode.Checked;
+                    if (CryptnosRegistryKeyOpen())
+                    {
+                        CryptnosSettings.SetValue("DailyMode", (chkDailyMode.Checked ? 1 : 0),
+                            RegistryValueKind.DWord);
+                    }
+                    return true;
+
+                // Ctrl + L:  Toggle "Lock Parameters":
+                case Keys.Control | Keys.L:
+                    // "Daily mode" implies that "Lock Parameters" must also be turned on,
+                    // since we don't want to be editing parameters when we can't see them.
+                    // Thus toggling the parameter lock should also disable "daily mode".
+                    if (chkDailyMode.Checked) chkDailyMode.Checked = false;
+                    chkLock.Checked = !chkLock.Checked;
+                    // Store our settings for both toggles:
+                    if (CryptnosRegistryKeyOpen())
+                    {
+                        CryptnosSettings.SetValue("DailyMode", (chkDailyMode.Checked ? 1 : 0),
+                            RegistryValueKind.DWord);
+                        CryptnosSettings.SetValue("LockParams", (chkLock.Checked ? 1 : 0),
+                            RegistryValueKind.DWord);
+                    }
+                    return true;
+
+                // Ctrl + R:  Toggle "Remember Parameters":
+                case Keys.Control | Keys.R:
+                    if (!chkLock.Checked)
+                    {
+                        chkRemember.Checked = !chkRemember.Checked;
+                    }
+                    return true;
+
+                // Ctrl + S:  Launch the Advanced Settings dialog:
+                case Keys.Control | Keys.S:
+                    // Since the Advanced Settings button already does a lot of work, let it handle
+                    // the bulk of this:
+                    btnAdvanced_Click(null, null);
+                    return true;
+
+                // Ctrl + T:  Toggle "Keep on Top":
+                case Keys.Control | Keys.T:
+                    // Toggle the actual "keep on top" setting:
+                    TopMost = !TopMost;
+                    // If the user is turning on "keep on top", odds are they probably want to be able
+                    // to manually type in their password.  This makes sense; if you want to see your
+                    // password window all the type, you probably want to see the password displayed
+                    // there as well.  So if we turn this toggle on, disable the "clear passwords on
+                    // focus loss" option so we'll always be able to see the generated password.  Note
+                    // that we won't store this value, so it will be temporary until the user shuts
+                    // down the program.
+                    if (TopMost)
+                    {
+                        clearPasswordsOnFocusLoss = false;
+                    }
+                    // If the user is turning off "keep on top", restore their "clear passwords on focus
+                    // loss" setting from the registry:
+                    else
+                    {
+                        if (CryptnosRegistryKeyOpen())
+                        {
+                            clearPasswordsOnFocusLoss = (int)CryptnosSettings.GetValue("ClearPasswordsOnFocusLoss",
+                                0) == 1 ? true : false;
+                        }
+                    }
+                    // Now save the current "keep on top" setting:
+                    if (CryptnosRegistryKeyOpen())
+                    {
+                        CryptnosSettings.SetValue("KeepOnTop", (TopMost ? 1 : 0),
+                            RegistryValueKind.DWord);
+                    }
+                    return true;
+
+                // F1:  Launch the browser to show the HTML help:
+                case Keys.F1:
+                    // The HTML help file sits in the same folder as the Cryptnos executable.
+                    // So to get the location of the EXE and append the help file name to the
+                    // folder's path.
+                    FileInfo mainExePath = new FileInfo(Application.ExecutablePath);
+                    string helpIndex = mainExePath.DirectoryName +
+                        Char.ToString(System.IO.Path.DirectorySeparatorChar) +
+                        "help.html";
+                    // The file should exist, but just in case it doesn't:
+                    if ((new FileInfo(helpIndex)).Exists)
+                    {
+                        // Try to launch the default browser.  We'll pass the path to the HTML file
+                        // to the system and let it handle what browser to open.  Whatever is
+                        // associated with HTML files should be launched.  However, just in case
+                        // something blows up, we'll include this in a try/catch and display an
+                        // error if it fails.
+                        try { System.Diagnostics.Process.Start(helpIndex); }
+                        catch
+                        {
+                            MessageBox.Show("I was unable to launch your default browser to display " +
+                                "the Cryptnos help file. Please use the shortcut icon in the Start " +
+                                "menu instead.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    // If the help files can't be found, complain:
+                    else
+                    {
+                        MessageBox.Show("The Cryptnos HTML help file could not be found. Please " +
+                            "reinstall Cryptnos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    return true;
+            }
+
+            // Any key combinations that aren't recognized should pass up the chain to
+            // whoever else might be listening:
+            return false;
+        }
+
         #endregion
 
         #region Interoperation Methods
@@ -1575,6 +1772,13 @@ namespace com.gpfcomics.Cryptnos
                         RegistryValueKind.DWord);
                     CryptnosSettings.SetValue("Encoding", encoding.WebName,
                         RegistryValueKind.String);
+                    // Only save the window location if our window is in a normal state, i.e.
+                    // not minimized (or maximized, but we've disabled that option):
+                    if (WindowState == FormWindowState.Normal)
+                    {
+                        CryptnosSettings.SetValue("WindowTop", Top, RegistryValueKind.DWord);
+                        CryptnosSettings.SetValue("WindowLeft", Left, RegistryValueKind.DWord);
+                    }
                     CryptnosSettings.SetValue("Version",
                         Assembly.GetExecutingAssembly().GetName().Version.ToString(),
                         RegistryValueKind.String);
@@ -1582,6 +1786,7 @@ namespace com.gpfcomics.Cryptnos
                     siteParamsKey.Close();
                     CryptnosSettings.Close();
                 }
+
             }
             catch (Exception ex)
             {
@@ -1798,6 +2003,8 @@ namespace com.gpfcomics.Cryptnos
             updateFeedLastCheck = DateTime.MinValue;
             encoding = Encoding.UTF8;
             TopMost = false;
+            Top = Screen.PrimaryScreen.Bounds.Height / 4;
+            Left = Screen.PrimaryScreen.Bounds.Width / 4;
         }
 
         #endregion

@@ -181,6 +181,7 @@ namespace com.gpfcomics.Cryptnos
             this.btnCheckForUpdates.Size = new System.Drawing.Size(156, 23);
             this.btnCheckForUpdates.TabIndex = 12;
             this.btnCheckForUpdates.Text = "Check for Updates...";
+            this.toolTip1.SetToolTip(this.btnCheckForUpdates, "Check to see if you\'re running\r\nthe latest version of Cryptnos.");
             this.btnCheckForUpdates.UseVisualStyleBackColor = true;
             this.btnCheckForUpdates.Click += new System.EventHandler(this.btnCheckForUpdates_Click);
             // 

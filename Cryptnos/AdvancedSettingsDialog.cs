@@ -27,11 +27,12 @@
  * 
  * UPDATES FOR 1.3.3:  Made UTF-8 the default encoding except for when displaying the system
  * default.  Removed the "force update check on next launch" checkbox and replaced it with a
- * new Check for Updates button that lets the user interactively initiate the check.
+ * new Check for Updates button that lets the user interactively initiate the check.  Pressing
+ * F1 now launches the HTML help.
  * 
- * This program is Copyright 2012, Jeffrey T. Darlington.
- * E-mail:  jeff@gpf-comics.com
- * Web:     http://www.gpf-comics.com/
+ * This program is Copyright 2013, Jeffrey T. Darlington.
+ * E-mail:  jeff@cryptnos.com
+ * Web:     http://www.cryptnos.com/
  * 
  * This program is free software; you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by the Free Software Foundation; either version 2
@@ -50,6 +51,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Reflection;
 using System.Windows.Forms;
@@ -371,6 +373,56 @@ namespace com.gpfcomics.Cryptnos
                 btnCheckForUpdates.Text = text;
                 btnCheckForUpdates.Enabled = true;
             }
+        }
+
+        /// <summary>
+        /// Process "hot keys" combinations for the entire form
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        protected override bool ProcessCmdKey(ref Message message, Keys keys)
+        {
+            // See if we recognize any key combinations:
+            switch (keys)
+            {
+                // F1:  Launch the browser to show the HTML help:
+                case Keys.F1:
+                    // The HTML help file sits in the same folder as the Cryptnos executable.
+                    // So to get the location of the EXE and append the help file name to the
+                    // folder's path.
+                    FileInfo mainExePath = new FileInfo(Application.ExecutablePath);
+                    string helpIndex = mainExePath.DirectoryName +
+                        Char.ToString(System.IO.Path.DirectorySeparatorChar) +
+                        "help.html";
+                    // The file should exist, but just in case it doesn't:
+                    if ((new FileInfo(helpIndex)).Exists)
+                    {
+                        // Try to launch the default browser.  We'll pass the path to the HTML file
+                        // to the system and let it handle what browser to open.  Whatever is
+                        // associated with HTML files should be launched.  However, just in case
+                        // something blows up, we'll include this in a try/catch and display an
+                        // error if it fails.
+                        try { System.Diagnostics.Process.Start(helpIndex); }
+                        catch
+                        {
+                            MessageBox.Show("I was unable to launch your default browser to display " +
+                                "the Cryptnos help file. Please use the shortcut icon in the Start " +
+                                "menu instead.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    // If the help files can't be found, complain:
+                    else
+                    {
+                        MessageBox.Show("The Cryptnos HTML help file could not be found. Please " +
+                            "reinstall Cryptnos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    return true;
+            }
+
+            // Any key combinations that aren't recognized should pass up the chain to
+            // whoever else might be listening:
+            return false;
         }
 
         #region IUpdateCheckListener Methods
