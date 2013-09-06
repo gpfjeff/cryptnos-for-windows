@@ -30,6 +30,8 @@
  * new Check for Updates button that lets the user interactively initiate the check.  Pressing
  * F1 now launches the HTML help.
  * 
+ * UPDATES FOR 1.3.4: Tweaks to improve behavior under Mono.
+ * 
  * This program is Copyright 2013, Jeffrey T. Darlington.
  * E-mail:  jeff@cryptnos.com
  * Web:     http://www.cryptnos.com/
@@ -213,9 +215,17 @@ namespace com.gpfcomics.Cryptnos
             InitializeComponent();
             // Keep track of our parent form:
             this.parent = parent;
-            // Set up the encoding's drop-down box:
+            // Set up the encoding's drop-down box.  Note the try/catch block; this is a
+            // kludge to prevent this bit of code from blowing up under Mono.  Apparently
+            // there is a bug in their implementation of Encoding.GetEncodings() that
+            // returns a bunch of invalid encodings for the platform.  The try/catch
+            // block, while inelegant, should populate the drop-down box with only valid
+            // encodings for the platform.  See: https://bugzilla.xamarin.com/show_bug.cgi?id=8117
             foreach (EncodingInfo encodingInfo in Encoding.GetEncodings())
-                cmbTextEncodings.Items.Add(encodingInfo.GetEncoding());
+            {
+                try { cmbTextEncodings.Items.Add(encodingInfo.GetEncoding()); }
+                catch { }
+            }
             cmbTextEncodings.DisplayMember = "WebName";
             // Select the text encoding currently selected:
             this.encoding = encoding;

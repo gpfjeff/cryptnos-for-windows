@@ -25,6 +25,8 @@
  * 
  * UPDATES FOR 1.3.3: Pressing F1 now launches the HTML help.
  * 
+ * UPDATES FOR 1.3.4: Tweaks to improve behavior under Mono.
+ * 
  * This program is Copyright 2013, Jeffrey T. Darlington.
  * E-mail:  jeff@cryptnos.com
  * Web:     http://www.cryptnos.com/
@@ -164,13 +166,16 @@ namespace com.gpfcomics.Cryptnos
         /// <param name="e"></param>
         private void ImportDialog_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // If the user did not click the import button, default to cancel:
-            if (!clickedImport)
+            // If the user did not click the import button, default to cancel.  Note that we skip
+            // this if we're running under Mono, as that causes the call stack to overflow.
+            if (!caller.IsMono)
             {
-                DialogResult = DialogResult.Cancel;
-                sitesFromFile = null;
+                if (!clickedImport)
+                {
+                    DialogResult = DialogResult.Cancel;
+                    sitesFromFile = null;
+                }
             }
-
         }
 
         /// <summary>
