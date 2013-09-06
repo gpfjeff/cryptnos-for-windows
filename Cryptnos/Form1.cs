@@ -75,6 +75,8 @@
  * hot key combinations to toggle certain settings (Issue 10).  Pressing F1 now launches the HTML
  * help.
  * 
+ * UPDATES FOR 1.3.4: Tweaks to improve behavior under Mono.
+ * 
  * This program is Copyright 2013, Jeffrey T. Darlington.
  * E-mail:  jeff@cryptnos.com
  * Web:     http://www.cryptnos.com/
@@ -249,6 +251,12 @@ namespace com.gpfcomics.Cryptnos
         private bool clearPasswordsOnFocusLoss = false;
 
         /// <summary>
+        /// Whether or not we are running under .NET (false) or Mono (true).  This helps us
+        /// perform framework specific logic.
+        /// </summary>
+        private bool isMono = false;
+
+        /// <summary>
         /// This <see cref="Size"/> represents the size of the main form in its fully
         /// expanded mode.
         /// </summary>
@@ -261,6 +269,19 @@ namespace com.gpfcomics.Cryptnos
         private Size sizeDailyUse = new Size(298, 187);
 
         #endregion
+
+        /// <summary>
+        /// Whether or not we are running under .NET (false) or Mono (true).  This helps us
+        /// perform framework specific logic.
+        /// </summary>
+        public bool IsMono
+        {
+            // This property will be read-only for everyone else:
+            get
+            {
+                return isMono;
+            }
+        }
 
         /// <summary>
         /// Constructor
@@ -457,6 +478,23 @@ namespace com.gpfcomics.Cryptnos
                         Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 }
                 catch { lastImportExportPath = Environment.CurrentDirectory; }
+
+                // Test whether or not we're running under .NET or Mono:
+                try
+                {
+                    isMono = Type.GetType("Mono.Runtime") != null;
+                }
+                catch { }
+                // Some Mono-specific setup logic:
+                if (isMono)
+                {
+                    // Our window setup is actually pretty lousy, and it really shows in Mono under
+                    // Linux.  Enabling "daily mode" pretty much makes the app unusable, or at least
+                    // a lot more difficult.  For our user's sanity, we'll disable the "daily mode"
+                    // check box for now to prevent them from accidentally enabling it.
+                    chkDailyMode.Checked = false;
+                    chkDailyMode.Enabled = false;
+                }
 
                 // Finally, initialize the update checker and set it to work.  The update check
                 // should occur in a separate thread, which will allow the main UI thread to

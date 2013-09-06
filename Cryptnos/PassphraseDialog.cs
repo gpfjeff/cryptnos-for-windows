@@ -15,7 +15,9 @@
  * Form.DialogResult property and exposes a read-only Passphrase property to allow access to
  * the entered passphrase.
  * 
- * This program is Copyright 2009, Jeffrey T. Darlington.
+ * UPDATES FOR 1.3.4: Tweaks to improve behavior under Mono.
+ * 
+ * This program is Copyright 2013, Jeffrey T. Darlington.
  * E-mail:  jeff@cryptnos.com
  * Web:     http://www.cryptnos.com/
  * 
@@ -74,6 +76,12 @@ namespace com.gpfcomics.Cryptnos
         private bool clickedOK = false;
 
         /// <summary>
+        /// Whether or not we are running under .NET (false) or Mono (true).  This helps us
+        /// perform framework specific logic.
+        /// </summary>
+        private bool isMono = false;
+
+        /// <summary>
         /// The user's passphrase.  Note that this property is read-only.
         /// </summary>
         public string Passphrase
@@ -106,6 +114,11 @@ namespace com.gpfcomics.Cryptnos
                     break;
             }
             TopMost = keepOnTop;
+            try
+            {
+                isMono = Type.GetType("Mono.Runtime") != null;
+            }
+            catch { }
         }
 
         /// <summary>
@@ -173,13 +186,15 @@ namespace com.gpfcomics.Cryptnos
             // be set to true and the result should already be set to OK.  Otherwise, 
             // clickedOK defaults to false but the result is unset.  So explicitly set the
             // result to Cancel here and make sure the passphrase property is cleared out.
-            if (!clickedOK)
+            if (!isMono)
             {
-                DialogResult = DialogResult.Cancel;
-                passphrase = null;
+                if (!clickedOK)
+                {
+                    DialogResult = DialogResult.Cancel;
+                    passphrase = null;
+                }
             }
         }
-
 
     }
 }

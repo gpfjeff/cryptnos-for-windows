@@ -17,6 +17,8 @@
  * 
  * UPDATES FOR 1.3.3:  Fixed mutex bug; see Issue #8 in the Google Code issue tracker.
  * 
+ * UPDATES FOR 1.3.4: Tweaks to improve behavior under Mono.
+ * 
  * This program is Copyright 2013, Jeffrey T. Darlington.
  * E-mail:  jeff@cryptnos.com
  * Web:     http://www.cryptnos.com/
@@ -144,6 +146,16 @@ namespace com.gpfcomics.Cryptnos
             // Create a Boolean flag which we'll test to see if we've created a new window
             // or not.  By default, assume that we've created an entirely new window.
             bool createdNew = true;
+
+            // Try to identify whether or not we're running under Microsoft .NET or Mono.  We'll
+            // do some specific stuff below depending on the framework we're running under.
+            bool isMono = false;
+            try
+            {
+                isMono = Type.GetType("Mono.Runtime") != null;
+            }
+            catch { }
+
             // Asbestos underpants:
             try
             {
@@ -171,23 +183,31 @@ namespace com.gpfcomics.Cryptnos
                         // Declare another flag to see whether or not we found the other
                         // instance.  Be default, assume we haven't:
                         bool foundIt = false;
-                        // Get the current process, then try to find any currently running
-                        // processes by the same name:
-                        Process current = Process.GetCurrentProcess();
-                        foreach (Process process in Process.GetProcessesByName(current.ProcessName))
+
+                        // Note that the following only makes sense if we're running under .NET,
+                        // since Mono cannot handle the P/Invokes needed to poke around with
+                        // Windows processes.  For Mono apps, we'll just claim that we can't
+                        // find any other instances and leave it up to the user to handle.
+                        if (!isMono)
                         {
-                            // If we found one and the process ID numbers do not match, try to
-                            // bring the other instance to the foreground:
-                            if (process.Id != current.Id)
+                            // Get the current process, then try to find any currently running
+                            // processes by the same name:
+                            Process current = Process.GetCurrentProcess();
+                            foreach (Process process in Process.GetProcessesByName(current.ProcessName))
                             {
-                                foundIt = true;
-                                SetForegroundWindow(process.MainWindowHandle);
-                                break;
+                                // If we found one and the process ID numbers do not match, try to
+                                // bring the other instance to the foreground:
+                                if (process.Id != current.Id)
+                                {
+                                    foundIt = true;
+                                    SetForegroundWindow(process.MainWindowHandle);
+                                    break;
+                                }
                             }
                         }
                         // Did we find the other instance?  If not, warn the user:
                         if (!foundIt)
-                            MessageBox.Show("Windows reports that another instance of Cryptnos " +
+                            MessageBox.Show("Another instance of Cryptnos " +
                                 "is currently running, but we can't find it. You may need to " +
                                 "manually stop the other Cryptnos process or reboot your " +
                                 "computer before you can run Cryptnos again.", "Error",
