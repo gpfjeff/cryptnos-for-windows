@@ -28,6 +28,8 @@
  * 
  * UPDATES FOR 1.3.3: Pressing F1 now launches the HTML help.
  * 
+ * UPDATES FOR 1.3.4: Tweaks to improve behavior under Mono.
+ * 
  * This program is Copyright 2013, Jeffrey T. Darlington.
  * E-mail:  jeff@cryptnos.com
  * Web:     http://www.cryptnos.com/
@@ -231,10 +233,13 @@ namespace com.gpfcomics.Cryptnos
             // should be set to true and the result should already be set to OK.  Otherwise, 
             // clickedOK defaults to false but the result is unset.  So explicitly set the
             // result to Cancel here and make sure the passphrase property is cleared out.
-            if (!clickedOK)
+            if (!caller.IsMono)
             {
-                DialogResult = DialogResult.Cancel;
-                siteArray = null;
+                if (!clickedOK)
+                {
+                    DialogResult = DialogResult.Cancel;
+                    siteArray = null;
+                }
             }
         }
 
