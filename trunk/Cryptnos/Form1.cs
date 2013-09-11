@@ -75,7 +75,10 @@
  * hot key combinations to toggle certain settings (Issue 10).  Pressing F1 now launches the HTML
  * help.
  * 
- * UPDATES FOR 1.3.4: Tweaks to improve behavior under Mono.
+ * UPDATES FOR 1.3.4: Tweaks to improve behavior under Mono.  Fixed a few errors that only
+ * manifested under Mono on Linux and disabled "daily mode" (at least temporarily) because it
+ * cut off critical UI elements.  Upgraded the GPFUpdateChecker library to version 1.2 in order
+ * to better handle update notifications on non-Windows platforms.
  * 
  * This program is Copyright 2013, Jeffrey T. Darlington.
  * E-mail:  jeff@cryptnos.com
@@ -219,6 +222,11 @@ namespace com.gpfcomics.Cryptnos
         /// <see cref="UpdateChecker"/>.
         /// </summary>
         private int updateInterval = Int32.Parse(Properties.Resources.UpdateIntervalInDays);
+
+        /// <summary>
+        /// The alternate download page for non-Windows users running Mono to download updates.
+        /// </summary>
+        private string updateAltDownloadPage = Properties.Resources.UpdateAltDownloadPage;
 
         /// <summary>
         /// The actual <see cref="UpdateChecker"/> object, which will check for Cryptnos
@@ -2063,7 +2071,16 @@ namespace com.gpfcomics.Cryptnos
             // notifications, which includes a prompt on whether or not they'd like to
             // upgrade.  The null check is probably redudant--this method should never be
             // called if the update checker is null--but it's a belt-and-suspenders thing.
-            try { if (updateChecker != null) updateChecker.GetNewerVersion(); }
+            // Also note that non-Windows users running under Mono will have to perform the
+            // download and upgrade themselves, while Windows folks running under .NET
+            // should get a fully automatic update.
+            try {
+                if (updateChecker != null)
+                {
+                    if (isMono) updateChecker.NotifyUserOfNewVersionOnly(updateAltDownloadPage);
+                    else updateChecker.GetNewerVersion();
+                }
+            }
             catch (Exception ex)
             {
                 if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
