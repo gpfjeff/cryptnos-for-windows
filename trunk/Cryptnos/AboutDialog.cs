@@ -15,7 +15,7 @@
  * 
  * UPDATES FOR 1.3.3: Pressing F1 now launches the HTML help.
  * 
- * This program is Copyright 2013, Jeffrey T. Darlington.
+ * This program is Copyright 2014, Jeffrey T. Darlington.
  * E-mail:  jeff@cryptnos.com
  * Web:     http://www.cryptnos.com/
  * 
@@ -162,6 +162,24 @@ namespace com.gpfcomics.Cryptnos
             // Any key combinations that aren't recognized should pass up the chain to
             // whoever else might be listening:
             return false;
+        }
+
+        /// <summary>
+        /// What to do when the website link is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void lblLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Try to launch the default browser and go to the Cryptnos site or complain:
+            try { System.Diagnostics.Process.Start(lblLink.Text); }
+            catch
+            {
+                MessageBox.Show("I was unable to launch your default browser to open " +
+                    "the Cryptnos website. Please open your browser and type in the " +
+                    "URL manually.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
 
     }
