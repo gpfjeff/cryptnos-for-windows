@@ -80,7 +80,7 @@
  * cut off critical UI elements.  Upgraded the GPFUpdateChecker library to version 1.2 in order
  * to better handle update notifications on non-Windows platforms.
  * 
- * This program is Copyright 2013, Jeffrey T. Darlington.
+ * This program is Copyright 2014, Jeffrey T. Darlington.
  * E-mail:  jeff@cryptnos.com
  * Web:     http://www.cryptnos.com/
  * 
@@ -502,6 +502,7 @@ namespace com.gpfcomics.Cryptnos
                     // check box for now to prevent them from accidentally enabling it.
                     chkDailyMode.Checked = false;
                     chkDailyMode.Enabled = false;
+                    chkDailyMode.Visible = false;
                 }
 
                 // Finally, initialize the update checker and set it to work.  The update check
@@ -2084,6 +2085,9 @@ namespace com.gpfcomics.Cryptnos
             catch (Exception ex)
             {
                 if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                else MessageBox.Show("An error occurred while attempting to download the new version. " +
+                    "Please try downloading it again later.", "Error", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
         }

@@ -32,7 +32,7 @@
  * 
  * UPDATES FOR 1.3.4: Tweaks to improve behavior under Mono.
  * 
- * This program is Copyright 2013, Jeffrey T. Darlington.
+ * This program is Copyright 2014, Jeffrey T. Darlington.
  * E-mail:  jeff@cryptnos.com
  * Web:     http://www.cryptnos.com/
  * 
@@ -444,12 +444,22 @@ namespace com.gpfcomics.Cryptnos
             // notifications, which includes a prompt on whether or not they'd like to
             // upgrade.  The null check is probably redudant--this method should never be
             // called if the update checker is null--but it's a belt-and-suspenders thing.
-            try { if (updateChecker != null) updateChecker.GetNewerVersion(); }
+            try
+            {
+                if (updateChecker != null)
+                {
+                    if (parent.IsMono) updateChecker.NotifyUserOfNewVersionOnly(Properties.Resources.UpdateAltDownloadPage);
+                    else updateChecker.GetNewerVersion();
+                }
+            }
             // If anything blows up, make sure to re-enable the button to let the user
             // try again:
             catch (Exception ex)
             {
                 if (debug) MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                else MessageBox.Show("An error occurred while attempting to download the new version. " +
+                    "Please try downloading it again later.", "Error", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
                 ResetUpdateCheckButton(btnCheckForUpdatesText);
             }
