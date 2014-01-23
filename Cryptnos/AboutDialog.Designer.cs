@@ -60,7 +60,7 @@ namespace com.gpfcomics.Cryptnos
             this.lblCopyright.Text = "[Copyright label]";
             this.lblCopyright.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.toolTip1.SetToolTip(this.lblCopyright, "The copyright date for this version\r\nof Cryptnos, so you can determine\r\nits fresh" +
-                    "ness.");
+        "ness.");
             // 
             // lblLink
             // 
@@ -72,6 +72,7 @@ namespace com.gpfcomics.Cryptnos
             this.lblLink.Text = "http://www.cryptnos.com/";
             this.lblLink.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.toolTip1.SetToolTip(this.lblLink, "Click this link to find out more\r\ninformation about Cryptnos\r\nonline.");
+            this.lblLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblLink_LinkClicked);
             // 
             // btnOK
             // 
@@ -96,7 +97,7 @@ namespace com.gpfcomics.Cryptnos
             this.txtLicense.TabIndex = 3;
             this.txtLicense.Text = resources.GetString("txtLicense.Text");
             this.toolTip1.SetToolTip(this.txtLicense, "The license under which Cryptnos has\r\nbeen released.  A full copy of this\r\nlicens" +
-                    "e can be found in the Cryptnos\r\ninstallation folder.");
+        "e can be found in the Cryptnos\r\ninstallation folder.");
             // 
             // pictureBox1
             // 
@@ -120,7 +121,7 @@ namespace com.gpfcomics.Cryptnos
             this.btnHelp.TabIndex = 4;
             this.btnHelp.Text = "Help...";
             this.toolTip1.SetToolTip(this.btnHelp, "Click this button to launch\r\nthe Cryptnos HTML help\r\nfile in your default browser" +
-                    ".");
+        ".");
             this.btnHelp.UseVisualStyleBackColor = true;
             this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
             // 
