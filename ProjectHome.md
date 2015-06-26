@@ -4,7 +4,7 @@
 |:--------------------|:---------|
 | **Date of Release** | March 13, 2013 |
 | **Next Release Milestone** | 1.3.4    |
-| **Date of Next Release** | Winter 2013-2014 |
+| **Date of Next Release** | Unknown |
 | **Status of Development** | Sporadic |
 
 # About Cryptnos #
@@ -15,6 +15,4 @@ This project relates to the Microsoft Windows (.NET 2.0) version. For the Google
 
 Cryptnos makes use of the [Legion of the Bouncy Castle C# Crypto API](http://www.bouncycastle.org/csharp/), which is released under the [MIT X11 License](http://opensource.org/licenses/mit-license.php). The source for the Bouncy Castle code can be obtained from their site. All original code for Cryptnos is released under the [GNU General Public License, version 2](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
 
-Crpytnos also uses the [GPFUpdateChecker](https://code.google.com/p/gpfupdatechecker/) library to check for application updates.
-
-<wiki:gadget url="http://google-code-feed-gadget.googlecode.com/svn/trunk/gadget.xml" up\_feeds="http://www.cryptnos.com/news/windows/feed/" width="500px" height="340px" border="0"/>
+Crpytnos also uses the [GPFUpdateChecker](https://github.com/gpfjeff/gpfupdatechecker) library to check for application updates.
