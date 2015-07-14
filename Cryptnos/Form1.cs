@@ -78,9 +78,9 @@
  * UPDATES FOR 1.3.4: Tweaks to improve behavior under Mono.  Fixed a few errors that only
  * manifested under Mono on Linux and disabled "daily mode" (at least temporarily) because it
  * cut off critical UI elements.  Upgraded the GPFUpdateChecker library to version 1.2 in order
- * to better handle update notifications on non-Windows platforms.
+ * to better handle update notifications on non-Windows platforms.  Fix for Issue #14.
  * 
- * This program is Copyright 2014, Jeffrey T. Darlington.
+ * This program is Copyright 2015, Jeffrey T. Darlington.
  * E-mail:  jeff@cryptnos.com
  * Web:     http://www.cryptnos.com/
  * 
