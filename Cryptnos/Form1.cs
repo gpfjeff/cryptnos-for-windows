@@ -640,7 +640,7 @@ namespace com.gpfcomics.Cryptnos
                     // Now that we've eliminated unwanted characters, we'll work on the
                     // length.  If the character limit has been set and it is less than
                     // the current length of the hash, crop the hash to the desired length:
-                    if (cbCharLimit.SelectedIndex != 0)
+                    if (cbCharLimit.SelectedIndex != 0 && cbCharLimit.SelectedIndex <= hash.Length)
                         hash = hash.Substring(0, cbCharLimit.SelectedIndex);
                     // Now that the hash has been generated and tweaked, display it in the
                     // password box:
